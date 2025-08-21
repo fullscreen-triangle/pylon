@@ -1,0 +1,178 @@
+# Pylon Global Configuration
+# Production-ready configuration for spatio-temporal coordination infrastructure
+
+[coordinator]
+# Coordinator service configuration
+bind_address = "0.0.0.0"
+port = 8080
+worker_threads = 4
+max_connections = 10000
+connection_timeout_ms = 30000
+coordination_precision = "1e-9"
+max_fragment_size = 65536
+fragment_cache_size = 1048576
+
+[temporal_coordination]
+# Network temporal coordination (Cable 1: Sango Rine Shumba)
+enabled = true
+atomic_clock_source = "ntp"
+ntp_servers = [
+    "pool.ntp.org",
+    "time.cloudflare.com", 
+    "time.google.com"
+]
+fragment_size = 1024
+coherence_window_ms = 100
+precision_target = "1e-12"
+jitter_compensation = true
+adaptive_precision = true
+temporal_fragment_ttl_ms = 5000
+
+[spatial_coordination]
+# Autonomous spatial navigation (Cable 2)
+enabled = true
+entropy_engineering = true
+behavioral_prediction = false
+navigation_precision = "1e-6"
+path_optimization_algorithm = "entropy_gradient"
+environmental_complexity_limit = 1000000
+coordination_latency_target_ms = 10
+fragment_reconstruction_timeout_ms = 50
+
+[individual_coordination]
+# Individual experience optimization (Cable 3)
+enabled = true
+bmd_integration = true
+consciousness_optimization = true
+experience_tracking = true
+privacy_mode = "local_processing"
+optimization_response_time_ms = 100
+experience_accuracy_target = 0.95
+reality_state_anchoring = true
+
+[temporal_economic]
+# Unified temporal-economic convergence layer
+enabled = true
+value_representation = "precision_by_difference"
+economic_precision = "1e-6"
+transaction_timeout_ms = 1000
+fragment_distribution = true
+iou_representation = "temporal"
+credit_limit_algorithm = "precision_constraint"
+
+[security]
+# Security and encryption configuration
+fragment_encryption = true
+temporal_signature_verification = true
+spatial_hash_validation = true
+coordination_authentication = "precision_based"
+tls_enabled = true
+tls_cert_path = "/etc/pylon/certs/server.crt"
+tls_key_path = "/etc/pylon/certs/server.key"
+allowed_origins = ["*"]
+api_key_required = false
+
+[database]
+# Data storage configuration
+type = "sqlite"
+url = "sqlite:///var/lib/pylon/coordination.db"
+max_connections = 20
+connection_timeout_ms = 5000
+auto_migrate = true
+
+[cache]
+# Cache configuration
+type = "memory"
+redis_url = "redis://localhost:6379"
+memory_cache_size = 134217728  # 128MB
+cache_ttl_seconds = 3600
+
+[monitoring]
+# Observability and monitoring
+enabled = true
+metrics_bind_address = "0.0.0.0"
+metrics_port = 9090
+log_level = "info"
+log_format = "json"
+tracing_enabled = true
+prometheus_metrics = true
+jaeger_endpoint = "http://localhost:14268/api/traces"
+
+[api]
+# REST API configuration
+enabled = true
+cors_enabled = true
+rate_limiting = true
+rate_limit_requests_per_minute = 1000
+request_timeout_ms = 30000
+max_request_size_bytes = 10485760  # 10MB
+
+[websocket]
+# WebSocket configuration
+enabled = true
+max_connections = 1000
+ping_interval_ms = 30000
+pong_timeout_ms = 10000
+max_message_size_bytes = 1048576  # 1MB
+
+[grpc]
+# gRPC service configuration
+enabled = true
+bind_address = "0.0.0.0"
+port = 50051
+max_message_size_bytes = 4194304  # 4MB
+keepalive_time_ms = 30000
+keepalive_timeout_ms = 5000
+
+[performance]
+# Performance optimization settings
+channel_buffer_size = 1000
+worker_queue_size = 10000
+coordination_batch_size = 100
+precision_calculation_threads = 0  # 0 = use all available cores
+fragment_processing_parallelism = 4
+
+[development]
+# Development-specific settings (only active in dev mode)
+debug_mode = false
+verbose_logging = false
+coordination_simulation = false
+test_data_generation = false
+mock_hardware_interfaces = false
+
+[production]
+# Production-specific overrides
+debug_mode = false
+log_level = "warn"
+metrics_detailed = false
+auto_scaling = true
+health_check_interval_ms = 10000
+
+# Environment-specific configuration profiles
+[profiles.development]
+coordinator.worker_threads = 2
+coordinator.max_connections = 100
+monitoring.log_level = "debug"
+development.debug_mode = true
+development.verbose_logging = true
+
+[profiles.testing]
+coordinator.worker_threads = 1
+coordinator.max_connections = 10
+database.url = "sqlite://memory"
+cache.type = "memory"
+monitoring.log_level = "error"
+
+[profiles.staging]
+coordinator.worker_threads = 8
+coordinator.max_connections = 5000
+monitoring.log_level = "info"
+security.api_key_required = true
+
+[profiles.production]
+coordinator.worker_threads = 16
+coordinator.max_connections = 50000
+monitoring.log_level = "warn"
+security.api_key_required = true
+security.tls_enabled = true
+production.auto_scaling = true

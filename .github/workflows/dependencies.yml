@@ -1,0 +1,216 @@
+name: Dependencies
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Run every Monday at 3 AM
+  workflow_dispatch: # Allow manual triggers
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.75
+
+      - name: Install cargo-edit
+        run: cargo install cargo-edit
+
+      - name: Install cargo-outdated
+        run: cargo install cargo-outdated
+
+      - name: Check for outdated dependencies
+        id: outdated
+        run: |
+          OUTDATED=$(cargo outdated --workspace --format json)
+          echo "outdated=$OUTDATED" >> $GITHUB_OUTPUT
+          if [ "$OUTDATED" != "[]" ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update dependencies
+        if: steps.outdated.outputs.has_updates == 'true'
+        run: |
+          # Update patch versions only for safety
+          cargo update
+          
+          # Check if updates were made
+          if git diff --quiet Cargo.lock; then
+            echo "No updates were made"
+            exit 0
+          fi
+
+      - name: Run tests after update
+        if: steps.outdated.outputs.has_updates == 'true'
+        run: |
+          cargo check --workspace --all-features
+          cargo test --workspace --all-features
+          cargo clippy --workspace --all-features -- -D warnings
+
+      - name: Create Pull Request
+        if: steps.outdated.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dependencies"
+          title: "chore: update dependencies"
+          body: |
+            ## Dependency Updates
+            
+            This PR contains automated dependency updates.
+            
+            ### Changes
+            - Updated patch versions of dependencies
+            - All tests pass with updated dependencies
+            
+            ### Verification
+            - [x] `cargo check` passes
+            - [x] `cargo test` passes  
+            - [x] `cargo clippy` passes
+            
+            ### Outdated Dependencies
+            ```json
+            ${{ steps.outdated.outputs.outdated }}
+            ```
+            
+            This PR was automatically created by the dependencies workflow.
+          branch: automated/dependency-updates
+          delete-branch: true
+
+  check-vulnerabilities:
+    name: Check Vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+
+      - name: Run security audit
+        id: audit
+        run: |
+          if cargo audit --json > audit.json; then
+            echo "vulnerabilities=false" >> $GITHUB_OUTPUT
+          else
+            echo "vulnerabilities=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create vulnerability issue
+        if: steps.audit.outputs.vulnerabilities == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const auditResults = JSON.parse(fs.readFileSync('audit.json', 'utf8'));
+            
+            const vulnerabilities = auditResults.vulnerabilities.list;
+            
+            if (vulnerabilities.length > 0) {
+              const issueBody = `## Security Vulnerabilities Detected
+              
+              The following vulnerabilities were found in dependencies:
+              
+              ${vulnerabilities.map(vuln => `
+              ### ${vuln.advisory.title}
+              - **Package**: ${vuln.advisory.package}
+              - **Severity**: ${vuln.advisory.severity}
+              - **CVE**: ${vuln.advisory.cve || 'N/A'}
+              - **Description**: ${vuln.advisory.description}
+              - **Solution**: ${vuln.advisory.solution || 'Update to a patched version'}
+              `).join('\n')}
+              
+              Please review and update the affected dependencies.`;
+              
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Security: ${vulnerabilities.length} vulnerability(ies) detected`,
+                body: issueBody,
+                labels: ['security', 'dependencies']
+              });
+            }
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, Unlicense
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny
+
+      - name: Check licenses
+        run: cargo deny check licenses
+
+      - name: Generate license report
+        run: |
+          cargo tree --format '{p} {l}' | sort | uniq > licenses.txt
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v3
+        with:
+          name: license-report
+          path: licenses.txt
+
+  supply-chain-analysis:
+    name: Supply Chain Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Analyze dependency graph
+        run: |
+          cargo tree --format '{p}' --prefix none | sort | uniq -c | sort -nr > dependency-frequency.txt
+          cargo tree --duplicates > duplicates.txt || true
+
+      - name: Check for malicious packages
+        run: |
+          # Check for suspicious patterns in dependency names
+          cargo tree --format '{p}' --prefix none | grep -E '(bitcoin|crypto|wallet|mining|backdoor|malware)' > suspicious.txt || true
+
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v3
+        with:
+          name: supply-chain-analysis
+          path: |
+            dependency-frequency.txt
+            duplicates.txt
+            suspicious.txt

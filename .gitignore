@@ -1,0 +1,123 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+/logs/
+/tmp/
+
+# Configuration files with secrets
+.env
+.env.local
+.env.production
+*.key
+*.pem
+*.crt
+secrets.toml
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Cache and build artifacts
+.cache/
+dist/
+build/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+*.tsbuildinfo
+
+# Documentation
+/docs/book/
+/docs/_book/
+
+# Test outputs
+/test-results/
+/coverage/
+/benchmarks/
+
+# Coordination specific
+/coordination-data/
+/fragment-cache/
+/temporal-state/
+/precision-logs/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes
+*.yaml.local
+*.yml.local
+
+# Development tools
+.cargo-ok
+.pre-commit-config.yaml
+
+# Performance and profiling
+perf.data*
+flamegraph.svg
+massif.out.*
+cachegrind.out.*
+
+# Local development
+local.toml
+dev.toml
+override.toml
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Lock files for other package managers
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

@@ -1,0 +1,54 @@
+# Clippy configuration for Pylon project
+# Ensures high code quality and consistency across all crates
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 25
+
+# Documentation requirements
+missing-docs-in-public-items = true
+
+# Function length limits
+too-many-arguments-threshold = 8
+too-many-lines-threshold = 150
+
+# Type complexity limits
+type-complexity-threshold = 250
+
+# Enum variant name thresholds
+enum-variant-name-threshold = 3
+
+# Literal representation
+literal-representation-threshold = 100
+
+# Single character lifetime names
+single-char-lifetime-names-threshold = 4
+
+# Trivial bounds
+trivial-copy-size-limit = 128
+
+# Vec box size threshold  
+vec-box-size-threshold = 4096
+
+# Large types passed by value
+pass-by-value-size-limit = 256
+
+# Stack allocated futures
+large-stack-arrays = 524288
+
+# Upper case acronyms
+upper-case-acronyms-aggressive = true
+
+# Avoid breaking exported API
+avoid-breaking-exported-api = true
+
+# Standard library items
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+
+# Lints to allow in development
+allow-print-stdout = false
+allow-print-stderr = false
+allow-dbg-macro = false
+
+# Performance lints
+warn-on-all-wildcard-imports = false
