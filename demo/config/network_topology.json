@@ -1,0 +1,315 @@
+{
+  "simulation_metadata": {
+    "name": "Sango Rine Shumba Global Network Topology",
+    "description": "Realistic 10-node global network with physics-based latency modeling",
+    "version": "1.0",
+    "created": "2024-01-01"
+  },
+  "nodes": [
+    {
+      "id": "tokyo_jp",
+      "name": "Tokyo, Japan",
+      "location": {
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+        "timezone": "Asia/Tokyo",
+        "utc_offset": "+09:00"
+      },
+      "infrastructure": {
+        "type": "fiber_backbone",
+        "power_grid_frequency": 50,
+        "connection_quality": "premium",
+        "base_jitter_ms": 0.5,
+        "jitter_std_ms": 0.1,
+        "processing_delay_ms": 2.0
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 10000,
+        "concurrent_connections": 50000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "sydney_au",
+      "name": "Sydney, Australia", 
+      "location": {
+        "latitude": -33.8688,
+        "longitude": 151.2093,
+        "timezone": "Australia/Sydney",
+        "utc_offset": "+10:00"
+      },
+      "infrastructure": {
+        "type": "fiber_satellite_mix",
+        "power_grid_frequency": 50,
+        "connection_quality": "high",
+        "base_jitter_ms": 1.2,
+        "jitter_std_ms": 0.3,
+        "processing_delay_ms": 3.5
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 5000,
+        "concurrent_connections": 25000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "harare_zw",
+      "name": "Harare, Zimbabwe",
+      "location": {
+        "latitude": -17.8292,
+        "longitude": 31.0522,
+        "timezone": "Africa/Harare",
+        "utc_offset": "+02:00"
+      },
+      "infrastructure": {
+        "type": "mixed_infrastructure",
+        "power_grid_frequency": 50,
+        "connection_quality": "moderate",
+        "base_jitter_ms": 5.0,
+        "jitter_std_ms": 1.5,
+        "processing_delay_ms": 8.0
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 1000,
+        "concurrent_connections": 10000,
+        "precision_level": "microsecond"
+      }
+    },
+    {
+      "id": "la_paz_bo",
+      "name": "La Paz, Bolivia",
+      "location": {
+        "latitude": -16.5000,
+        "longitude": -68.1500,
+        "timezone": "America/La_Paz",
+        "utc_offset": "-04:00"
+      },
+      "infrastructure": {
+        "type": "high_altitude_variable",
+        "power_grid_frequency": 60,
+        "connection_quality": "variable",
+        "base_jitter_ms": 8.0,
+        "jitter_std_ms": 3.0,
+        "processing_delay_ms": 12.0,
+        "altitude_effects": {
+          "atmospheric_delay_factor": 1.15,
+          "weather_sensitivity": "high"
+        }
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 500,
+        "concurrent_connections": 5000,
+        "precision_level": "microsecond"
+      }
+    },
+    {
+      "id": "london_uk",
+      "name": "London, United Kingdom",
+      "location": {
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "timezone": "Europe/London", 
+        "utc_offset": "+00:00"
+      },
+      "infrastructure": {
+        "type": "premium_fiber",
+        "power_grid_frequency": 50,
+        "connection_quality": "premium",
+        "base_jitter_ms": 0.3,
+        "jitter_std_ms": 0.05,
+        "processing_delay_ms": 1.5
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 20000,
+        "concurrent_connections": 100000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "new_york_us",
+      "name": "New York, USA",
+      "location": {
+        "latitude": 40.7128,
+        "longitude": -74.0060,
+        "timezone": "America/New_York",
+        "utc_offset": "-05:00"
+      },
+      "infrastructure": {
+        "type": "fiber_backbone",
+        "power_grid_frequency": 60,
+        "connection_quality": "premium",
+        "base_jitter_ms": 0.4,
+        "jitter_std_ms": 0.08,
+        "processing_delay_ms": 1.8
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 15000,
+        "concurrent_connections": 75000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "mumbai_in",
+      "name": "Mumbai, India",
+      "location": {
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "timezone": "Asia/Kolkata",
+        "utc_offset": "+05:30"
+      },
+      "infrastructure": {
+        "type": "dense_network",
+        "power_grid_frequency": 50,
+        "connection_quality": "high",
+        "base_jitter_ms": 2.5,
+        "jitter_std_ms": 0.8,
+        "processing_delay_ms": 4.0
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 8000,
+        "concurrent_connections": 40000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "sao_paulo_br",
+      "name": "São Paulo, Brazil",
+      "location": {
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+        "timezone": "America/Sao_Paulo",
+        "utc_offset": "-03:00"
+      },
+      "infrastructure": {
+        "type": "regional_hub",
+        "power_grid_frequency": 60,
+        "connection_quality": "high",
+        "base_jitter_ms": 1.8,
+        "jitter_std_ms": 0.5,
+        "processing_delay_ms": 3.2
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 6000,
+        "concurrent_connections": 30000,
+        "precision_level": "nanosecond"
+      }
+    },
+    {
+      "id": "cairo_eg",
+      "name": "Cairo, Egypt",
+      "location": {
+        "latitude": 30.0444,
+        "longitude": 31.2357,
+        "timezone": "Africa/Cairo",
+        "utc_offset": "+02:00"
+      },
+      "infrastructure": {
+        "type": "regional_connectivity",
+        "power_grid_frequency": 50,
+        "connection_quality": "moderate",
+        "base_jitter_ms": 3.5,
+        "jitter_std_ms": 1.0,
+        "processing_delay_ms": 6.0
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 2000,
+        "concurrent_connections": 15000,
+        "precision_level": "microsecond"
+      }
+    },
+    {
+      "id": "reykjavik_is",
+      "name": "Reykjavik, Iceland",
+      "location": {
+        "latitude": 64.1466,
+        "longitude": -21.9426,
+        "timezone": "Atlantic/Reykjavik",
+        "utc_offset": "+00:00"
+      },
+      "infrastructure": {
+        "type": "geothermal_powered",
+        "power_grid_frequency": 50,
+        "connection_quality": "high",
+        "base_jitter_ms": 1.5,
+        "jitter_std_ms": 0.4,
+        "processing_delay_ms": 2.8,
+        "special_properties": {
+          "power_stability": "exceptional",
+          "climate_controlled": true,
+          "renewable_energy": 100
+        }
+      },
+      "capabilities": {
+        "max_bandwidth_mbps": 3000,
+        "concurrent_connections": 20000,
+        "precision_level": "nanosecond"
+      }
+    }
+  ],
+  "routing_topology": {
+    "connectivity_model": "full_mesh",
+    "redundancy_level": "high",
+    "failover_enabled": true,
+    "load_balancing": "adaptive"
+  },
+  "physics_parameters": {
+    "speed_of_light_ms_per_km": 0.0033356,
+    "earth_circumference_km": 40075,
+    "fiber_propagation_factor": 1.46,
+    "satellite_orbit_altitude_km": 35786,
+    "atmospheric_delay_factor": 1.02
+  },
+  "jitter_models": {
+    "fiber_backbone": {
+      "distribution": "normal",
+      "mean_ms": 0.5,
+      "std_ms": 0.1,
+      "max_ms": 2.0
+    },
+    "fiber_satellite_mix": {
+      "distribution": "mixed",
+      "fiber_ratio": 0.7,
+      "satellite_ratio": 0.3,
+      "satellite_delay_ms": 250
+    },
+    "mixed_infrastructure": {
+      "distribution": "exponential",
+      "lambda": 2.0,
+      "max_ms": 50.0
+    },
+    "premium_fiber": {
+      "distribution": "normal", 
+      "mean_ms": 0.3,
+      "std_ms": 0.05,
+      "max_ms": 1.0
+    }
+  },
+  "power_grid_effects": {
+    "50hz_grids": {
+      "interference_amplitude_ms": 0.02,
+      "interference_frequency_hz": 50,
+      "harmonic_components": [100, 150, 250]
+    },
+    "60hz_grids": {
+      "interference_amplitude_ms": 0.03,
+      "interference_frequency_hz": 60,
+      "harmonic_components": [120, 180, 300]
+    }
+  },
+  "environmental_factors": {
+    "solar_activity": {
+      "enabled": true,
+      "impact_factor": 0.15,
+      "cycle_period_hours": 11
+    },
+    "atmospheric_conditions": {
+      "enabled": true,
+      "ionospheric_delay_variation": 0.1,
+      "weather_sensitivity": {
+        "rain": 1.2,
+        "snow": 1.1,
+        "clear": 1.0
+      }
+    }
+  }
+}

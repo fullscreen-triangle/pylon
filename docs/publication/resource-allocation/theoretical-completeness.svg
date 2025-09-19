@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-labelledby="f3title f3desc"> <title id="f3title">Figure 3: Theoretical Completeness and Practical Implications</title> <desc id="f3desc">Left panel shows the space of optimal allocations covered completely by existing frameworks; right panel lists practical selection criteria and reduced research frontier.</desc> <defs> <style> text { font-family: Arial, sans-serif; fill:#111; font-size:14px; } .panel { stroke:#000; stroke-width:2; fill:#fff; } .head { font-weight:700; font-size:16px; } .small { font-size:12px; } .bubble { stroke:#000; fill:#f9f9f9; } .crit { font-size:13px; } .tick { font-weight:700; } .dash { stroke:#000; stroke-width:1.5; stroke-dasharray:5 4; fill:none; } </style> </defs> <!-- Left panel --> <g transform="translate(30,30)"> <rect class="panel" width="400" height="380" rx="12"/> <text x="200" y="30" text-anchor="middle" class="head">Optimal Allocation Space</text> <circle cx="200" cy="210" r="150" class="bubble"/> <text x="200" y="115" text-anchor="middle" class="small">All Optimal Allocations O*</text>
+<!-- Framework bubbles -->
+<ellipse cx="140" cy="190" rx="62" ry="38" class="bubble"/>
+<text x="140" y="188" text-anchor="middle" class="small">Market</text>
+
+<ellipse cx="250" cy="170" rx="62" ry="38" class="bubble"/>
+<text x="250" y="168" text-anchor="middle" class="small">Central Plan</text>
+
+<ellipse cx="180" cy="255" rx="62" ry="38" class="bubble"/>
+<text x="180" y="253" text-anchor="middle" class="small">Info-Theoretic</text>
+
+<ellipse cx="260" cy="250" rx="62" ry="38" class="bubble"/>
+<text x="260" y="248" text-anchor="middle" class="small">Consciousness</text>
+
+<path class="dash" d="M320,230 C360,200 360,160 330,130"/>
+<text x="332" y="128" class="small" text-anchor="start">Other E_i</text>
+
+<text x="200" y="350" text-anchor="middle" class="small">Coverage: ⋃ frameworks = Optimal Space</text>
+</g> <!-- Right panel --> <g transform="translate(470,30)"> <rect class="panel" width="400" height="380" rx="12"/> <text x="200" y="30" text-anchor="middle" class="head">Implications</text> <!-- Bullets --> <text x="20" y="70" class="crit"><tspan class="tick">•</tspan> End of organizational discovery (focus shifts)</text> <text x="20" y="98" class="crit"><tspan class="tick">•</tspan> System selection: efficiency, cost, acceptability</text> <text x="20" y="126" class="crit"><tspan class="tick">•</tspan> Policy: ensure attainment of O*, not structure</text> <text x="20" y="154" class="crit"><tspan class="tick">•</tspan> Theoretical unity of paradigms</text>
+<text x="200" y="190" text-anchor="middle" class="head" font-size="15px">Selection Criteria Shift</text>
+<rect x="40" y="210" width="320" height="140" rx="10" fill="#f9f9f9" stroke="#000"/>
+<text x="60" y="235" class="small">Previous focus: Discover new organizational forms</text>
+<text x="60" y="255" class="small">Now: Optimize implementation performance</text>
+<text x="60" y="275" class="small">Metrics: runtime, scalability, robustness, fairness</text>
+<text x="60" y="295" class="small">Constraints: legal, social, computational</text>
+<text x="60" y="315" class="small">Outcome: choose framework minimizing total cost</text>
+</g> </svg>

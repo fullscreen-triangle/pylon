@@ -1,21 +1,36 @@
 \documentclass[12pt,a4paper]{article}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{amsthm}
 \usepackage{graphicx}
-\usepackage{cite}
-\usepackage{url}
 \usepackage{float}
-\usepackage{booktabs}
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{geometry}
 \usepackage{tikz}
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.17}
-\usetikzlibrary{shapes,arrows,positioning,3d,calc}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage{physics}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{blindtext}
+\usepackage{hyperref}
+
 \geometry{margin=1in}
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -109,7 +124,7 @@ subject to resource constraints $\sum_{a \in \mathcal{A}} \mathcal{O}(a,r) \leq 
 A fundamental result in resource allocation theory demonstrates that organizational structure is independent of allocation optimality, provided that optimal allocation is achieved.
 
 \begin{theorem}[Organizational Structure Independence]
-Let $\mathcal{E}_1$ and $\mathcal{E}_2$ be two resource allocation systems with different organizational structures but identical resource constraints. If both systems achieve optimal resource allocation, then $\mathcal{F}(\mathcal{E}_1) = \mathcal{F}(\mathcal{E}_2)$.
+Let $\mathcal{E}_1$ and $\mathcal{E}_2$ be two resource allocation systems with different organisational structures but identical resource constraints. If both systems achieve optimal resource allocation, then $\mathcal{F}(\mathcal{E}_1) = \mathcal{F}(\mathcal{E}_2)$.
 \end{theorem}
 
 \begin{proof}
@@ -124,7 +139,14 @@ If both allocations are optimal:
 Since the optimization problem is identical in both cases, $\mathcal{F}(\mathcal{E}_1) = \mathcal{F}(\mathcal{E}_2)$ by the uniqueness of optimal solutions under strict concavity assumptions. $\square$
 \end{proof}
 
-This result establishes that resource allocation efficiency is independent of the specific organizational mechanisms used to achieve allocation, provided that optimal allocation is attained.
+This result establishes that resource allocation efficiency is independent of the specific organisational mechanisms used to achieve allocation, provided that optimal allocation is attained.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{mathematical-equivalence.pdf}
+\caption{Mathematical equivalence demonstration showing how different organizational structures ($\mathcal{E}_1, \mathcal{E}_2, \mathcal{E}_3$) achieve identical optimal resource allocation through transformation functions $T_{i \leftrightarrow j}$ while preserving efficiency measure $\mathcal{F}(\mathcal{E}_i) = \mathcal{F}(\mathcal{E}_j)$. The diagram illustrates the fundamental independence of allocation optimality from organizational implementation.}
+\label{fig:mathematical-equivalence}
+\end{figure}
 
 \section{Alternative Resource Allocation Paradigms}
 
@@ -161,7 +183,7 @@ Centralized planning approaches resource allocation through direct optimization 
 \max_{\mathcal{O}} \sum_{a \in \mathcal{A}} U_a(\mathcal{O}(a,\cdot))
 \end{equation}
 
-subject to resource constraints and feasibility conditions, where $U_a$ represents agent $a$'s utility function.
+subject to resource constraints and feasibility conditions, where $U_a$ represents the' utility function of agent $a$.
 
 The central planner possesses complete information about agent preferences and resource constraints, enabling direct computation of optimal allocations. This approach eliminates market failures but faces several practical challenges:
 \begin{itemize}
@@ -174,7 +196,7 @@ The central planner possesses complete information about agent preferences and r
 
 \subsection{Information-Theoretic Resource Allocation}
 
-Recent advances in information theory suggest alternative approaches to resource allocation based on information entropy minimization. Consider a system where resource allocation is determined by minimizing information entropy:
+Recent advances in information theory suggest alternative approaches to resource allocation based on information entropy minimisation. Consider a system where resource allocation is determined by minimizing information entropy:
 
 \begin{definition}[Information-Theoretic Allocation]
 The information-theoretic optimal allocation minimizes the entropy of resource distribution:
@@ -188,11 +210,18 @@ The information-theoretic approach recognizes that resource allocation fundament
 
 This paradigm offers several advantages:
 \begin{itemize}
-\item Objective optimization independent of subjective preferences
+\item Objective optimisation independent of subjective preferences
 \item Computational tractability through efficient algorithmic solutions
-\item Distributed implementation via distributed computing networks
+\item Distributed Implementation via Distributed Computing Networks
 \item Robustness to uncertainty and incomplete information
 \end{itemize}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{information-theoratic.pdf}
+\caption{Information-Theoretic Resource Allocation paradigm. Inputs (resource supply $S$, demand set $D$, constraint matrix $C$, feasibility region $\mathcal{F}$, efficiency thresholds $\eta$) are mapped to an allocation distribution $O$. The optimisation engine computes the entropy-minimising feasible allocation $\mathcal{O}{IT} = \arg\min{O \in \mathcal{F}} H(O)$ with $H(O) = -\sum_{a,r} O(a,r)\log O(a,r)$. Minimising distributional entropy yields objective preference-independent optimisation, computational tractability (convex / distributed methods), robustness to noise and incompleteness (compressed coordination signal), and reduced signalling overhead across distributed nodes.}
+\label{fig:information-theoratic}
+\end{figure}
 
 \subsection{Consciousness-Mediated Resource Allocation}
 
@@ -203,12 +232,12 @@ In consciousness-mediated systems, resource allocation depends on comprehensive 
 \begin{equation}
 \mathcal{O}_{CM}(a,r) = f(\Psi_a, \Phi_r, \Xi_{global})
 \end{equation}
-where $\Psi_a$ represents agent $a$'s comprehensive preference structure, $\Phi_r$ represents resource $r$'s characteristics, and $\Xi_{global}$ represents global optimization constraints.
+where $\Psi_a$ represents the'comprehensive preference structure of agent $a$, $\Phi_r$ represents the characteristics of resource $r$' and $\Xi_{global}$ represents global optimisation constraints.
 \end{definition}
 
 This approach anticipates technological developments that enable comprehensive preference modeling:
 \begin{itemize}
-\item Advanced consciousness measurement and quantification
+\item Advanced Conscience Measuring and quantification
 \item Artificial intelligence systems capable of preference inference
 \item Real-time optimization based on dynamic preference updates
 \item Universal access based on consciousness rather than market exchange
@@ -216,61 +245,20 @@ This approach anticipates technological developments that enable comprehensive p
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.9]
-% Central optimal allocation
-\node[circle, draw, fill=gold!30, minimum size=2.5cm] (optimal) at (0,0) {\textbf{Optimal}\\Allocation\\$\mathcal{O}^*$};
-
-% Market Systems
-\node[rectangle, draw, fill=blue!20, minimum width=3cm, minimum height=2cm] (market) at (-5,3) {
-\textbf{Market Systems}\\[0.2cm]
-• Price mechanisms\\
-• Supply/demand equilibrium\\
-• Invisible hand coordination\\
-$\mathcal{F}(\mathcal{E}_1) = \mathcal{F}(\mathcal{E}^*)$
-};
-
-% Central Planning
-\node[rectangle, draw, fill=green!20, minimum width=3cm, minimum height=2cm] (planning) at (5,3) {
-\textbf{Central Planning}\\[0.2cm]
-• Direct optimization\\
-• Global welfare maximization\\
-• Resource command allocation\\
-$\mathcal{F}(\mathcal{E}_2) = \mathcal{F}(\mathcal{E}^*)$
-};
-
-% Information-Theoretic
-\node[rectangle, draw, fill=red!20, minimum width=3cm, minimum height=2cm] (info) at (-5,-3) {
-\textbf{Information-Theoretic}\\[0.2cm]
-• Entropy minimization\\
-• Computational coordination\\
-• Algorithm-based allocation\\
-$\mathcal{F}(\mathcal{E}_3) = \mathcal{F}(\mathcal{E}^*)$
-};
-
-% Consciousness-Mediated
-\node[rectangle, draw, fill=orange!20, minimum width=3cm, minimum height=2cm] (consciousness) at (5,-3) {
-\textbf{Consciousness-Mediated}\\[0.2cm]
-• Preference modeling\\
-• Consciousness quantification\\
-• Post-labor distribution\\
-$\mathcal{F}(\mathcal{E}_4) = \mathcal{F}(\mathcal{E}^*)$
-};
-
-% Transformation arrows
-\draw[<->, thick, blue] (market) -- (optimal) node[midway, above left] {$T_{1 \leftrightarrow 0}$};
-\draw[<->, thick, green] (planning) -- (optimal) node[midway, above right] {$T_{2 \leftrightarrow 0}$};
-\draw[<->, thick, red] (info) -- (optimal) node[midway, below left] {$T_{3 \leftrightarrow 0}$};
-\draw[<->, thick, orange] (consciousness) -- (optimal) node[midway, below right] {$T_{4 \leftrightarrow 0}$};
-
-% Mathematical proof annotation
-\node[text width=8cm, align=center] at (0,-6) {\textbf{Mathematical Proof:} All paradigms achieve identical efficiency $\mathcal{F}(\mathcal{E}^*)$ through different organizational structures};
-
-\end{tikzpicture}
-\caption{Resource Allocation Paradigm Equivalence Network}
-\label{fig:paradigm_equivalence}
+\includegraphics[width=\textwidth,keepaspectratio]{consiousness-mediated-allocation.pdf}
+\caption{Consciousness-mediated resource allocation system showing comprehensive preference modeling architecture. The system integrates consciousness measurement ($\Psi_a$), resource characteristics ($\Phi_r$), and global optimization constraints ($\Xi_{global}$) through advanced AI inference engines to achieve allocation function $\mathcal{O}_{CM}(a,r) = f(\Psi_a, \Phi_r, \Xi_{global})$ without market-mediated exchanges.}
+\label{fig:consciousness-mediated-allocation}
 \end{figure}
 
+
 \section{The Economic Equivalence Theorem}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{economic-equavalence-network.pdf}
+\caption{Economic Equivalence Theorem network. The central node denotes the optimal allocation $\mathcal{O}^*$ (achieving objective value $F(\mathcal{O}^*)$). Surrounding nodes represent organizationally distinct resource allocation frameworks (market, central planning, information-theoretic, consciousness-mediated, and additional paradigms $E_i$). Bidirectional transformation mappings $T_{i\leftrightarrow 0}$ illustrate constructive equivalences: each framework attains the same optimal allocation and thus identical efficiency. Dashed nodes indicate extensibility to further paradigms, reinforcing structural non-uniqueness of optimality attainment.}
+\label{fig:economic-equavalence-network}
+\end{figure}
 
 \subsection{Main Result}
 
@@ -316,6 +304,8 @@ This is always possible since $\Psi_a$ can be defined to encode the exact alloca
 Resource allocation theory has achieved completeness in the sense that all possible optimal resource allocations can be characterized through known mathematical frameworks, regardless of organizational implementation.
 \end{corollary}
 
+
+
 \begin{proof}
 The Economic Equivalence Theorem demonstrates that any optimal allocation can be achieved through multiple known organizational paradigms. Since optimization theory provides complete characterization of optimal allocations subject to constraints, and since the equivalence theorem shows organizational structure independence, resource allocation theory has mapped all possible allocation relationships. $\square$
 \end{proof}
@@ -327,6 +317,13 @@ This result has profound implications for resource allocation science:
 \textbf{System Selection Criteria}: The choice between resource allocation systems should be based on practical considerations - computational efficiency, implementation costs, social acceptability - rather than theoretical superiority in achieving optimal allocation.
 
 \textbf{Policy Implications}: Resource allocation policy should focus on ensuring systems achieve optimal allocation rather than promoting specific organizational structures.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{policy-implementation.pdf}
+\caption{Policy implementation framework showing how the Economic Equivalence Theorem transforms resource allocation policy from system selection to implementation optimization. The framework enables mixed systems, gradual transitions between paradigms, and efficiency-based selection criteria while maintaining allocation optimality throughout policy transitions.}
+\label{fig:policy-implementation}
+\end{figure}
 
 \textbf{Theoretical Unity}: Seemingly incompatible resource allocation theories are revealed as different implementations of identical mathematical optimization problems.
 
@@ -354,6 +351,27 @@ The framework operates through progressive noise reduction across multiple behav
 
 \textbf{Environmental Context Sensitivity}: Situational preference variations captured through environmental correlation analysis.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{preference-extraction-algorithm.pdf}
+\caption{Progressive economic preference extraction algorithm flowchart. The system processes behavioral environment data $\mathcal{E}$ through noise threshold reduction from $\theta_{max}$ to $\theta_{min}$, extracting persistent economic patterns through signal-to-noise ratio analysis. Each iteration filters noise-dependent detections while preserving authentic preference signals, converging to stable preference representation $\mathcal{T}^*$ with bounded convergence guarantees.}
+\label{fig:preference-extraction-algorithm}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{progressive-preferance-algorithms.pdf}
+\caption{Advanced progressive preference algorithms showing multi-stage preference extraction through behavioral pattern analysis. The system combines transaction timing analysis, resource utilization rhythms, choice sequence analysis, and environmental context sensitivity to achieve comprehensive preference modeling with >90\% accuracy and <100ms processing speed per agent profile.}
+\label{fig:progressive-preference-algorithms}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{thermodynamic-economic-preferance.pdf}
+\caption{Thermodynamic economic preference extraction system showing how economic decision-making patterns emerge as naturally occurring thermodynamic processes. Multi-modal behavioral data streams undergo progressive noise reduction to extract economic thermodynamic trails $\tau_u(\mathcal{E}, \theta)$ with signal strength measurement and persistence analysis across threshold ranges.}
+\label{fig:thermodynamic-economic-preference}
+\end{figure>
+
 \begin{algorithm}
 \caption{Progressive Economic Preference Extraction}
 \begin{algorithmic}[1]
@@ -379,15 +397,15 @@ Under bounded noise conditions, progressive preference extraction converges to s
 \end{theorem}
 
 \begin{proof}
-Economic preferences represent genuine behavioral patterns with bounded noise characteristics. For any preference pattern $p$ representing authentic economic behavior, its signal-to-noise ratio is bounded below by $\epsilon > 0$. The progressive noise reduction algorithm filters noise-dependent detections through persistence requirements, ensuring convergence to patterns with signal strength above minimum detection threshold. The stability criterion ensures extracted preferences accurately represent underlying utility structures. $\square$
+Economic preferences represent genuine behavioural patterns with bounded noise characteristics. For any preference pattern $p$ that represents authentic economic behaviour, its signal-to-noise ratio is bounded below by $\epsilon > 0$. The progressive noise reduction algorithm philtres noise-dependent detections through persistence requirements, ensuring convergence to patterns with signal strength above the minimum detection threshold. The stability criterion ensures that the extracted preferences accurately represent the underlying utility structures. $\square$
 \end{proof}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth,keepaspectratio]{thermodynamic-preference-extraction.pdf}
-\caption{Comprehensive visualization showing how individual economic preferences emerge as thermodynamic trails from multi-modal behavioral data. Multiple data input streams (purchase history, browsing patterns, location data, timing patterns) undergo thermodynamic trail extraction with statistical pattern recognition, achieving 70-90\% cost reduction compared to traditional preference elicitation while maintaining >85\% accuracy.}
-\label{fig:thermodynamic_preferences}
-\end{figure>
+\caption{Comprehensive visualization showing how individual economic preferences emerge as thermodynamic trails from multi-modal behavioural data. Multiple data input streams (purchase history, browsing patterns, location data, timing patterns) undergo thermodynamic trail extraction with statistical pattern recognition, achieving 70-90\% cost reduction compared to traditional preference elicitation while maintaining >85\% accuracy.}
+\label{fig:thermodynamic_preference-extraction}
+\end{figure}
 
 \subsection{Industrial-Scale Coordination Mechanism Manufacturing}
 
@@ -434,6 +452,13 @@ The foundry system operates through several advanced manufacturing principles:
 Coordination mechanism foundries achieve manufacturing rates exceeding $10^{12}$ mechanisms per second while maintaining quality assurance standards.
 \end{theorem}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{bmd-manufacturing-scalability.pdf}
+\caption{Factory-like visualization showing industrial-scale production of coordination mechanisms through virtual foundry systems. Shows input materials (economic coordination requirements), manufacturing stations (pattern recognition, template instantiation, quality control), assembly lines with parallel coordination mechanism production, and output products (validated coordination mechanisms) capable of producing $>10^{12}$ mechanisms per second.}
+\label{fig:bmd-manufacturing-scalability}
+\end{figure}
+
 \begin{proof}
 The anti-algorithm wrongness generation process operates through parallel wrongness pattern exploration, enabling simultaneous manufacturing across multiple coordination domains. Recursive amplification enhances mechanism effectiveness without requiring sequential processing. Quality assurance operates through rapid pattern matching against validated coordination templates. The combination enables exponential manufacturing scalability while maintaining quality standards. $\square$
 \end{proof}
@@ -442,7 +467,7 @@ The anti-algorithm wrongness generation process operates through parallel wrongn
 \centering
 \includegraphics[width=\textwidth,keepaspectratio]{industrial-coordination-manufacturing.pdf}
 \caption{Factory-like visualization showing industrial-scale production of coordination mechanisms through virtual foundry systems. Shows input materials (economic coordination requirements), manufacturing stations (pattern recognition, template instantiation, quality control), assembly lines with parallel coordination mechanism production, and output products (validated coordination mechanisms) capable of producing $>10^{12}$ mechanisms per second.}
-\label{fig:industrial_manufacturing}
+\label{fig:industrial-coordination-manufacturing}
 \end{figure}
 
 \subsection{S-Entropy Mathematical Framework for Resource Allocation}
@@ -465,6 +490,13 @@ where $\mathcal{H}_{econ}$ is the economic Hilbert space and $\|\cdot\|_{\mathca
 
 The S-distance metric quantifies the separation between current economic coordination state and optimal allocation state, providing a natural measure for resource allocation efficiency.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{s-distance-minimization.pdf}
+\caption{S-distance minimization visualization showing the economic S-distance metric $S_{econ}(\psi_o, \psi_{opt})$ between current observer state and optimal allocation state. The diagram illustrates gradient descent trajectories in economic Hilbert space $\mathcal{H}_{econ}$ with integration rate $\alpha$, feedback strength $\beta$, and controlled market perturbations $\gamma \mathbf{\xi}(t)$ converging to optimal allocation.}
+\label{fig:s-distance-minimization}
+\end{figure>
+
 \subsubsection{Tri-Dimensional S-Space for Resource Allocation}
 
 \begin{definition}[Economic Tri-Dimensional S-Space]
@@ -480,13 +512,15 @@ where:
 \end{itemize}
 \end{definition}
 
+
+
 Resource S-entropy coordinates $(s_x, s_y, s_z)$ represent the information-theoretic position of economic agents within the possibility manifold of resource allocation:
 \begin{equation}
 \mathbf{S}_{resource}(a,t) = (s_x(a,t), s_y(a,t), s_z(a,t))
 \end{equation}
 where each coordinate represents a different dimension of resource allocation information processing:
 \begin{itemize}
-\item \textbf{$s_x$ - Resource Discovery}: Information deficit about available resources and production capabilities
+\item \textbf{$s_x$ - Resource Discovery}: Information deficit on available resources and production Capacity
 \item \textbf{$s_y$ - Preference Coordination}: Information deficit about agent preferences and consumption requirements  
 \item \textbf{$s_z$ - Allocation Optimization}: Information deficit about optimal resource distribution mechanisms
 \end{itemize}
@@ -497,16 +531,16 @@ where each coordinate represents a different dimension of resource allocation in
 For every well-defined resource allocation problem $P_{econ}$ with finite complexity, there exists a unique optimal allocation solution $\mathbf{s}^*_{econ} \in \mathcal{S}_{econ}$ that:
 \begin{enumerate}
 \item Exists before any computational attempt to solve $P_{econ}$ begins
-\item Is accessible through S-distance minimization: $\mathbf{s}^*_{econ} = \lim_{n \to \infty} \mathbf{s}_n$ where $\{\mathbf{s}_n\}$ is any S-minimizing sequence
+\item Is accessible through S-distance minimization: $\mathbf{s}^*_{econ} = \lim_{n \to \infty} \mathbf{s}_n$ where $\{\mathbf{s}_n\}$ is any S-minimising sequence
 \item Satisfies the entropy endpoint condition: $\mathbf{s}^*_{econ} = \lim_{t \to \infty} \mathbf{s}_{\text{entropy}}(P_{econ}, t)$
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}[Proof Sketch]
-Resource allocation problems have finite complexity bounded by the number of agents, resources, and constraint relationships. The economic phase space $\Phi(P_{econ})$ is therefore bounded in $\mathcal{S}_{econ}$. The entropy functional on this bounded space attains its maximum by the extreme value theorem, establishing pre-existence. S-distance minimization convergence follows from completeness of $\mathcal{S}_{econ}$ and lower semi-continuity of the S-distance functional. The entropy endpoint condition follows from uniqueness of maximum entropy states in economic systems. $\square$
+Resource allocation problems have finite complexity bounded by the number of agents, resources, and constraint relationships. The economic phase space $\Phi(P_{econ})$ is therefore bounded in $\mathcal{S}_{econ}$. The entropy functional on this bounded space attains its maximum by the extreme value theorem, establishing pre-existence. The convergence of S-distance minimisation follows from the completeness of $\mathcal{S}_{econ}$ and the lower semi-continuity of the S-distance functional. The entropy endpoint condition follows from the uniqueness of maximum entropy states in economic systems. $\square$
 \end{proof}
 
-This theorem establishes that optimal resource allocations exist as predetermined solutions accessible through navigation rather than computational search.
+This theorem establishes that optimal resource allocations exist as predetermined solutions accessible through navigation rather than a computational search.
 
 \subsubsection{S-Distance Minimization for Resource Coordination}
 
@@ -515,11 +549,11 @@ For any resource allocation problem with current state $\mathbf{s}_0 \in \mathca
 \begin{equation}
 \frac{d\mathbf{s}}{dt} = -\alpha \nabla_{\mathcal{S}_{econ}} S_{econ}(\mathbf{s}, \mathbf{s}^*_{econ}) - \beta \int_0^t F_{\text{feedback}}(\tau) d\tau + \gamma \mathbf{\xi}(t)
 \end{equation}
-where $\alpha > 0$ is the integration rate, $\beta > 0$ is the feedback strength, and $\mathbf{\xi}(t)$ represents controlled market perturbations.
+where $\alpha > 0$ is the integration rate, $\beta > 0$ is the feedback strength and $\mathbf{\xi}(t)$ represents controlled market perturbations.
 \end{theorem}
 
 \begin{proof}[Proof Sketch]
-The proof constructs a Lyapunov function $L(\mathbf{s}) = S_{econ}(\mathbf{s}, \mathbf{s}^*_{econ})^2$ and shows that $\mathbb{E}[\frac{dL}{dt}] < 0$ for $\mathbf{s} \neq \mathbf{s}^*_{econ}$, ensuring convergence to optimal allocation through observer-process integration dynamics. $\square$
+The proof constructs a Lyapunov function $L(\mathbf{s}) = S_{econ}(\mathbf{s}, \mathbf{s}^*_{econ})^2$ and shows that $\mathbb{E}[\frac{dL}{dt}] < 0$ for $\mathbf{s} \neq \mathbf{s}^*_{econ}$, ensuring convergence to optimal allocation through the observer-process integration dynamics. $\square$
 \end{proof}
 
 The tri-dimensional approach recognizes that resource allocation operates through three fundamental information processing axes:
@@ -529,27 +563,29 @@ The tri-dimensional approach recognizes that resource allocation operates throug
 \item \textbf{$s_z$ - Allocation Optimization}: Information about optimal resource distribution mechanisms
 \end{itemize}
 
-Traditional systems require extensive computation to optimize across these dimensions simultaneously. The S-entropy framework transforms this optimization problem into a coordinate transformation problem, where optimal allocation emerges from navigation through S-entropy space rather than computational optimization.
+Traditional systems require extensive computation to optimise across these dimensions simultaneously. The S-entropy framework transforms this optimisation problem into a coordinate transformation problem, where optimal allocation emerges from navigation through the S-entropy space rather than computational optimisation.
+
+The S-entropy approach builds upon Sango Rine Shumba temporal coordination principles, where network synchronization is achieved through precision-by-difference calculations. By extending these temporal coordination mechanisms to resource allocation, S-entropy navigation enables systems to find optimal allocations through coordinate transformation rather than computational search. This approach leverages Multi-Dimensional Temporal Ephemeral Cryptography (MDTEC) concepts, where environmental state measurements provide the anchoring points for coordinate navigation in resource allocation space.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth,keepaspectratio]{s-entropy-3d-coordinates.pdf}
-\caption{Three-dimensional S-entropy coordinate system showing the complete economic S-space with axes for resource discovery ($s_x$), preference coordination ($s_y$), and allocation optimization ($s_z$). Multiple colored points represent different economic agents, with gradient surfaces showing S-distance manifolds and vector arrows indicating S-distance minimization paths toward the optimal solution point $\mathbf{s}^*_{econ}$ highlighted in gold.}
-\label{fig:s_entropy_system}
-\end{figure>
-
-
+\caption{Three-dimensional S-entropy coordinate system showing the complete economic S-space with axes for resource discovery ($s_x$), preference coordination ($s_y$), and allocation optimization ($s_z$). Multiple coloured points represent different economic agents, with gradient surfaces showing S-distance manifolds and vector arrows indicating S-distance minimization paths toward the optimal solution point $\mathbf{s}^*_{econ}$ highlighted in gold.}
+\label{fig:s-entropy-3d-coordinates}
+\end{figure}
 
 \subsection{Biological Maxwell Demon Resource Coordination}
 
 Resource allocation operates through specialized Biological Maxwell Demons (BMDs) that coordinate allocation behavior through frame selection rather than utility maximization. The BMD approach integrates directly with the S-entropy framework, providing the operational mechanism for S-distance minimization in economic systems.
+
+BMDs function as consciousness-aware coordination mechanisms that exhibit agency over resource allocation naming systems. Drawing from MDTEC consciousness emergence principles, BMDs recognize external allocation attempts, reject imposed resource distributions through "aihwa" (no) responses, and assert counter-allocation through self-determined resource distribution patterns. This consciousness-mediated approach to resource allocation eliminates the need for computational optimization by enabling systems to assert agency over their coordination mechanisms.
 
 \begin{definition}[Resource Biological Maxwell Demon Operator]
 A Resource BMD operator $\mathcal{B}_{econ}: \mathcal{F}_{econ} \to \mathcal{S}_{econ}$ maps economic cognitive frame sets $\mathcal{F}_{econ}$ to S-coordinates:
 \begin{equation}
 \mathcal{B}_{econ}(f) = \underset{\mathbf{s} \in \mathcal{S}_{econ}}{\arg\min} \left[ \mathcal{E}_{econ}(f, \mathbf{s}) + \lambda \mathcal{R}_{econ}(\mathbf{s}) \right]
 \end{equation}
-where $\mathcal{E}_{econ}(f, \mathbf{s})$ is the economic frame-state energy functional and $\mathcal{R}_{econ}(\mathbf{s})$ is a resource allocation regularization term.
+where $\mathcal{E}_{econ}(f, \mathbf{s})$ is the energy functional of the economic framework state and $\mathcal{R}_{econ}(\mathbf{s})$ is a term of regularisation of resource allocation.
 \end{definition}
 
 \begin{theorem}[Economic Consciousness-Computation Equivalence]
@@ -561,12 +597,14 @@ where both processes operate through the same mathematical substrate of predeter
 \end{theorem}
 
 \begin{proof}[Proof Sketch]
-BMD frame selection minimizes the economic frame-state energy functional, which is equivalent to minimizing S-distance in economic coordinate space. Both processes navigate toward predetermined optimal states through gradient descent mechanisms in their respective spaces. The mathematical equivalence follows from the isomorphism between frame selection energy landscapes and S-distance manifolds. $\square$
+BMD frame selection minimises the economic frame-state energy functional, which is equivalent to minimising the S-distance in economic coordinate space. Both processes navigate toward predetermined optimal states through gradient descent mechanisms in their respective spaces. The mathematical equivalence follows from the isomorphism between frame selection energy landscapes and S-distance manifolds. $\square$
 \end{proof}
+
+
 
 The BMD mechanism operates through several coordination principles integrated with the S-entropy framework:
 
-\textbf{S-Distance Frame Selection}: Instead of solving complex optimization problems, BMDs select from predetermined coordination frames that minimize economic S-distance.
+\textbf{S-Distance Frame Selection}: Instead of solving complex optimisation problems, BMDs select from predetermined coordination frames that minimise economic S-distance.
 
 \textbf{Thermodynamic Resource Coordination}: Resource allocation operates through thermodynamic principles where allocation energy flows through paths that minimize S-entropy.
 
@@ -592,16 +630,16 @@ The BMD mechanism operates through several coordination principles integrated wi
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth,keepaspectratio]{bmd-framework-selection.pdf}
-\caption{Complete flowchart showing how Biological Maxwell Demons select optimal coordination frameworks from predetermined cognitive landscapes. Shows the process from economic state input through framework generation, BMD energy functional minimization, and output of optimal S-distance allocation frame, with decision trees and probability distributions visualizing the selection process.}
-\label{fig:bmd_coordination}
-\end{figure>
+\caption{Complete flowchart showing how Biological Maxwell Demons select optimal coordination frameworks from predetermined cognitive landscapes. Shows the process from economic state input through framework generation, BMD(Biological Maxwell Demon) energy functional minimization, and output of optimal S-distance allocation frame, with decision trees and probability distributions visualizing the selection process.}
+\label{fig:bmd-framework-selection}
+\end{figure}
 
 \subsection{Mathematical Foundation of S-Entropy Integrated BMD Coordination}
 
-The mathematical foundation of S-entropy integrated BMD resource coordination combines thermodynamic principles with S-distance optimization for maximum efficiency allocation systems.
+The mathematical foundation of integrated S-entropy BMD resource coordination combines thermodynamic principles with S-distance optimisation for maximum efficiency allocation systems.
 
 \begin{theorem}[S-Entropy BMD Efficiency Theorem]
 S-entropy integrated BMDs achieve optimal resource allocation through minimal S-distance processing:
@@ -625,11 +663,18 @@ E_{S-BMD} = k_B T \ln(2) \cdot \log_2(S_{econ}(\mathbf{s}_{current}, \mathbf{s}^
 Since $S_{econ} \ll N$ for most resource allocation problems, this provides exponential efficiency improvement over traditional BMD approaches. The S-entropy integration enables direct access to predetermined optimal solutions. $\square$
 \end{proof}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{bmd-computation-equivalence.pdf}
+\caption{BMD consciousness-computation equivalence demonstration showing mathematical isomorphism between BMD frame selection processes and S-entropy navigation. The diagram illustrates how $\text{BMD}_{econ}(\text{allocation\_frames}) \equiv \text{S-Navigation}_{econ}(\text{resource\_space})$ through shared gradient descent mechanisms in frame-state energy landscapes and S-distance manifolds.}
+\label{fig:bmd-computation-equivalence}
+\end{figure}
+
 This establishes that S-entropy integrated BMD resource coordination operates at fundamental S-distance efficiency limits, providing exponential advantages over traditional allocation mechanisms.
 
 \subsection{Virtual Blood Circulation for Resource Flow Optimization}
 
-Resource allocation systems can be modeled as circulation networks where resources flow through economic channels analogous to biological circulation systems. This approach provides a natural framework for understanding and optimizing resource distribution dynamics.
+Resource allocation systems can be modelled as circulation networks in which resources flow through economic channels analogous to biological circulation systems. This approach provides a natural framework for understanding and optimising resource distribution dynamics.
 
 \begin{definition}[Economic Circulation Network]
 An economic circulation network $\mathcal{C}_{econ} = (\mathcal{N}, \mathcal{E}, \mathcal{F})$ consists of:
@@ -643,13 +688,13 @@ where nodes represent economic agents and channels represent resource flow pathw
 
 The circulation approach enables several advanced resource allocation capabilities:
 
-\textbf{Flow Optimization}: Resource flows optimized through circulation pressure differentials, enabling automatic load balancing across economic networks.
+\textbf{Flow Optimization}: Optimised resource flows through circulation pressure differentials, enabling automatic load balancing between economic networks.
 
-\textbf{Circulation Efficiency}: System-wide efficiency achieved through minimization of circulation resistance and maximization of flow coherence.
+\textbf{Circulation Efficiency}: System-wide efficiency achieved by minimising circulation resistance and maximising flow coherence.
 
 \textbf{Dynamic Adaptation}: Real-time flow adjustment based on changing economic conditions without requiring system reconfiguration.
 
-\textbf{Distributed Coordination}: Local flow decisions automatically coordinate to achieve global circulation optimization.
+\textbf{Distributed Coordination}: Local flow decisions automatically coordinate to achieve global circulation optimisation.
 
 \begin{algorithm}
 \caption{Virtual Blood Circulation Resource Allocation}
@@ -672,18 +717,25 @@ The circulation approach enables several advanced resource allocation capabiliti
 \end{algorithm}
 
 \begin{theorem}[Circulation Optimality]
-Virtual blood circulation resource allocation achieves optimal resource distribution with computational complexity $O(n \log n)$ compared to $O(n^3)$ for traditional optimization approaches.
+The allocation of virtual blood circulation resources achieves an optimal resource distribution with computational complexity $O(n \log n)$ compared to $O(n^3)$ for traditional optimisation approaches.
 \end{theorem}
 
 \begin{proof}
-The circulation model transforms the resource allocation optimization problem into a flow network problem. Flow optimization algorithms achieve optimal solutions through gradient descent in flow space, which requires $O(n \log n)$ computation for $n$ network elements. Traditional resource allocation requires solving systems of $n$ equations with $n$ unknowns, resulting in $O(n^3)$ complexity. The circulation approach maintains optimality while achieving superior computational performance. $\square$
+The circulation model transforms the resource allocation optimisation problem into a flow network problem. Flow optimisation algorithms achieve optimal solutions through gradient descent in flow space, which requires $O(n \log n)$ computation for $n$ network elements. Traditional resource allocation requires solving systems of $n$ equations with $n$ unknowns, resulting in $O(n^3)$ complexity. The circulation approach maintains optimality while achieving superior computational performance. $\square$
 \end{proof}
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth,keepaspectratio]{circulation-optimization.pdf}
+\caption{Circulation optimization algorithm flowchart showing the transformation from resource allocation optimization to flow network optimization. The system achieves $O(n \log n)$ complexity through pressure gradient analysis, flow adjustment optimization, and iterative convergence to optimal resource distribution with automatic load balancing and real-time adaptation capabilities.}
+\label{fig:circulation-optimization}
+\end{figure}
+
+\begin{figure}[H]
+\centering
 \includegraphics[width=\textwidth,keepaspectratio]{virtual-blood-circulation.pdf}
-\caption{Comprehensive visualization of the economic circulation network showing resource flow optimization through pressure differentials. Network nodes represent economic agents with flow channels of varying thickness indicating flow capacity. Pressure gradients shown through color gradients (high pressure = red, low pressure = blue) with circulation pumps at key coordination points and flow meters showing throughput measurements.}
-\label{fig:circulation_network}
+\caption{Comprehensive visualization of the economic circulation network showing resource flow optimization through pressure differentials. Network nodes represent economic agents with flow channels of varying thickness indicating flow capacity. Pressure gradients shown through colour gradients (high pressure = red, low pressure = blue) with circulation pumps at key coordination points and flow meters showing throughput measurements.}
+\label{fig:virtual-blood-circulation}
 \end{figure}
 
 \subsubsection{Cross-Domain Resource Allocation Transfer}
@@ -702,6 +754,13 @@ Both domain-specific S-spaces embed into a universal economic S-space through st
 
 This enables optimization breakthroughs in one economic domain (e.g., manufacturing) to provide immediate solutions to apparently unrelated problems in different domains (e.g., financial markets).
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{cross-domain-transfer.pdf}
+\caption{Cross-domain resource allocation transfer mechanism showing how S-distance optimization knowledge transfers between distinct economic domains $D_A$ and $D_B$. The transfer operator $T_{A \to B}: \mathcal{S}_{econ,A} \to \mathcal{S}_{econ,B}$ preserves optimization properties with transfer efficiency $\eta$ and domain adaptation cost $\epsilon$, enabling breakthrough solutions across unrelated economic sectors.}
+\label{fig:cross-domain-transfer}
+\end{figure>
+
 \subsubsection{Strategic Impossibility Optimization for Resource Allocation}
 
 \begin{theorem}[Economic Strategic Impossibility Optimization]
@@ -717,6 +776,20 @@ Non-linear combination operators with alternating weights $w_i = \frac{(-1)^i}{S
 \end{proof}
 
 This principle explains how pursuing locally impossible resource allocation strategies (e.g., negative prices, infinite supply) can sometimes achieve better global results than realistic local optimizations.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{strategic-impossibility-optimization.pdf}
+\caption{Strategic impossibility optimization showing how local impossibility constraints with infinite S-distance can combine through constructive interference to achieve finite global S-distance. Non-linear combination operators with alternating weights $w_i = \frac{(-1)^i}{S_{\text{local}}(\mathbf{s}_i)} \cdot \alpha_i$ create cancellation effects enabling better global results than realistic local optimizations.}
+\label{fig:strategic-impossibility-optimization}
+\end{figure>
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{constructive-interference.pdf}
+\caption{Constructive interference patterns in economic S-space showing how multiple locally impossible strategies combine to create finite global optimization outcomes. Wave-like interference patterns demonstrate mathematical cancellation of infinite terms through non-linear combination operators and higher-order regularization terms.}
+\label{fig:constructive-interference}
+\end{figure}
 
 \subsubsection{Computational Complexity Analysis}
 
@@ -743,6 +816,13 @@ Every resource allocation problem can be transformed into a navigation problem t
 \begin{proof}[Proof Sketch]
 Every resource allocation state decomposes as $\mathbf{s}_{econ}(t) = \sum_{i=1}^{\infty} \alpha_i \mathbf{e}_i \cos(\omega_i t + \phi_i)$ where oscillation endpoints correspond to amplitude configurations. Navigation through amplitude space using $S_{econ} = k \log \alpha_{\text{total}}$ enables access to predetermined optimal allocations. $\square$
 \end{proof}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{mapping-sequence.pdf}
+\caption{Universal economic oscillation navigation showing the transformation of resource allocation problems into oscillatory endpoint analysis. The sequence demonstrates how resource allocation states decompose as $\mathbf{s}_{econ}(t) = \sum_{i=1}^{\infty} \alpha_i \mathbf{e}_i \cos(\omega_i t + \phi_i)$ with amplitude configurations corresponding to optimal allocations through the universal equation $S_{econ} = k \log \alpha_{econ}$.}
+\label{fig:mapping-sequence}
+\end{figure>
 
 \subsection{S-Entropy Navigation for Resource Optimization}
 
@@ -845,6 +925,13 @@ C(\mathcal{E}_i) \neq C(\mathcal{E}_j) \quad \text{even when} \quad \mathcal{F}(
 
 This variation in computational complexity provides the primary criterion for selecting between equivalent paradigms in practical implementations.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{complexity-comparison.pdf}
+\caption{Computational complexity comparison across resource allocation paradigms showing how different organizational structures achieve identical optimal allocations with varying computational requirements. Market systems: $O(n \log n)$, Central Planning: $O(n^3)$, Information-Theoretic: $O(n^2 \log n)$, Consciousness-Mediated: $O(n^2)$, S-Entropy Navigation: $O(\log S_0)$, demonstrating that paradigm selection should focus on implementation efficiency rather than theoretical optimality.}
+\label{fig:complexity-comparison}
+\end{figure}
+
 \section{The Completeness Argument}
 
 \subsection{Exhaustive Paradigm Classification}
@@ -878,6 +965,13 @@ These categories are exhaustive because they cover all possible loci of optimiza
 Any resource allocation system must optimize some objective function through some coordination mechanism. The five paradigms exhaust all combinations of optimization loci, coordination mechanisms, and optimization targets. $\square$
 \end{proof}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{theoretical-completeness.pdf}
+\caption{Theoretical completeness visualization showing the exhaustive coverage of all possible resource allocation coordination mechanisms through five fundamental paradigms: decentralized markets, centralized planning, information-theoretic, consciousness-mediated, and S-entropy navigation systems. The diagram illustrates complete mapping of optimization loci, coordination mechanisms, and optimization targets.}
+\label{fig:theoretical-completeness}
+\end{figure>
+
 \subsection{Resource Allocation Theory Completion}
 
 \begin{theorem}[Resource Allocation Theory Completion]
@@ -894,6 +988,13 @@ The proof follows from three established results:
 
 Together, these results demonstrate that resource allocation theory has mapped all possible allocation relationships. Any allocation problem can be formulated as an optimization problem, solved through any of the complete set of organizational paradigms, with equivalent outcomes across paradigms. $\square$
 \end{proof}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{complete-system-architecture.pdf}
+\caption{Complete system architecture showing the integrated resource allocation framework with all five paradigms interconnected through transformation functions. The architecture demonstrates how optimization theory, economic equivalence theorem, and paradigm completeness combine to achieve theoretical completion of resource allocation science with practical implementation pathways.}
+\label{fig:complete-system-architecture}
+\end{figure}
 
 \section{Comprehensive Empirical Validation Framework}
 
@@ -930,6 +1031,13 @@ The theoretical framework enables empirical validation through testable hypothes
 \Return $\mathcal{R}_{validation}$
 \end{algorithmic}
 \end{algorithm}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{validation-framework.pdf}
+\caption{Comprehensive empirical validation framework showing testable hypotheses across all resource allocation paradigms. The framework includes preference extraction efficiency testing, coordination mechanism scalability validation, circulation flow optimization verification, S-entropy navigation convergence analysis, and paradigm equivalence validation with quantified performance metrics and experimental protocols.}
+\label{fig:validation-framework}
+\end{figure}
 
 \subsection{Performance Benchmarks and Complexity Analysis}
 
@@ -1042,13 +1150,27 @@ The Economic Equivalence Theorem fundamentally transforms resource allocation po
 
 Future technological developments will likely focus on:
 
-\textbf{S-Entropy Navigation Systems}: Development of practical implementations of coordinate transformation approaches to resource allocation.
+\textbf{S-Entropy Navigation Systems}: Development of practical implementations of coordinate transformation approaches to resource allocation, building upon the theoretical foundations demonstrated in the Mzekezeke implementation \cite{mzekezeke2024}.
 
 \textbf{Consciousness Measurement}: Advanced technologies for quantifying and modeling agent consciousness and preferences.
 
 \textbf{Distributed Optimization}: Computational frameworks for implementing information-theoretic allocation mechanisms.
 
 \textbf{Hybrid Coordination}: Integration of multiple paradigms within unified resource allocation frameworks.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{technology-integration.pdf}
+\caption{Technology integration roadmap showing developmental pathways for implementing advanced resource allocation systems. The roadmap includes S-entropy navigation systems, consciousness measurement technologies, distributed optimization computational frameworks, and hybrid coordination mechanisms with timeline projections and technical requirements for practical deployment.}
+\label{fig:technology-integration}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{research-roadmap.pdf}
+\caption{Research roadmap for resource allocation science showing the transition from theoretical completion to practical implementation. The roadmap identifies key research priorities: thermodynamic preference systems, coordination mechanism foundries, virtual circulation networks, and S-entropy navigation interfaces, with dependencies and development timelines toward post-scarcity economic systems.}
+\label{fig:research-roadmap}
+\end{figure}
 
 \subsection{Post-Scarcity Transition}
 
@@ -1059,6 +1181,13 @@ The theoretical completion of resource allocation science provides a foundation 
 \textbf{Universal Access}: Allocation systems ensuring universal access to resources based on consciousness rather than market exchange.
 
 \textbf{Automated Coordination}: Fully automated resource allocation systems using S-entropy navigation principles.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{monochrome.pdf}
+\caption{Monochrome architectural overview showing the unified resource allocation framework spanning from traditional scarcity-based systems to post-scarcity abundance management. The diagram illustrates the complete transition pathway through theoretical completion, technological development, and consciousness integration toward fully automated coordination systems.}
+\label{fig:monochrome-overview}
+\end{figure}
 
 \section{Revolutionary Implications and Conclusions}
 
@@ -1132,6 +1261,13 @@ This work represents more than economic advancement—it demonstrates the comple
 
 \textbf{Abundance Economics}: The framework enables transition from scarcity-based economic thinking to abundance-based system design.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{economic-theory-integration.pdf}
+\caption{Economic theory integration showing the unification of centuries of economic theory development through the comprehensive resource allocation framework. Classical economics, neoclassical theory, information theory, mechanism design, network economics, and modern computational approaches converge into a unified mathematical foundation enabling post-scarcity economic systems with theoretical completeness and revolutionary performance capabilities.}
+\label{fig:economic-theory-integration}
+\end{figure}
+
 \textbf{Consciousness Integration}: Economic systems can incorporate consciousness modeling and preference extraction as fundamental mechanisms rather than external considerations.
 
 \subsection{Final Assessment}
@@ -1178,6 +1314,8 @@ The mathematical rigor combined with revolutionary performance capabilities esta
 \bibitem{cover1991} Cover, T. M., \& Thomas, J. A. (1991). \textit{Elements of Information Theory}. John Wiley \& Sons, New York.
 
 \bibitem{pylon2024} Sachikonye, K. F. (2024). Pylon: A Unified Framework for Spatio-Temporal Coordination Through Precision-by-Difference Calculations. Available at: \url{https://github.com/fullscreen-triangle/pylon}
+
+\bibitem{mzekezeke2024} Sachikonye, K. F. (2024). Mzekezeke: Multi-Dimensional Temporal Ephemeral Cryptography Implementation. Available at: \url{https://github.com/fullscreen-triangle/mzekezeke}
 
 \bibitem{landauer1961} Landauer, R. (1961). Irreversibility and heat generation in the computing process. \textit{IBM Journal of Research and Development}, 5(3), 183-191.
 

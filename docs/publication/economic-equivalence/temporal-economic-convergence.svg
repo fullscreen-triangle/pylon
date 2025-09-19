@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900"> <title>Temporal-Economic Convergence Architecture</title> <desc>Architecture layers showing convergence between temporal and economic coordination via shared environmental references.</desc> <rect width="1200" height="900" fill="white"/> <!-- Left temporal, right economic, middle convergence --> <g stroke="#000" fill="white" font-size="12"> <rect x="100" y="120" width="240" height="80"/><text x="120" y="165">Atomic Clocks</text> <rect x="100" y="230" width="240" height="80"/><text x="140" y="275">Temporal Nodes</text> <rect x="100" y="340" width="240" height="80"/><text x="130" y="385">Temporal Fragments</text> <rect x="100" y="450" width="240" height="80"/><text x="150" y="495">Temporal Validation</text> <rect x="100" y="560" width="240" height="80"/><text x="135" y="605">Temporal Feedback</text>
+<rect x="860" y="120" width="240" height="80"/><text x="900" y="165">Value Refs</text>
+<rect x="860" y="230" width="240" height="80"/><text x="900" y="275">Economic Nodes</text>
+<rect x="860" y="340" width="240" height="80"/><text x="880" y="385">Monetary Fragments</text>
+<rect x="860" y="450" width="240" height="80"/><text x="890" y="495">Economic Validation</text>
+<rect x="860" y="560" width="240" height="80"/><text x="900" y="605">Economic Feedback</text>
+
+<rect x="470" y="260" width="260" height="130"/><text x="485" y="300">Convergence Layer</text><text x="485" y="320">Shared Env Reference</text><text x="485" y="340">Unified Precision Engine</text>
+<rect x="470" y="430" width="260" height="110"/><text x="485" y="470">Performance Sync</text><text x="485" y="490">Cross-Domain Validation</text>
+</g>
+<defs><marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"><path d="M0 0 L10 5 L0 10Z" fill="#000"/></marker></defs>
+
+<!-- Flows --> <g stroke="#000" fill="none" marker-end="url(#arC)"> <line x1="340" y1="270" x2="470" y2="310"/> <line x1="730" y1="310" x2="860" y2="270"/> <line x1="340" y1="380" x2="470" y2="330"/> <line x1="730" y1="330" x2="860" y2="380"/> <line x1="600" y1="390" x2="600" y2="430"/> <line x1="340" y1="500" x2="470" y2="480"/> <line x1="730" y1="480" x2="860" y2="500"/> </g> <g font-size="12"> <text x="470" y="780">Integration Points: env ref / fragment reconstruction / validation equivalence / feedback loops</text> </g> </svg>
