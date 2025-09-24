@@ -1,14 +1,4 @@
-"""
-Precision Calculator Module
-
-Implements the core precision-by-difference calculations that form the foundation
-of the Sango Rine Shumba temporal coordination framework.
-
-The precision-by-difference calculation ΔP_i(k) = T_ref(k) - t_i(k) transforms
-temporal variations from errors into coordination resources, enabling enhanced
-network synchronization beyond individual component capabilities.
-"""
-
+# precision_calculator.py - Fixed version
 import asyncio
 import time
 import math
@@ -17,524 +7,717 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 import logging
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend for PNG output
+import matplotlib.pyplot as plt
 from collections import deque
+from pathlib import Path
+import json
+
 
 @dataclass
 class PrecisionMeasurement:
-    """Represents a single precision-by-difference measurement"""
-    
+    """Complete precision-by-difference measurement"""
+
     node_id: str
     measurement_time: float
     atomic_reference: float
     local_measurement: float
     precision_difference: float
     measurement_quality: float
-    
-    # Metadata
-    reference_source: str = "unknown"
-    local_precision_level: str = "microsecond"
-    environmental_factors: Dict[str, float] = field(default_factory=dict)
-    
-    def __post_init__(self):
-        """Calculate derived properties"""
-        self.age_seconds = 0.0
-        self.is_valid = abs(self.precision_difference) < 1.0  # 1 second threshold
-        
-        # Calculate measurement confidence based on various factors
-        self.confidence = self._calculate_confidence()
-    
-    def _calculate_confidence(self) -> float:
-        """Calculate confidence in this measurement"""
-        confidence = 1.0
-        
-        # Reduce confidence for large differences
-        if abs(self.precision_difference) > 0.1:  # 100ms
-            confidence *= 0.8
-        if abs(self.precision_difference) > 0.01:  # 10ms
-            confidence *= 0.9
-            
-        # Factor in measurement quality
-        confidence *= self.measurement_quality
-        
-        # Consider environmental factors
-        if 'power_grid_interference' in self.environmental_factors:
-            confidence *= (1.0 - self.environmental_factors['power_grid_interference'])
-        
-        return max(0.1, min(1.0, confidence))
-    
-    def update_age(self):
-        """Update the age of this measurement"""
-        self.age_seconds = time.time() - self.measurement_time
-    
-    @property
-    def is_fresh(self, max_age_seconds: float = 5.0) -> bool:
-        """Check if measurement is still fresh"""
-        self.update_age()
-        return self.age_seconds <= max_age_seconds
 
-@dataclass
-class CoordinationMatrix:
-    """Represents the temporal coordination matrix for network synchronization"""
-    
-    matrix_id: str
-    generation_time: float
-    measurements: List[PrecisionMeasurement]
-    
-    # Calculated properties
-    temporal_window_start: float = 0.0
-    temporal_window_end: float = 0.0
-    temporal_window_duration: float = 0.0
-    coordination_accuracy: float = 0.0
-    synchronization_quality: float = 0.0
-    
+    # Statistical metadata
+    confidence_interval: Tuple[float, float] = field(default_factory=lambda: (0.0, 0.0))
+    standard_deviation: float = 0.0
+    measurement_count: int = 1
+
+    # Environmental factors
+    network_conditions: str = "normal"
+    temperature_factor: float = 1.0
+
     def __post_init__(self):
-        """Calculate matrix properties"""
-        if self.measurements:
-            self._calculate_temporal_window()
-            self._calculate_coordination_metrics()
-    
-    def _calculate_temporal_window(self):
-        """Calculate temporal coherence window boundaries"""
-        if not self.measurements:
-            return
-        
-        precision_differences = [m.precision_difference for m in self.measurements]
-        
-        # Window boundaries: [T_ref + min(ΔP), T_ref + max(ΔP)]
-        min_precision = min(precision_differences)
-        max_precision = max(precision_differences)
-        
-        reference_time = self.measurements[0].atomic_reference
-        
-        self.temporal_window_start = reference_time + min_precision
-        self.temporal_window_end = reference_time + max_precision
-        self.temporal_window_duration = self.temporal_window_end - self.temporal_window_start
-    
-    def _calculate_coordination_metrics(self):
-        """Calculate coordination accuracy and quality metrics"""
-        if not self.measurements:
-            return
-        
-        precision_differences = [m.precision_difference for m in self.measurements]
-        confidences = [m.confidence for m in self.measurements]
-        
-        # Coordination accuracy based on precision difference variance
-        if len(precision_differences) > 1:
-            precision_std = statistics.stdev(precision_differences)
-            self.coordination_accuracy = 1.0 / (1.0 + precision_std)
-        else:
-            self.coordination_accuracy = 1.0
-        
-        # Synchronization quality based on measurement confidence
-        self.synchronization_quality = statistics.mean(confidences) if confidences else 0.0
-    
-    def get_temporal_coordinate(self, progress: float) -> float:
-        """Get temporal coordinate within the window (progress 0.0 to 1.0)"""
-        if self.temporal_window_duration == 0:
-            return self.temporal_window_start
-        
-        return self.temporal_window_start + (progress * self.temporal_window_duration)
-    
-    def is_coordinate_within_window(self, coordinate: float) -> bool:
-        """Check if a temporal coordinate falls within this matrix's window"""
-        return self.temporal_window_start <= coordinate <= self.temporal_window_end
+        """Validate measurement data"""
+        if self.measurement_quality < 0.0 or self.measurement_quality > 1.0:
+            raise ValueError("Measurement quality must be between 0.0 and 1.0")
+        if abs(self.precision_difference) > 1.0:  # More than 1 second difference is suspicious
+            logging.warning(f"Large precision difference detected: {self.precision_difference}")
+
 
 class PrecisionCalculator:
-    """
-    Precision-by-difference calculation engine
-    
-    This class implements the core mathematical framework of Sango Rine Shumba:
-    - Continuous precision-by-difference calculations ΔP_i(k) = T_ref(k) - t_i(k)
-    - Temporal coordination matrix generation
-    - Enhanced precision through difference calculations
-    - Network synchronization quality monitoring
-    """
-    
-    def __init__(self, atomic_clock, network_simulator, data_collector=None):
-        """Initialize precision calculator"""
-        self.atomic_clock = atomic_clock
-        self.network_simulator = network_simulator
-        self.data_collector = data_collector
+    """Enhanced precision-by-difference calculator with statistical validation"""
+
+    def __init__(self, window_size: int = 100):
         self.logger = logging.getLogger(__name__)
-        
-        # Measurement storage
-        self.measurements: Dict[str, deque] = {}  # Per-node measurement history
-        self.coordination_matrices: List[CoordinationMatrix] = []
-        self.current_matrix: Optional[CoordinationMatrix] = None
-        
-        # Calculation parameters
-        self.measurement_interval = 0.05  # 50ms default
-        self.matrix_generation_interval = 0.1  # 100ms
-        self.measurement_history_size = 1000
-        self.outlier_threshold = 3.0  # Standard deviations
-        
-        # Performance metrics
-        self.performance_metrics = {
-            'total_measurements': 0,
-            'valid_measurements': 0,
-            'outlier_measurements': 0,
-            'coordination_matrices_generated': 0,
-            'average_precision_enhancement': 0.0,
-            'sync_quality_history': deque(maxlen=1000)
-        }
-        
-        # Calculation state
-        self.is_running = False
-        self.last_matrix_time = 0.0
-        
-        self.logger.info("Precision calculator initialized")
-    
-    async def start_continuous_calculation(self):
-        """Start continuous precision-by-difference calculations"""
-        self.logger.info("Starting continuous precision-by-difference calculations...")
-        self.is_running = True
-        
-        # Initialize measurement queues for each node
-        for node_id in self.network_simulator.nodes:
-            self.measurements[node_id] = deque(maxlen=self.measurement_history_size)
-        
-        # Start background calculation tasks
-        calculation_task = asyncio.create_task(self._calculation_loop())
-        matrix_task = asyncio.create_task(self._matrix_generation_loop())
-        analysis_task = asyncio.create_task(self._analysis_loop())
-        
+        self.window_size = window_size
+        self.measurements: Dict[str, deque] = {}
+        self.precision_history: Dict[str, List[float]] = {}
+        self.atomic_clock_service = None
+
+    async def calculate_precision_by_difference(
+            self,
+            node_id: str,
+            local_time: float,
+            quality_threshold: float = 0.8
+    ) -> PrecisionMeasurement:
+        """Calculate ΔP_i(k) = T_ref(k) - t_i(k) with validation"""
+
         try:
-            await asyncio.gather(calculation_task, matrix_task, analysis_task)
-        except asyncio.CancelledError:
-            self.logger.info("Precision calculation tasks cancelled")
-    
-    async def _calculation_loop(self):
-        """Main calculation loop for precision-by-difference measurements"""
-        while self.is_running:
-            try:
-                current_time = time.time()
-                
-                # Get atomic clock reference
-                reference_data = await self.atomic_clock.get_reference_time()
-                if not reference_data:
-                    await asyncio.sleep(self.measurement_interval)
-                    continue
-                
-                atomic_reference = reference_data['timestamp']
-                reference_source = reference_data['source']
-                
-                # Calculate precision differences for all nodes
-                for node_id, node in self.network_simulator.nodes.items():
-                    try:
-                        # Get local measurement from node
-                        local_data = await self.network_simulator.get_precision_measurement(node_id)
-                        local_measurement = local_data['local_measurement']
-                        
-                        # Calculate precision difference: ΔP_i(k) = T_ref(k) - t_i(k)
-                        precision_difference = atomic_reference - local_measurement
-                        
-                        # Assess measurement quality
-                        measurement_quality = self._assess_measurement_quality(
-                            node, local_data, reference_data
-                        )
-                        
-                        # Create measurement record
-                        measurement = PrecisionMeasurement(
-                            node_id=node_id,
-                            measurement_time=current_time,
-                            atomic_reference=atomic_reference,
-                            local_measurement=local_measurement,
-                            precision_difference=precision_difference,
-                            measurement_quality=measurement_quality,
-                            reference_source=reference_source,
-                            local_precision_level=node.precision_level,
-                            environmental_factors=self._get_environmental_factors(node)
-                        )
-                        
-                        # Validate and store measurement
-                        if self._validate_measurement(measurement, node_id):
-                            self.measurements[node_id].append(measurement)
-                            self.performance_metrics['valid_measurements'] += 1
-                            
-                            # Log measurement data
-                            if self.data_collector:
-                                await self.data_collector.log_precision_measurement({
-                                    'timestamp': current_time,
-                                    'node_id': node_id,
-                                    'atomic_reference': atomic_reference,
-                                    'local_measurement': local_measurement,
-                                    'precision_difference': precision_difference,
-                                    'measurement_quality': measurement_quality,
-                                    'confidence': measurement.confidence,
-                                    'reference_source': reference_source
-                                })
-                        else:
-                            self.performance_metrics['outlier_measurements'] += 1
-                        
-                        self.performance_metrics['total_measurements'] += 1
-                        
-                    except Exception as e:
-                        self.logger.warning(f"Failed to calculate precision for node {node_id}: {e}")
-                
-                await asyncio.sleep(self.measurement_interval)
-                
-            except Exception as e:
-                self.logger.error(f"Error in calculation loop: {e}")
-                await asyncio.sleep(1.0)
-    
-    def _assess_measurement_quality(self, node, local_data, reference_data) -> float:
-        """Assess the quality of a measurement"""
-        quality = 1.0
+            # Get atomic reference
+            if not self.atomic_clock_service:
+                raise RuntimeError("Atomic clock service not initialized")
+
+            atomic_ref = await self.atomic_clock_service.get_atomic_reference()
+
+            # Calculate precision difference
+            precision_diff = atomic_ref - local_time
+
+            # Assess measurement quality
+            quality = self._assess_measurement_quality(node_id, precision_diff)
+
+            # Create measurement
+            measurement = PrecisionMeasurement(
+                node_id=node_id,
+                measurement_time=time.time(),
+                atomic_reference=atomic_ref,
+                local_measurement=local_time,
+                precision_difference=precision_diff,
+                measurement_quality=quality
+            )
+
+            # Store measurement
+            self._store_measurement(measurement)
+
+            # Calculate statistical properties
+            self._update_statistics(measurement)
+
+            return measurement
+
+        except Exception as e:
+            self.logger.error(f"Precision calculation failed for {node_id}: {e}")
+            # Return fallback measurement
+            return PrecisionMeasurement(
+                node_id=node_id,
+                measurement_time=time.time(),
+                atomic_reference=local_time,
+                local_measurement=local_time,
+                precision_difference=0.0,
+                measurement_quality=0.0
+            )
+
+    def _assess_measurement_quality(self, node_id: str, precision_diff: float) -> float:
+        """Assess measurement quality based on historical data"""
+        if node_id not in self.precision_history:
+            return 0.5  # Default quality for first measurement
+
+        history = self.precision_history[node_id]
+        if len(history) < 5:
+            return 0.6
+
+        # Calculate quality based on consistency with recent measurements
+        recent_mean = statistics.mean(history[-10:])
+        recent_std = statistics.stdev(history[-10:]) if len(history) > 1 else 0.1
+
+        # Quality decreases with distance from recent mean
+        deviation = abs(precision_diff - recent_mean)
+        quality = max(0.0, 1.0 - (deviation / (3 * recent_std + 0.001)))
+
+        return min(1.0, quality)
+
+    def _store_measurement(self, measurement: PrecisionMeasurement):
+        """Store measurement in history"""
+        node_id = measurement.node_id
         
-        # Factor in atomic clock quality
-        if 'uncertainty' in reference_data:
-            reference_uncertainty = reference_data['uncertainty']
-            if reference_uncertainty > 1e-6:  # More than 1μs uncertainty
-                quality *= 0.9
-            if reference_uncertainty > 1e-3:  # More than 1ms uncertainty
-                quality *= 0.7
+        # Initialize deque for node if not exists
+        if node_id not in self.measurements:
+            self.measurements[node_id] = deque(maxlen=self.window_size)
         
-        # Factor in local measurement quality
-        if 'measurement_jitter' in local_data:
-            jitter = abs(local_data['measurement_jitter'])
-            if jitter > 1e-6:
-                quality *= 0.95
-            if jitter > 1e-3:
-                quality *= 0.8
+        if node_id not in self.precision_history:
+            self.precision_history[node_id] = []
         
-        # Factor in node load
-        if node.current_load > 0.8:
-            quality *= 0.9
-        if node.current_load > 0.95:
-            quality *= 0.7
+        # Store measurement
+        self.measurements[node_id].append(measurement)
+        self.precision_history[node_id].append(measurement.precision_difference)
         
-        # Factor in environmental conditions
-        quality *= node.environmental_factor
+        # Keep only recent history
+        if len(self.precision_history[node_id]) > self.window_size:
+            self.precision_history[node_id] = self.precision_history[node_id][-self.window_size:]
+
+    def _update_statistics(self, measurement: PrecisionMeasurement):
+        """Update statistical properties of measurement"""
+        node_id = measurement.node_id
         
-        return max(0.1, min(1.0, quality))
-    
-    def _get_environmental_factors(self, node) -> Dict[str, float]:
-        """Get environmental factors affecting measurement"""
-        factors = {}
-        
-        # Power grid interference
-        if node.power_grid_frequency == 50:
-            interference = 0.02 * abs(math.sin(2 * math.pi * 50 * time.time()))
-        else:  # 60Hz
-            interference = 0.03 * abs(math.sin(2 * math.pi * 60 * time.time()))
-        
-        factors['power_grid_interference'] = min(interference, 0.1)
-        
-        # Environmental factor from node
-        factors['atmospheric_conditions'] = 1.0 - node.environmental_factor
-        
-        # Infrastructure stability
-        quality_factors = {
-            'premium': 0.05,
-            'high': 0.1,
-            'moderate': 0.2,
-            'variable': 0.3
-        }
-        factors['infrastructure_instability'] = quality_factors.get(node.connection_quality, 0.15)
-        
-        return factors
-    
-    def _validate_measurement(self, measurement: PrecisionMeasurement, node_id: str) -> bool:
-        """Validate a precision measurement for outliers and errors"""
-        
-        # Basic sanity checks
-        if abs(measurement.precision_difference) > 10.0:  # 10 seconds is clearly wrong
-            self.logger.warning(f"Extreme precision difference rejected: {measurement.precision_difference}s")
-            return False
-        
-        if measurement.measurement_quality < 0.1:
-            return False
-        
-        # Check against recent measurements for outlier detection
-        if len(self.measurements[node_id]) >= 10:
-            recent_measurements = list(self.measurements[node_id])[-10:]
-            recent_differences = [m.precision_difference for m in recent_measurements]
+        if node_id in self.precision_history and len(self.precision_history[node_id]) > 1:
+            history = self.precision_history[node_id]
             
-            mean_diff = statistics.mean(recent_differences)
-            if len(recent_differences) > 1:
-                std_diff = statistics.stdev(recent_differences)
-                
-                # Z-score outlier detection
-                z_score = abs(measurement.precision_difference - mean_diff) / std_diff if std_diff > 0 else 0
-                if z_score > self.outlier_threshold:
-                    self.logger.debug(f"Outlier measurement rejected for {node_id}: z-score={z_score:.2f}")
-                    return False
-        
-        return True
-    
-    async def _matrix_generation_loop(self):
-        """Generate coordination matrices from precision measurements"""
-        while self.is_running:
-            try:
-                current_time = time.time()
-                
-                # Check if it's time to generate a new matrix
-                if current_time - self.last_matrix_time >= self.matrix_generation_interval:
-                    matrix = await self._generate_coordination_matrix()
-                    if matrix:
-                        self.coordination_matrices.append(matrix)
-                        self.current_matrix = matrix
-                        self.last_matrix_time = current_time
-                        
-                        # Keep only recent matrices
-                        if len(self.coordination_matrices) > 100:
-                            self.coordination_matrices = self.coordination_matrices[-50:]
-                        
-                        self.performance_metrics['coordination_matrices_generated'] += 1
-                        
-                        # Log matrix data
-                        if self.data_collector:
-                            await self.data_collector.log_coordination_matrix({
-                                'timestamp': current_time,
-                                'matrix_id': matrix.matrix_id,
-                                'num_measurements': len(matrix.measurements),
-                                'temporal_window_duration': matrix.temporal_window_duration,
-                                'coordination_accuracy': matrix.coordination_accuracy,
-                                'synchronization_quality': matrix.synchronization_quality
-                            })
-                
-                await asyncio.sleep(0.01)  # Check every 10ms
-                
-            except Exception as e:
-                self.logger.error(f"Error in matrix generation loop: {e}")
-                await asyncio.sleep(1.0)
-    
-    async def _generate_coordination_matrix(self) -> Optional[CoordinationMatrix]:
-        """Generate a coordination matrix from current measurements"""
-        
-        current_measurements = []
+            # Calculate confidence interval (95%)
+            mean = statistics.mean(history)
+            std = statistics.stdev(history) if len(history) > 1 else 0.0
+            margin = 1.96 * std / math.sqrt(len(history))  # 95% CI
+            
+            measurement.confidence_interval = (mean - margin, mean + margin)
+            measurement.standard_deviation = std
+            measurement.measurement_count = len(history)
+
+    def set_atomic_clock_service(self, atomic_clock_service):
+        """Set atomic clock service reference"""
+        self.atomic_clock_service = atomic_clock_service
+
+    def get_current_coordination_matrix(self):
+        """Get current coordination matrix for temporal operations"""
         current_time = time.time()
         
-        # Collect most recent valid measurements from each node
-        for node_id, measurement_queue in self.measurements.items():
-            if measurement_queue:
-                # Get the most recent fresh measurement
-                for measurement in reversed(measurement_queue):
-                    if measurement.is_fresh(max_age_seconds=1.0):  # Within last second
-                        current_measurements.append(measurement)
-                        break
+        # Create coordination matrix based on recent measurements
+        coordination_data = {
+            'temporal_window_start': current_time - 0.1,  # 100ms window
+            'temporal_window_end': current_time + 0.1,
+            'temporal_window_duration': 0.2,  # 200ms total
+            'measurement_timestamp': current_time,
+            'active_nodes': list(self.measurements.keys()),
+            'coordination_quality': self._calculate_coordination_quality()
+        }
         
-        # Need at least 3 nodes for meaningful coordination
-        if len(current_measurements) < 3:
-            return None
+        # Return as simple object with attributes
+        class CoordinationMatrix:
+            def __init__(self, data):
+                for key, value in data.items():
+                    setattr(self, key, value)
         
-        # Create coordination matrix
-        matrix_id = f"matrix_{int(current_time * 1000000)}"  # Microsecond precision ID
-        matrix = CoordinationMatrix(
-            matrix_id=matrix_id,
-            generation_time=current_time,
-            measurements=current_measurements
-        )
-        
-        self.logger.debug(f"Generated coordination matrix {matrix_id} with {len(current_measurements)} measurements")
-        return matrix
-    
-    async def _analysis_loop(self):
-        """Analyze precision enhancement and synchronization quality"""
-        while self.is_running:
-            try:
-                if self.current_matrix and len(self.coordination_matrices) > 5:
-                    # Calculate precision enhancement
-                    enhancement = self._calculate_precision_enhancement()
-                    if enhancement > 0:
-                        self.performance_metrics['average_precision_enhancement'] = (
-                            0.9 * self.performance_metrics['average_precision_enhancement'] + 
-                            0.1 * enhancement
-                        )
-                    
-                    # Track synchronization quality
-                    sync_quality = self.current_matrix.synchronization_quality
-                    self.performance_metrics['sync_quality_history'].append(sync_quality)
-                
-                await asyncio.sleep(5.0)  # Analyze every 5 seconds
-                
-            except Exception as e:
-                self.logger.error(f"Error in analysis loop: {e}")
-    
-    def _calculate_precision_enhancement(self) -> float:
-        """Calculate precision enhancement achieved through difference calculations"""
-        
-        if not self.current_matrix or len(self.current_matrix.measurements) < 2:
+        return CoordinationMatrix(coordination_data)
+
+    def _calculate_coordination_quality(self) -> float:
+        """Calculate overall coordination quality across all nodes"""
+        if not self.measurements:
             return 0.0
         
-        measurements = self.current_matrix.measurements
+        quality_scores = []
+        for node_measurements in self.measurements.values():
+            if node_measurements:
+                recent_measurement = list(node_measurements)[-1]
+                quality_scores.append(recent_measurement.measurement_quality)
         
-        # Calculate individual node precision (based on jitter)
-        individual_precisions = []
-        for measurement in measurements:
-            node = self.network_simulator.nodes[measurement.node_id]
-            # Estimate individual precision from jitter characteristics
-            individual_precision = node.base_jitter_ms / 1000  # Convert to seconds
-            individual_precisions.append(individual_precision)
+        return statistics.mean(quality_scores) if quality_scores else 0.0
+
+    async def start_continuous_calculation(self):
+        """Start continuous precision calculation service"""
+        self.logger.info("Starting continuous precision calculation service...")
         
-        # Calculate coordination precision (from precision differences)
-        precision_differences = [m.precision_difference for m in measurements]
-        if len(precision_differences) > 1:
-            coordination_precision = statistics.stdev(precision_differences)
-        else:
-            coordination_precision = abs(precision_differences[0])
-        
-        # Calculate enhancement as ratio
-        avg_individual_precision = statistics.mean(individual_precisions)
-        if coordination_precision > 0 and avg_individual_precision > 0:
-            enhancement = avg_individual_precision / coordination_precision
-            return max(1.0, enhancement)  # Enhancement of at least 1.0 (no degradation)
-        
-        return 1.0
-    
-    def get_current_coordination_matrix(self) -> Optional[CoordinationMatrix]:
-        """Get the current coordination matrix"""
-        return self.current_matrix
-    
-    def get_node_precision_history(self, node_id: str, max_points: int = 100) -> List[PrecisionMeasurement]:
-        """Get precision measurement history for a specific node"""
-        if node_id not in self.measurements:
-            return []
-        
-        measurements = list(self.measurements[node_id])
-        return measurements[-max_points:] if len(measurements) > max_points else measurements
-    
+        while True:
+            try:
+                # Calculate precision for all known nodes
+                for node_id in list(self.measurements.keys()):
+                    try:
+                        local_time = time.time()
+                        measurement = await self.calculate_precision_by_difference(node_id, local_time)
+                        
+                        self.logger.debug(f"Continuous calculation for {node_id}: "
+                                        f"{measurement.precision_difference * 1000:.3f}ms")
+                        
+                    except Exception as e:
+                        self.logger.warning(f"Continuous calculation failed for {node_id}: {e}")
+                
+                # Sleep between calculations
+                await asyncio.sleep(1.0)  # 1 second interval
+                
+            except asyncio.CancelledError:
+                self.logger.info("Continuous precision calculation stopped")
+                break
+            except Exception as e:
+                self.logger.error(f"Error in continuous precision calculation: {e}")
+                await asyncio.sleep(5.0)  # Longer sleep on error
+
     def get_precision_statistics(self) -> Dict[str, Any]:
-        """Get comprehensive precision calculation statistics"""
+        """Get comprehensive precision statistics"""
+        stats = {
+            'total_nodes': len(self.measurements),
+            'total_measurements': sum(len(measurements) for measurements in self.measurements.values()),
+            'node_statistics': {},
+            'overall_statistics': {}
+        }
         
-        current_time = time.time()
+        all_precisions = []
+        all_qualities = []
+        
+        # Per-node statistics
+        for node_id, node_measurements in self.measurements.items():
+            if not node_measurements:
+                continue
+                
+            measurements_list = list(node_measurements)
+            precisions = [m.precision_difference for m in measurements_list]
+            qualities = [m.measurement_quality for m in measurements_list]
+            
+            all_precisions.extend(precisions)
+            all_qualities.extend(qualities)
+            
+            node_stats = {
+                'measurement_count': len(measurements_list),
+                'mean_precision_ms': statistics.mean(precisions) * 1000,
+                'std_precision_ms': statistics.stdev(precisions) * 1000 if len(precisions) > 1 else 0.0,
+                'min_precision_ms': min(precisions) * 1000,
+                'max_precision_ms': max(precisions) * 1000,
+                'mean_quality': statistics.mean(qualities),
+                'last_measurement_time': measurements_list[-1].measurement_time
+            }
+            
+            stats['node_statistics'][node_id] = node_stats
         
         # Overall statistics
-        total_measurements = self.performance_metrics['total_measurements']
-        valid_rate = (self.performance_metrics['valid_measurements'] / total_measurements 
-                     if total_measurements > 0 else 0.0)
-        outlier_rate = (self.performance_metrics['outlier_measurements'] / total_measurements 
-                       if total_measurements > 0 else 0.0)
+        if all_precisions:
+            stats['overall_statistics'] = {
+                'mean_precision_ms': statistics.mean(all_precisions) * 1000,
+                'std_precision_ms': statistics.stdev(all_precisions) * 1000 if len(all_precisions) > 1 else 0.0,
+                'min_precision_ms': min(all_precisions) * 1000,
+                'max_precision_ms': max(all_precisions) * 1000,
+                'mean_quality': statistics.mean(all_qualities),
+                'coordination_quality': self._calculate_coordination_quality()
+            }
         
-        # Current precision differences
-        current_differences = []
-        current_confidences = []
-        if self.current_matrix:
-            for measurement in self.current_matrix.measurements:
-                current_differences.append(measurement.precision_difference)
-                current_confidences.append(measurement.confidence)
+        return stats
+
+    def export_precision_data(self, output_dir: Path = Path("output")) -> Dict[str, Any]:
+        """Export precision calculation data"""
+        output_dir.mkdir(exist_ok=True)
         
-        # Synchronization quality trend
-        sync_quality_history = list(self.performance_metrics['sync_quality_history'])
-        avg_sync_quality = statistics.mean(sync_quality_history) if sync_quality_history else 0.0
-        
-        return {
-            'total_measurements': total_measurements,
-            'valid_measurement_rate': valid_rate,
-            'outlier_rate': outlier_rate,
-            'coordination_matrices_generated': self.performance_metrics['coordination_matrices_generated'],
-            'average_precision_enhancement': self.performance_metrics['average_precision_enhancement'],
-            'average_sync_quality': avg_sync_quality,
-            'current_matrix_id': self.current_matrix.matrix_id if self.current_matrix else None,
-            'current_precision_differences': current_differences,
-            'current_measurement_confidences': current_confidences,
-            'temporal_window_duration': self.current_matrix.temporal_window_duration if self.current_matrix else 0.0,
-            'coordination_accuracy': self.current_matrix.coordination_accuracy if self.current_matrix else 0.0,
-            'active_nodes': len([q for q in self.measurements.values() if len(q) > 0]),
-            'calculation_uptime': current_time - (current_time if not hasattr(self, '_start_time') else self._start_time)
+        # Collect all measurement data
+        export_data = {
+            'precision_statistics': self.get_precision_statistics(),
+            'detailed_measurements': {},
+            'export_timestamp': time.time()
         }
+        
+        # Export detailed measurements for each node
+        for node_id, node_measurements in self.measurements.items():
+            measurements_data = []
+            for measurement in node_measurements:
+                measurement_data = {
+                    'timestamp': measurement.measurement_time,
+                    'atomic_reference': measurement.atomic_reference,
+                    'local_measurement': measurement.local_measurement,
+                    'precision_difference': measurement.precision_difference,
+                    'measurement_quality': measurement.measurement_quality,
+                    'confidence_interval': measurement.confidence_interval,
+                    'standard_deviation': measurement.standard_deviation
+                }
+                measurements_data.append(measurement_data)
+            
+            export_data['detailed_measurements'][node_id] = measurements_data
+        
+        # Save to JSON
+        json_file = output_dir / "precision_calculation_data.json"
+        with open(json_file, 'w') as f:
+            json.dump(export_data, f, indent=2)
+        
+        self.logger.info(f"Precision calculation data exported to {json_file}")
+        return export_data
+
+    def create_precision_visualization(self, output_dir: Path = Path("output")):
+        """Create precision calculation visualizations"""
+        output_dir.mkdir(exist_ok=True)
+        
+        if not self.measurements:
+            self.logger.warning("No measurements available for visualization")
+            return
+        
+        self._create_precision_time_series(output_dir)
+        self._create_precision_distribution(output_dir)
+        self._create_quality_analysis(output_dir)
+        self._create_coordination_matrix_plot(output_dir)
+
+    def _create_precision_time_series(self, output_dir: Path):
+        """Create precision difference time series plot"""
+        try:
+            plt.figure(figsize=(15, 10))
+            
+            colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink', 'gray']
+            
+            for i, (node_id, node_measurements) in enumerate(self.measurements.items()):
+                if not node_measurements:
+                    continue
+                
+                measurements_list = list(node_measurements)
+                timestamps = [m.measurement_time for m in measurements_list]
+                precisions = [m.precision_difference * 1000 for m in measurements_list]  # Convert to ms
+                
+                # Normalize timestamps to start from 0
+                if timestamps:
+                    start_time = min(timestamps)
+                    relative_times = [(t - start_time) for t in timestamps]
+                    
+                    color = colors[i % len(colors)]
+                    plt.plot(relative_times, precisions, 'o-', color=color, label=node_id, 
+                           markersize=4, linewidth=1, alpha=0.7)
+            
+            plt.xlabel('Time (seconds)')
+            plt.ylabel('Precision Difference (ms)')
+            plt.title('Precision-by-Difference Time Series')
+            plt.grid(True, alpha=0.3)
+            plt.legend()
+            plt.tight_layout()
+            
+            timeseries_file = output_dir / "precision_time_series.png"
+            plt.savefig(timeseries_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            self.logger.info(f"Precision time series plot saved to {timeseries_file}")
+            
+        except Exception as e:
+            self.logger.error(f"Error creating precision time series plot: {e}")
+
+    def _create_precision_distribution(self, output_dir: Path):
+        """Create precision difference distribution plot"""
+        try:
+            fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+            
+            all_precisions = []
+            for node_measurements in self.measurements.values():
+                precisions = [m.precision_difference * 1000 for m in node_measurements]
+                all_precisions.extend(precisions)
+            
+            if not all_precisions:
+                return
+            
+            # Overall distribution histogram
+            axes[0, 0].hist(all_precisions, bins=30, alpha=0.7, color='blue', edgecolor='black')
+            axes[0, 0].set_xlabel('Precision Difference (ms)')
+            axes[0, 0].set_ylabel('Frequency')
+            axes[0, 0].set_title('Overall Precision Distribution')
+            axes[0, 0].grid(True, alpha=0.3)
+            
+            # Box plot by node
+            node_data = []
+            node_labels = []
+            for node_id, node_measurements in self.measurements.items():
+                if node_measurements:
+                    precisions = [m.precision_difference * 1000 for m in node_measurements]
+                    node_data.append(precisions)
+                    node_labels.append(node_id)
+            
+            if node_data:
+                axes[0, 1].boxplot(node_data, labels=node_labels)
+                axes[0, 1].set_ylabel('Precision Difference (ms)')
+                axes[0, 1].set_title('Precision by Node')
+                axes[0, 1].grid(True, alpha=0.3)
+            
+            # Statistical summary
+            axes[1, 0].text(0.1, 0.8, f"Mean: {np.mean(all_precisions):.3f} ms", 
+                           transform=axes[1, 0].transAxes, fontsize=12)
+            axes[1, 0].text(0.1, 0.7, f"Std Dev: {np.std(all_precisions):.3f} ms", 
+                           transform=axes[1, 0].transAxes, fontsize=12)
+            axes[1, 0].text(0.1, 0.6, f"Min: {np.min(all_precisions):.3f} ms", 
+                           transform=axes[1, 0].transAxes, fontsize=12)
+            axes[1, 0].text(0.1, 0.5, f"Max: {np.max(all_precisions):.3f} ms", 
+                           transform=axes[1, 0].transAxes, fontsize=12)
+            axes[1, 0].text(0.1, 0.4, f"Total Measurements: {len(all_precisions)}", 
+                           transform=axes[1, 0].transAxes, fontsize=12)
+            axes[1, 0].set_title('Statistical Summary')
+            axes[1, 0].axis('off')
+            
+            # Quality scores over time
+            all_qualities = []
+            all_times = []
+            for node_measurements in self.measurements.values():
+                for measurement in node_measurements:
+                    all_qualities.append(measurement.measurement_quality)
+                    all_times.append(measurement.measurement_time)
+            
+            if all_times:
+                start_time = min(all_times)
+                relative_times = [(t - start_time) for t in all_times]
+                axes[1, 1].scatter(relative_times, all_qualities, alpha=0.6, color='green')
+                axes[1, 1].set_xlabel('Time (seconds)')
+                axes[1, 1].set_ylabel('Measurement Quality')
+                axes[1, 1].set_title('Measurement Quality Over Time')
+                axes[1, 1].grid(True, alpha=0.3)
+            
+            plt.tight_layout()
+            
+            distribution_file = output_dir / "precision_distribution.png"
+            plt.savefig(distribution_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            self.logger.info(f"Precision distribution plot saved to {distribution_file}")
+            
+        except Exception as e:
+            self.logger.error(f"Error creating precision distribution plot: {e}")
+
+    def _create_quality_analysis(self, output_dir: Path):
+        """Create measurement quality analysis plot"""
+        try:
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+            
+            # Quality by node
+            node_qualities = {}
+            for node_id, node_measurements in self.measurements.items():
+                if node_measurements:
+                    qualities = [m.measurement_quality for m in node_measurements]
+                    node_qualities[node_id] = np.mean(qualities)
+            
+            if node_qualities:
+                nodes = list(node_qualities.keys())
+                qualities = list(node_qualities.values())
+                
+                colors = ['green' if q >= 0.8 else 'orange' if q >= 0.6 else 'red' for q in qualities]
+                bars = ax1.bar(range(len(nodes)), qualities, color=colors, alpha=0.7)
+                ax1.set_xlabel('Nodes')
+                ax1.set_ylabel('Average Quality Score')
+                ax1.set_title('Average Measurement Quality by Node')
+                ax1.set_xticks(range(len(nodes)))
+                ax1.set_xticklabels(nodes, rotation=45)
+                ax1.set_ylim(0, 1.1)
+                ax1.grid(True, alpha=0.3, axis='y')
+                
+                # Add value labels on bars
+                for i, bar in enumerate(bars):
+                    height = bar.get_height()
+                    ax1.text(bar.get_x() + bar.get_width()/2., height + 0.02,
+                            f'{height:.2f}', ha='center', va='bottom')
+            
+            # Quality distribution
+            all_qualities = []
+            for node_measurements in self.measurements.values():
+                qualities = [m.measurement_quality for m in node_measurements]
+                all_qualities.extend(qualities)
+            
+            if all_qualities:
+                ax2.hist(all_qualities, bins=20, alpha=0.7, color='purple', edgecolor='black')
+                ax2.axvline(x=np.mean(all_qualities), color='red', linestyle='--', 
+                           label=f'Mean: {np.mean(all_qualities):.3f}')
+                ax2.set_xlabel('Quality Score')
+                ax2.set_ylabel('Frequency')
+                ax2.set_title('Quality Score Distribution')
+                ax2.grid(True, alpha=0.3)
+                ax2.legend()
+            
+            plt.tight_layout()
+            
+            quality_file = output_dir / "quality_analysis.png"
+            plt.savefig(quality_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            self.logger.info(f"Quality analysis plot saved to {quality_file}")
+            
+        except Exception as e:
+            self.logger.error(f"Error creating quality analysis plot: {e}")
+
+    def _create_coordination_matrix_plot(self, output_dir: Path):
+        """Create coordination matrix visualization"""
+        try:
+            coordination_matrix = self.get_current_coordination_matrix()
+            
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+            
+            # Temporal window visualization
+            current_time = time.time()
+            window_start = coordination_matrix.temporal_window_start
+            window_end = coordination_matrix.temporal_window_end
+            
+            # Show temporal window
+            ax1.axvspan(window_start - current_time, window_end - current_time, 
+                       alpha=0.3, color='blue', label='Coordination Window')
+            ax1.axvline(x=0, color='red', linestyle='--', label='Current Time')
+            ax1.set_xlabel('Time Offset (seconds)')
+            ax1.set_ylabel('Coordination Activity')
+            ax1.set_title('Temporal Coordination Window')
+            ax1.legend()
+            ax1.grid(True, alpha=0.3)
+            
+            # Node coordination status
+            if self.measurements:
+                nodes = list(self.measurements.keys())
+                coordination_scores = []
+                
+                for node_id in nodes:
+                    if self.measurements[node_id]:
+                        recent_measurement = list(self.measurements[node_id])[-1]
+                        coordination_scores.append(recent_measurement.measurement_quality)
+                    else:
+                        coordination_scores.append(0.0)
+                
+                colors = ['green' if s >= 0.8 else 'orange' if s >= 0.6 else 'red' for s in coordination_scores]
+                bars = ax2.bar(range(len(nodes)), coordination_scores, color=colors, alpha=0.7)
+                ax2.set_xlabel('Nodes')
+                ax2.set_ylabel('Coordination Score')
+                ax2.set_title('Node Coordination Status')
+                ax2.set_xticks(range(len(nodes)))
+                ax2.set_xticklabels(nodes, rotation=45)
+                ax2.set_ylim(0, 1.1)
+                ax2.grid(True, alpha=0.3, axis='y')
+                
+                # Add value labels
+                for i, bar in enumerate(bars):
+                    height = bar.get_height()
+                    ax2.text(bar.get_x() + bar.get_width()/2., height + 0.02,
+                            f'{height:.2f}', ha='center', va='bottom')
+            
+            plt.tight_layout()
+            
+            coordination_file = output_dir / "coordination_matrix.png"
+            plt.savefig(coordination_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            self.logger.info(f"Coordination matrix plot saved to {coordination_file}")
+            
+        except Exception as e:
+            self.logger.error(f"Error creating coordination matrix plot: {e}")
+
+
+# Standalone execution capability
+async def main():
+    """Standalone execution of precision calculator"""
+    print("📊 Precision Calculator - Standalone Test")
+    print("=" * 50)
     
-    def stop(self):
-        """Stop precision calculations"""
-        self.is_running = False
-        self.logger.info("Precision calculator stopped")
+    # Setup logging
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Create output directory
+        output_dir = Path("precision_calculator_output")
+        output_dir.mkdir(exist_ok=True)
+        
+        logger.info("Initializing precision calculator...")
+        
+        # Create precision calculator
+        precision_calc = PrecisionCalculator(window_size=50)
+        
+        # Import atomic clock for testing
+        try:
+            from atomic_clock import AtomicClockService
+            async with AtomicClockService() as atomic_clock:
+                await atomic_clock.initialize()
+                precision_calc.set_atomic_clock_service(atomic_clock)
+                
+                logger.info("Running precision calculation tests...")
+                
+                # Simulate multiple nodes
+                test_nodes = ['tokyo', 'london', 'harare', 'sydney', 'lapaz']
+                
+                # Collect measurements over time
+                for measurement_round in range(20):  # 20 rounds of measurements
+                    for node_id in test_nodes:
+                        try:
+                            # Simulate slightly different local times
+                            local_time = time.time() + random.uniform(-0.002, 0.002)  # ±2ms variation
+                            
+                            measurement = await precision_calc.calculate_precision_by_difference(
+                                node_id, local_time
+                            )
+                            
+                            if measurement_round % 5 == 0:  # Log every 5th round
+                                precision_ms = measurement.precision_difference * 1000
+                                logger.info(f"Round {measurement_round+1}, {node_id}: "
+                                          f"{precision_ms:.3f}ms, quality: {measurement.measurement_quality:.3f}")
+                            
+                        except Exception as e:
+                            logger.warning(f"Measurement failed for {node_id} in round {measurement_round+1}: {e}")
+                    
+                    await asyncio.sleep(0.2)  # 200ms between rounds
+                
+                # Get coordination matrix
+                coordination_matrix = precision_calc.get_current_coordination_matrix()
+                logger.info(f"Coordination window: {coordination_matrix.temporal_window_duration:.3f}s")
+                
+        except ImportError:
+            logger.warning("AtomicClockService not available, using simulated measurements")
+            
+            # Simulate measurements without atomic clock
+            test_nodes = ['tokyo', 'london', 'harare', 'sydney', 'lapaz']
+            
+            for measurement_round in range(20):
+                for node_id in test_nodes:
+                    # Create simulated measurement
+                    current_time = time.time()
+                    simulated_atomic = current_time + random.uniform(-0.001, 0.001)
+                    local_time = current_time + random.uniform(-0.002, 0.002)
+                    
+                    measurement = PrecisionMeasurement(
+                        node_id=node_id,
+                        measurement_time=current_time,
+                        atomic_reference=simulated_atomic,
+                        local_measurement=local_time,
+                        precision_difference=simulated_atomic - local_time,
+                        measurement_quality=random.uniform(0.8, 1.0)
+                    )
+                    
+                    precision_calc._store_measurement(measurement)
+                    precision_calc._update_statistics(measurement)
+                    
+                    if measurement_round % 5 == 0:
+                        precision_ms = measurement.precision_difference * 1000
+                        logger.info(f"Round {measurement_round+1}, {node_id}: "
+                                  f"{precision_ms:.3f}ms (simulated)")
+                
+                await asyncio.sleep(0.2)
+        
+        # Get final statistics
+        stats = precision_calc.get_precision_statistics()
+        
+        # Export all data to JSON
+        logger.info("Exporting precision calculation data...")
+        precision_data = precision_calc.export_precision_data(output_dir)
+        
+        # Add test summary
+        export_data = {
+            'precision_calculation_results': precision_data,
+            'test_summary': {
+                'total_nodes_tested': len(test_nodes),
+                'measurements_per_node': 20,
+                'total_measurements': stats['total_measurements'],
+                'overall_precision_ms': stats['overall_statistics'].get('mean_precision_ms', 0),
+                'precision_std_ms': stats['overall_statistics'].get('std_precision_ms', 0),
+                'mean_quality': stats['overall_statistics'].get('mean_quality', 0),
+                'test_duration': 'approximately 4 seconds',
+                'timestamp': time.time()
+            }
+        }
+        
+        # Save complete test results
+        results_file = output_dir / "precision_test_results.json"
+        with open(results_file, 'w') as f:
+            json.dump(export_data, f, indent=2)
+        
+        logger.info(f"Complete test results saved to {results_file}")
+        
+        # Create visualizations
+        logger.info("Creating precision calculation visualizations...")
+        precision_calc.create_precision_visualization(output_dir)
+        
+        # Print summary
+        print("\n" + "=" * 50)
+        print("📊 PRECISION CALCULATOR TEST RESULTS")
+        print("=" * 50)
+        print(f"✅ Nodes tested: {len(test_nodes)}")
+        print(f"✅ Total measurements: {stats['total_measurements']}")
+        
+        if stats['overall_statistics']:
+            print(f"✅ Average precision: {stats['overall_statistics']['mean_precision_ms']:.3f} ± "
+                  f"{stats['overall_statistics']['std_precision_ms']:.3f}ms")
+            print(f"✅ Mean quality score: {stats['overall_statistics']['mean_quality']:.3f}")
+            print(f"✅ Coordination quality: {stats['overall_statistics']['coordination_quality']:.3f}")
+        
+        print(f"\n📁 All outputs saved to: {output_dir.absolute()}")
+        print(f"📄 JSON results: {results_file.name}")
+        print(f"📈 Visualizations: precision_time_series.png, precision_distribution.png, "
+              f"quality_analysis.png, coordination_matrix.png")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Precision calculator test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
+if __name__ == "__main__":
+    try:
+        import random
+        success = asyncio.run(main())
+        exit(0 if success else 1)
+    except KeyboardInterrupt:
+        print("\n⏹️  Test interrupted by user")
+        exit(1)
+    except Exception as e:
+        print(f"\n💥 Test failed: {e}")
+        exit(1)

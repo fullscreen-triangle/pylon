@@ -26,37 +26,30 @@ import uuid
 class BiometricProfile:
     """Represents a unique user's biometric behavioral profile"""
     
+    # Required fields (no defaults) - MUST come first
     user_id: str
     profile_name: str
+    average_typing_speed_wpm: float
+    keystroke_dwell_time_ms: float
+    keystroke_flight_time_ms: float
+    mouse_velocity_profile: Tuple[float, float]
+    mouse_acceleration_signature: float
+    click_pressure_profile: Tuple[float, float]
+    drag_smoothness_factor: float
+    saccade_velocity_deg_per_sec: float
+    fixation_duration_ms: float
+    blink_rate_per_minute: float
+    reading_pattern: str
+    scroll_speed_preference: float
+    application_switching_pattern: List[str]
+    window_management_style: str
+    multitasking_frequency: float
+    stress_response_factor: float
+    fatigue_degradation_rate: float
+    consistency_score: float
     
-    # Typing characteristics
-    average_typing_speed_wpm: float  # Words per minute
-    keystroke_dwell_time_ms: float   # Time key is held down
-    keystroke_flight_time_ms: float  # Time between key releases
+    # Optional fields with defaults - MUST come last
     typing_rhythm_signature: List[float] = field(default_factory=list)
-    
-    # Mouse movement characteristics
-    mouse_velocity_profile: Tuple[float, float]  # (mean, std) pixels/second
-    mouse_acceleration_signature: float          # Typical acceleration pattern
-    click_pressure_profile: Tuple[float, float]  # (mean, std) pressure units
-    drag_smoothness_factor: float                # How smooth are drag operations
-    
-    # Eye movement patterns
-    saccade_velocity_deg_per_sec: float         # Eye movement speed
-    fixation_duration_ms: float                 # How long eyes stay on target
-    blink_rate_per_minute: float                # Natural blink frequency
-    reading_pattern: str                        # 'left_to_right', 'scanning', 'focused'
-    
-    # Behavioral patterns
-    scroll_speed_preference: float              # Pixels per scroll event
-    application_switching_pattern: List[str]    # Common app switching sequence
-    window_management_style: str               # 'maximized', 'tiled', 'overlapped'
-    multitasking_frequency: float              # Tasks per minute
-    
-    # Biometric stability
-    stress_response_factor: float               # How behavior changes under stress
-    fatigue_degradation_rate: float            # Performance decline over time
-    consistency_score: float                   # How consistent is the behavior
     
     def __post_init__(self):
         """Initialize derived biometric characteristics"""

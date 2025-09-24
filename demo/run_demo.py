@@ -34,8 +34,9 @@ from src.data_collector import DataCollector
 from src.web_browser_simulator import WebBrowserSimulator
 from src.computer_interaction_simulator import ComputerInteractionSimulator
 
-from visualization.performance_dashboard import PerformanceDashboard
-from visualization.network_visualizer import NetworkVisualizer
+# Visualization components disabled - focusing on data collection
+# from visualization.performance_dashboard import PerformanceDashboard  
+# from visualization.network_visualizer import NetworkVisualizer
 
 import logging
 from colorama import init, Fore, Style
@@ -57,10 +58,9 @@ class SangoRineShubmaDemo:
     - Comprehensive data collection
     """
     
-    def __init__(self, config_dir="config", port=8050):
-        """Initialize demo with configuration directory and dashboard port"""
+    def __init__(self, config_dir="config"):
+        """Initialize demo with configuration directory"""
         self.config_dir = Path(config_dir)
-        self.port = port
         self.running = False
         self.experiment_id = f"exp_{int(time.time())}"
         
@@ -80,9 +80,9 @@ class SangoRineShubmaDemo:
         self.web_browser_simulator = None
         self.computer_interaction_simulator = None
         
-        # Visualization components
-        self.dashboard = None
-        self.network_visualizer = None
+        # Visualization components disabled - focusing on data collection
+        # self.dashboard = None
+        # self.network_visualizer = None
         
         self.logger.info(f"{Fore.CYAN}Initializing Sango Rine Shumba Demo...")
         self.logger.info(f"{Fore.YELLOW}Experiment ID: {self.experiment_id}")
@@ -157,6 +157,7 @@ class SangoRineShubmaDemo:
                 network_simulator=self.network_simulator,
                 temporal_fragmenter=self.temporal_fragmenter,
                 state_predictor=self.state_predictor,
+                precision_calculator=self.precision_calculator,
                 data_collector=self.data_collector
             )
             
@@ -166,22 +167,8 @@ class SangoRineShubmaDemo:
                 data_collector=self.data_collector
             )
             
-            # Initialize visualization components
-            self.logger.info(f"{Fore.CYAN}📈 Setting up visualization dashboard...")
-            self.dashboard = PerformanceDashboard(
-                network_simulator=self.network_simulator,
-                precision_calculator=self.precision_calculator,
-                temporal_fragmenter=self.temporal_fragmenter,
-                mimo_router=self.mimo_router,
-                data_collector=self.data_collector,
-                port=self.port
-            )
-            
-            self.network_visualizer = NetworkVisualizer(
-                network_simulator=self.network_simulator,
-                precision_calculator=self.precision_calculator,
-                data_collector=self.data_collector
-            )
+            # Visualization components disabled - focusing on data collection and storage
+            self.logger.info(f"{Fore.GREEN}📊 Data collection setup complete - all metrics will be saved")
             
             self.logger.info(f"{Fore.GREEN}✅ All components initialized successfully!")
             

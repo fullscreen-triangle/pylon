@@ -1,0 +1,24 @@
+{
+  "experiment_id": "sango_exp_1758444315",
+  "timestamp": 1758444559.521204,
+  "total_runtime_seconds": 244.52120447158813,
+  "network_performance": {
+    "total_messages_processed": 0,
+    "fragmentation_events": 0,
+    "coordination_calculations": 0,
+    "mimo_routing_events": 0
+  },
+  "user_experience_metrics": {
+    "browser_loads_traditional": 0,
+    "browser_loads_sango": 0,
+    "total_user_interactions": 0,
+    "biometric_verifications": 0,
+    "zero_latency_events": 0
+  },
+  "performance_improvements": {
+    "network_latency_reduction": "calculated_from_data",
+    "browser_load_time_improvement": "calculated_from_data",
+    "biometric_verification_speed": "calculated_from_data",
+    "zero_latency_success_rate": "calculated_from_data"
+  }
+}

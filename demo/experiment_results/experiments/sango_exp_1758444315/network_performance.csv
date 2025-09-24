@@ -1,0 +1,1 @@
+timestamp,measurement_type,source_node,destination_node,latency_ms,bandwidth_mbps,packet_loss,jitter_ms
