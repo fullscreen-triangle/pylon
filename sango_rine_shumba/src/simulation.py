@@ -3,14 +3,31 @@
 Sango Rine Shumba Validation Framework - Main Simulation Orchestrator
 
 This script orchestrates all modules in the validation framework, allowing them to run
-separately or together with intermediate result saving.
+separately or together with intermediate result saving. Each component can be executed
+in isolation for scientific rigor and debugging.
 
 Usage:
-    python simulation.py --run-all                    # Run complete validation pipeline
-    python simulation.py --run-observer               # Run only observer validation
-    python simulation.py --run-network               # Run only network validation
-    python simulation.py --run-signal                # Run only signal validation
-    python simulation.py --run-module <module_name>  # Run specific module
+    python simulation.py --run-all                           # Run complete validation pipeline
+    python simulation.py --run-observer                      # Run only observer validation
+    python simulation.py --run-network                      # Run only network validation
+    python simulation.py --run-signal                       # Run only signal validation
+    python simulation.py --run-component <component_name>   # Run specific component
+    
+Available components:
+    - finite_observer          # Test finite observer functionality
+    - gear_ratio_calculator    # Test gear ratio calculations
+    - oscillatory_hierarchy    # Test oscillatory hierarchy
+    - transcendent_observer     # Test transcendent observer
+    - ambiguous_compressor     # Test compression algorithms
+    - hierarchical_navigator   # Test navigation algorithms
+    - hardware_signals         # Collect hardware signals
+    - network_signals          # Collect network signals
+    - signal_metrics           # Analyze signal metrics
+    
+Examples:
+    python simulation.py --run-component finite_observer --duration 30
+    python simulation.py --run-signal --hardware-only
+    python simulation.py --run-all --save-intermediate
 """
 
 import asyncio
@@ -34,6 +51,11 @@ from observer.observer_metrics import ObserverMetrics
 from network.ambigous_compressor import AmbiguousCompressor
 from network.hierarchical_navigator import HierarchicalNavigator
 from network.network_metrics import NetworkMetrics
+
+# Import signal framework
+from signal.hardware_signals import HardwareSignalCollector
+from signal.network_signals import NetworkSignalCollector
+from signal.signal_metrics import SignalMetricsAnalyzer
 
 class SangoRineShumbaValidationFramework:
     """Main validation framework orchestrator"""
@@ -748,16 +770,288 @@ class SangoRineShumbaValidationFramework:
         
         self.logger.info(f"Complete validation results saved: {output_file}")
         self.logger.info(f"Validation summary saved: {summary_file}")
+    
+    async def run_signal_validation(self, hardware_only: bool = False, network_only: bool = False, 
+                                  duration: float = 60.0) -> Dict[str, Any]:
+        """Run comprehensive signal validation"""
+        self.logger.info("Starting signal validation...")
+        
+        validation_results = {
+            'validation_start_time': time.time(),
+            'hardware_signal_validation': {},
+            'network_signal_validation': {},
+            'signal_metrics_validation': {},
+            'validation_success': False
+        }
+        
+        # Hardware signal validation
+        if not network_only:
+            self.logger.info("Running hardware signal validation...")
+            try:
+                hardware_collector = HardwareSignalCollector(sample_duration=duration, sample_rate=2.0)
+                hardware_results = hardware_collector.collect_all_hardware_signals()
+                
+                # Save hardware results
+                hardware_file = self.output_dir / "hardware_signals_data.json"
+                hardware_collector.save_results(str(hardware_file))
+                
+                # Create hardware visualizations
+                hardware_collector.create_visualizations(str(self.output_dir / "hardware_signals"))
+                
+                validation_results['hardware_signal_validation'] = {
+                    'collection_success': True,
+                    'total_samples': hardware_results['collection_metadata']['total_samples_collected'],
+                    'collection_duration': hardware_results['collection_metadata']['collection_duration'],
+                    'platform_capabilities': hardware_results['collection_metadata']['platform_capabilities'],
+                    'results_file': str(hardware_file)
+                }
+                
+            except Exception as e:
+                self.logger.error(f"Hardware signal validation failed: {e}")
+                validation_results['hardware_signal_validation'] = {
+                    'collection_success': False,
+                    'error': str(e)
+                }
+        
+        # Network signal validation  
+        if not hardware_only:
+            self.logger.info("Running network signal validation...")
+            try:
+                network_collector = NetworkSignalCollector(sample_duration=duration, sample_rate=0.5)
+                network_results = network_collector.collect_all_network_signals()
+                
+                # Save network results
+                network_file = self.output_dir / "network_signals_data.json"
+                network_collector.save_results(str(network_file))
+                
+                # Create network visualizations
+                network_collector.create_visualizations(str(self.output_dir / "network_signals"))
+                
+                validation_results['network_signal_validation'] = {
+                    'collection_success': True,
+                    'total_samples': network_results['collection_metadata']['total_samples_collected'],
+                    'collection_duration': network_results['collection_metadata']['collection_duration'],
+                    'platform_capabilities': network_results['collection_metadata']['platform_capabilities'],
+                    'results_file': str(network_file)
+                }
+                
+            except Exception as e:
+                self.logger.error(f"Network signal validation failed: {e}")
+                validation_results['network_signal_validation'] = {
+                    'collection_success': False,
+                    'error': str(e)
+                }
+        
+        # Signal metrics validation
+        if not hardware_only and not network_only:
+            self.logger.info("Running signal metrics validation...")
+            try:
+                analyzer = SignalMetricsAnalyzer(analysis_window=duration)
+                
+                # Load collected data if available
+                hardware_data = None
+                network_data = None
+                
+                if 'hardware_signal_validation' in validation_results and validation_results['hardware_signal_validation'].get('collection_success'):
+                    hardware_file = validation_results['hardware_signal_validation']['results_file']
+                    with open(hardware_file, 'r') as f:
+                        hardware_data = json.load(f)
+                
+                if 'network_signal_validation' in validation_results and validation_results['network_signal_validation'].get('collection_success'):
+                    network_file = validation_results['network_signal_validation']['results_file']
+                    with open(network_file, 'r') as f:
+                        network_data = json.load(f)
+                
+                # Perform analysis
+                analysis_results = analyzer.analyze_all_signals(hardware_data, network_data)
+                
+                # Save analysis results
+                analysis_file = self.output_dir / "signal_metrics_analysis.json"
+                analyzer.save_results(str(analysis_file), analysis_results)
+                
+                # Create analysis visualizations
+                analyzer.create_visualizations(str(self.output_dir / "signal_metrics"))
+                
+                validation_results['signal_metrics_validation'] = {
+                    'analysis_success': True,
+                    'total_metrics_computed': analysis_results['analysis_metadata']['total_metrics_computed'],
+                    'analysis_duration': analysis_results['analysis_metadata']['analysis_duration'],
+                    'overall_quality_score': analysis_results['signal_metrics'].get('quality_metrics', {}).get('overall_quality_score', 0),
+                    'results_file': str(analysis_file)
+                }
+                
+            except Exception as e:
+                self.logger.error(f"Signal metrics validation failed: {e}")
+                validation_results['signal_metrics_validation'] = {
+                    'analysis_success': False,
+                    'error': str(e)
+                }
+        
+        # Determine overall success
+        hardware_success = validation_results.get('hardware_signal_validation', {}).get('collection_success', True)
+        network_success = validation_results.get('network_signal_validation', {}).get('collection_success', True)  
+        metrics_success = validation_results.get('signal_metrics_validation', {}).get('analysis_success', True)
+        
+        validation_results['validation_success'] = hardware_success and network_success and metrics_success
+        validation_results['validation_end_time'] = time.time()
+        validation_results['validation_duration'] = validation_results['validation_end_time'] - validation_results['validation_start_time']
+        
+        self.logger.info(f"Signal validation complete. Success: {validation_results['validation_success']}")
+        return validation_results
+    
+    async def run_component(self, component_name: str, duration: float = 30.0, **kwargs) -> Dict[str, Any]:
+        """Run individual component validation"""
+        self.logger.info(f"Running component validation: {component_name}")
+        
+        component_results = {
+            'component_name': component_name,
+            'validation_start_time': time.time(),
+            'validation_success': False
+        }
+        
+        try:
+            if component_name == 'finite_observer':
+                observer = FiniteObserver(
+                    observation_frequency=kwargs.get('frequency', 5.0),
+                    max_observation_space=kwargs.get('max_space', 100),
+                    observer_id=f"component_test_{int(time.time())}"
+                )
+                
+                # Run observation test
+                start_time = time.time()
+                signal_count = 0
+                
+                while time.time() - start_time < duration:
+                    test_signal = f"test_signal_{signal_count}_{int(time.time() * 1000000) % 1000000}"
+                    observer.observe_signal(test_signal)
+                    signal_count += 1
+                    await asyncio.sleep(0.1)
+                
+                stats = observer.get_observation_statistics()
+                
+                # Save results
+                results_file = self.output_dir / f"component_{component_name}_results.json"
+                observer.export_observations(str(results_file))
+                
+                component_results.update({
+                    'validation_success': stats['success_rate'] > 0.0,
+                    'statistics': stats,
+                    'signals_processed': signal_count,
+                    'results_file': str(results_file)
+                })
+            
+            elif component_name == 'gear_ratio_calculator':
+                calculator = GearRatioCalculator()
+                
+                # Test calculations
+                test_results = []
+                test_cases = [(1, 2), (3, 4), (7, 8), (2, 6)]
+                
+                for source, target in test_cases:
+                    ratio = calculator.get_compound_ratio(source, target)
+                    transitivity_valid = calculator.validate_gear_ratio_transitivity(source, target, ratio)
+                    
+                    test_results.append({
+                        'source_scale': source,
+                        'target_scale': target,
+                        'calculated_ratio': ratio,
+                        'transitivity_valid': transitivity_valid
+                    })
+                
+                # Save results
+                results_file = self.output_dir / f"component_{component_name}_results.json"
+                calculator.export_compound_ratio_table(str(results_file))
+                
+                component_results.update({
+                    'validation_success': all(test['transitivity_valid'] for test in test_results),
+                    'test_results': test_results,
+                    'performance_stats': calculator.get_performance_statistics(),
+                    'results_file': str(results_file)
+                })
+            
+            elif component_name == 'hardware_signals':
+                collector = HardwareSignalCollector(sample_duration=duration, sample_rate=2.0)
+                results = collector.collect_all_hardware_signals()
+                
+                results_file = self.output_dir / f"component_{component_name}_data.json"
+                collector.save_results(str(results_file))
+                collector.create_visualizations(str(self.output_dir / f"component_{component_name}"))
+                
+                component_results.update({
+                    'validation_success': results['collection_metadata']['total_samples_collected'] > 0,
+                    'collection_metadata': results['collection_metadata'],
+                    'results_file': str(results_file)
+                })
+            
+            elif component_name == 'network_signals':
+                collector = NetworkSignalCollector(sample_duration=duration, sample_rate=0.5)
+                results = collector.collect_all_network_signals()
+                
+                results_file = self.output_dir / f"component_{component_name}_data.json"
+                collector.save_results(str(results_file))
+                collector.create_visualizations(str(self.output_dir / f"component_{component_name}"))
+                
+                component_results.update({
+                    'validation_success': results['collection_metadata']['total_samples_collected'] > 0,
+                    'collection_metadata': results['collection_metadata'],
+                    'results_file': str(results_file)
+                })
+            
+            elif component_name == 'signal_metrics':
+                analyzer = SignalMetricsAnalyzer(analysis_window=duration)
+                results = analyzer.analyze_all_signals()
+                
+                results_file = self.output_dir / f"component_{component_name}_analysis.json"
+                analyzer.save_results(str(results_file), results)
+                analyzer.create_visualizations(str(self.output_dir / f"component_{component_name}"))
+                
+                component_results.update({
+                    'validation_success': results['analysis_metadata']['total_metrics_computed'] > 0,
+                    'analysis_metadata': results['analysis_metadata'],
+                    'results_file': str(results_file)
+                })
+            
+            else:
+                raise ValueError(f"Unknown component: {component_name}")
+        
+        except Exception as e:
+            self.logger.error(f"Component {component_name} validation failed: {e}")
+            component_results['error'] = str(e)
+        
+        component_results['validation_end_time'] = time.time()
+        component_results['validation_duration'] = component_results['validation_end_time'] - component_results['validation_start_time']
+        
+        # Save component results
+        self._save_intermediate_results(f"component_{component_name}", component_results)
+        
+        self.logger.info(f"Component {component_name} validation complete. Success: {component_results['validation_success']}")
+        return component_results
 
 
 async def main():
     """Main entry point for validation framework"""
     parser = argparse.ArgumentParser(description="Sango Rine Shumba Validation Framework")
+    
+    # Main execution modes
     parser.add_argument('--run-all', action='store_true', help='Run complete validation pipeline')
     parser.add_argument('--run-observer', action='store_true', help='Run observer framework validation')
     parser.add_argument('--run-network', action='store_true', help='Run network framework validation')
+    parser.add_argument('--run-signal', action='store_true', help='Run signal collection and analysis')
     parser.add_argument('--run-integration', action='store_true', help='Run integration validation')
+    parser.add_argument('--run-component', type=str, help='Run specific component validation')
+    
+    # Signal-specific options
+    parser.add_argument('--hardware-only', action='store_true', help='Only collect hardware signals')
+    parser.add_argument('--network-only', action='store_true', help='Only collect network signals')
+    parser.add_argument('--duration', type=float, default=60.0, help='Collection/test duration in seconds')
+    
+    # Component-specific options
+    parser.add_argument('--frequency', type=float, default=5.0, help='Observer frequency (for finite_observer component)')
+    parser.add_argument('--max-space', type=int, default=100, help='Max observation space (for finite_observer component)')
+    
+    # General options
     parser.add_argument('--output-dir', default='validation_results', help='Output directory for results')
+    parser.add_argument('--save-intermediate', action='store_true', help='Save intermediate results at each stage')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose logging')
     
     args = parser.parse_args()
@@ -787,20 +1081,61 @@ async def main():
         elif args.run_observer:
             print("📊 Running observer framework validation...")
             results = await framework.run_observer_validation()
-            framework._save_intermediate_results('observer_validation', results)
+            if args.save_intermediate:
+                framework._save_intermediate_results('observer_validation', results)
             
         elif args.run_network:
             print("🌐 Running network framework validation...")
             results = await framework.run_network_validation()
-            framework._save_intermediate_results('network_validation', results)
+            if args.save_intermediate:
+                framework._save_intermediate_results('network_validation', results)
+            
+        elif args.run_signal:
+            print("📡 Running signal collection and analysis...")
+            results = await framework.run_signal_validation(
+                hardware_only=args.hardware_only,
+                network_only=args.network_only,
+                duration=args.duration
+            )
+            if args.save_intermediate:
+                framework._save_intermediate_results('signal_validation', results)
             
         elif args.run_integration:
             print("🔗 Running integration validation...")
             results = await framework.run_integration_validation()
-            framework._save_intermediate_results('integration_validation', results)
+            if args.save_intermediate:
+                framework._save_intermediate_results('integration_validation', results)
+            
+        elif args.run_component:
+            available_components = [
+                'finite_observer', 'gear_ratio_calculator', 'oscillatory_hierarchy', 'transcendent_observer',
+                'ambiguous_compressor', 'hierarchical_navigator', 
+                'hardware_signals', 'network_signals', 'signal_metrics'
+            ]
+            
+            if args.run_component not in available_components:
+                print(f"❌ Unknown component: {args.run_component}")
+                print(f"Available components: {', '.join(available_components)}")
+                return
+            
+            print(f"🔧 Running component validation: {args.run_component}")
+            results = await framework.run_component(
+                args.run_component,
+                duration=args.duration,
+                frequency=args.frequency,
+                max_space=args.max_space
+            )
             
         else:
-            print("No validation option specified. Use --help for options.")
+            print("❓ No validation option specified.")
+            print("\nAvailable options:")
+            print("  --run-all              Run complete validation pipeline")
+            print("  --run-observer         Run observer framework validation")
+            print("  --run-network          Run network framework validation") 
+            print("  --run-signal           Run signal collection and analysis")
+            print("  --run-integration      Run integration validation")
+            print("  --run-component <name> Run specific component validation")
+            print("\nUse --help for detailed options.")
             return
         
         # Print summary

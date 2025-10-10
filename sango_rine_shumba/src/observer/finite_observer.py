@@ -192,3 +192,266 @@ class FiniteObserver:
     
     def __repr__(self):
         return f"FiniteObserver(id={self.observer_id}, freq={self.frequency}Hz, space={len(self.current_observations)}/{self.max_space})"
+
+
+def main():
+    """Standalone execution of finite observer demonstration"""
+    import argparse
+    import random
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from pathlib import Path
+    
+    parser = argparse.ArgumentParser(description="Finite Observer Demonstration")
+    parser.add_argument('--frequency', type=float, default=5.0,
+                       help='Observer frequency in Hz (default: 5.0)')
+    parser.add_argument('--max-space', type=int, default=100,
+                       help='Maximum observation space (default: 100)')
+    parser.add_argument('--duration', type=float, default=30.0,
+                       help='Test duration in seconds (default: 30)')
+    parser.add_argument('--output-dir', default='finite_observer_results',
+                       help='Output directory for results')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                       help='Verbose logging')
+    
+    args = parser.parse_args()
+    
+    # Setup logging
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s - %(message)s')
+    
+    # Create output directory
+    Path(args.output_dir).mkdir(exist_ok=True)
+    
+    print("🔍 Finite Observer Demonstration")
+    print("=" * 40)
+    print(f"Observer Frequency: {args.frequency} Hz")
+    print(f"Maximum Observation Space: {args.max_space}")
+    print(f"Test Duration: {args.duration} seconds")
+    print(f"Output Directory: {args.output_dir}")
+    print()
+    
+    # Initialize finite observer
+    observer = FiniteObserver(
+        observation_frequency=args.frequency,
+        max_observation_space=args.max_space,
+        observer_id="demo_observer"
+    )
+    
+    print(f"📡 Initialized: {observer}")
+    print()
+    
+    # Generate and observe various signal types
+    print("🔄 Starting signal observation...")
+    
+    start_time = time.time()
+    signal_count = 0
+    successful_observations = 0
+    
+    # Test different signal types
+    signal_types = ['numeric', 'string', 'dict', 'bytes']
+    
+    while time.time() - start_time < args.duration:
+        signal_type = random.choice(signal_types)
+        
+        if signal_type == 'numeric':
+            signal = random.uniform(-100, 100)
+        elif signal_type == 'string':
+            signal = f"signal_{signal_count}_{random.randint(1000, 9999)}"
+        elif signal_type == 'dict':
+            signal = {
+                'value': random.uniform(0, 1),
+                'timestamp': time.time(),
+                'id': signal_count,
+                'metadata': {'type': 'test', 'source': 'demo'}
+            }
+        else:  # bytes
+            signal = f"binary_signal_{signal_count}".encode()
+        
+        # Attempt observation
+        success = observer.observe_signal(signal)
+        if success:
+            successful_observations += 1
+        
+        signal_count += 1
+        
+        # Control rate approximately
+        time.sleep(0.1)  # 10 Hz signal generation rate
+    
+    actual_duration = time.time() - start_time
+    
+    print(f"✅ Signal observation complete!")
+    print(f"   Duration: {actual_duration:.2f}s")
+    print(f"   Signals generated: {signal_count}")
+    print(f"   Successful observations: {successful_observations}")
+    print(f"   Success rate: {successful_observations/signal_count:.1%}")
+    print()
+    
+    # Get statistics
+    stats = observer.get_observation_statistics()
+    
+    print("📊 Observer Statistics:")
+    print(f"   Observer success rate: {stats['success_rate']:.1%}")
+    print(f"   Space utilization: {stats['space_utilization']:.1%}")
+    print(f"   Observation rate: {stats['observation_rate_per_second']:.2f} obs/sec")
+    print(f"   Configured frequency: {stats['configured_frequency']:.2f} Hz")
+    print(f"   Mean extracted frequency: {stats['frequency_statistics']['mean_extracted_frequency']:.2f} Hz")
+    print(f"   Frequency deviation: {stats['frequency_statistics']['frequency_deviation_from_configured']:.2f} Hz")
+    print()
+    
+    # Save results
+    results_file = Path(args.output_dir) / "finite_observer_data.json"
+    observer.export_observations(str(results_file))
+    
+    # Create visualizations
+    print("📊 Creating visualizations...")
+    
+    # Plot 1: Observation success over time
+    if observer.observation_history:
+        plt.figure(figsize=(15, 10))
+        
+        # Success rate over time
+        plt.subplot(2, 3, 1)
+        timestamps = [obs['timestamp'] - observer.start_time for obs in observer.observation_history]
+        success_flags = [1 if obs['success'] else 0 for obs in observer.observation_history]
+        
+        # Running average success rate
+        window_size = max(10, len(success_flags) // 20)
+        running_success = []
+        for i in range(len(success_flags)):
+            start_idx = max(0, i - window_size + 1)
+            running_success.append(np.mean(success_flags[start_idx:i+1]))
+        
+        plt.plot(timestamps, running_success, 'b-', alpha=0.7, linewidth=2)
+        plt.xlabel('Time (seconds)')
+        plt.ylabel('Running Success Rate')
+        plt.title('Observation Success Rate Over Time')
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1.05)
+        
+        # Frequency analysis
+        plt.subplot(2, 3, 2)
+        extracted_freqs = [obs['extracted_frequency'] for obs in observer.observation_history]
+        
+        plt.hist(extracted_freqs, bins=20, alpha=0.7, color='green', edgecolor='black')
+        plt.axvline(x=args.frequency, color='red', linestyle='--', linewidth=2, 
+                   label=f'Configured: {args.frequency:.2f} Hz')
+        plt.xlabel('Extracted Frequency (Hz)')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Extracted Signal Frequencies')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        
+        # Space utilization over time
+        plt.subplot(2, 3, 3)
+        space_utilization = []
+        for i, obs in enumerate(observer.observation_history):
+            # Estimate space usage at this point in time
+            successful_so_far = sum(1 for j in range(i+1) if observer.observation_history[j]['success'])
+            space_util = min(successful_so_far / args.max_space, 1.0)
+            space_utilization.append(space_util * 100)
+        
+        plt.plot(timestamps, space_utilization, 'orange', alpha=0.7, linewidth=2)
+        plt.xlabel('Time (seconds)')
+        plt.ylabel('Space Utilization (%)')
+        plt.title('Observation Space Utilization Over Time')
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 105)
+        
+        # Signal type distribution
+        plt.subplot(2, 3, 4)
+        signal_types = [obs['signal_type'] for obs in observer.observation_history]
+        type_counts = {}
+        for sig_type in signal_types:
+            type_counts[sig_type] = type_counts.get(sig_type, 0) + 1
+        
+        types = list(type_counts.keys())
+        counts = list(type_counts.values())
+        colors = plt.cm.Set3(np.linspace(0, 1, len(types)))
+        
+        plt.bar(types, counts, color=colors, alpha=0.7, edgecolor='black')
+        plt.xlabel('Signal Type')
+        plt.ylabel('Observation Count')
+        plt.title('Signal Type Distribution')
+        plt.xticks(rotation=45)
+        plt.grid(True, alpha=0.3)
+        
+        # Frequency deviation analysis
+        plt.subplot(2, 3, 5)
+        freq_deviations = [abs(obs['extracted_frequency'] - args.frequency) for obs in observer.observation_history]
+        
+        plt.hist(freq_deviations, bins=15, alpha=0.7, color='purple', edgecolor='black')
+        plt.xlabel('Frequency Deviation (Hz)')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Frequency Deviations')
+        plt.grid(True, alpha=0.3)
+        
+        # Performance summary
+        plt.subplot(2, 3, 6)
+        
+        # Create performance metrics pie chart
+        performance_data = [
+            stats['successful_observations'],
+            stats['failed_observations']
+        ]
+        performance_labels = ['Successful', 'Failed']
+        colors = ['green', 'red']
+        
+        plt.pie(performance_data, labels=performance_labels, colors=colors, autopct='%1.1f%%', 
+               startangle=90, alpha=0.7)
+        plt.title('Overall Observation Performance')
+        
+        plt.tight_layout()
+        plt.savefig(Path(args.output_dir) / "finite_observer_analysis.png", dpi=150, bbox_inches='tight')
+        plt.close()
+        
+        print(f"   📊 Analysis plot: finite_observer_analysis.png")
+    
+    # Summary statistics
+    summary_stats = {
+        'test_configuration': {
+            'observer_frequency': args.frequency,
+            'max_observation_space': args.max_space,
+            'test_duration_planned': args.duration,
+            'test_duration_actual': actual_duration
+        },
+        'signal_generation': {
+            'total_signals_generated': signal_count,
+            'signal_generation_rate': signal_count / actual_duration,
+            'successful_observations': successful_observations,
+            'generation_success_rate': successful_observations / signal_count if signal_count > 0 else 0
+        },
+        'observer_performance': stats
+    }
+    
+    # Save summary
+    summary_file = Path(args.output_dir) / "finite_observer_summary.json"
+    with open(summary_file, 'w') as f:
+        json.dump(summary_stats, f, indent=2)
+    
+    print(f"💾 Results saved to {args.output_dir}/")
+    print(f"   📄 Data: finite_observer_data.json")
+    print(f"   📊 Summary: finite_observer_summary.json")
+    print(f"   🖼️  Plots: finite_observer_analysis.png")
+    
+    # Performance evaluation
+    if stats['success_rate'] > 0.8:
+        print(f"\n✅ Observer performed excellently (success rate: {stats['success_rate']:.1%})")
+    elif stats['success_rate'] > 0.6:
+        print(f"\n🟡 Observer performed well (success rate: {stats['success_rate']:.1%})")
+    elif stats['success_rate'] > 0.4:
+        print(f"\n🟠 Observer performance was moderate (success rate: {stats['success_rate']:.1%})")
+    else:
+        print(f"\n🔴 Observer performance was poor (success rate: {stats['success_rate']:.1%})")
+    
+    if stats['space_utilization'] > 0.9:
+        print(f"⚠️  Space utilization is high ({stats['space_utilization']:.1%}) - consider increasing max_space")
+    elif stats['space_utilization'] < 0.1:
+        print(f"ℹ️  Space utilization is low ({stats['space_utilization']:.1%}) - could reduce max_space")
+    
+    print("\n🎉 Finite observer demonstration complete!")
+
+
+if __name__ == "__main__":
+    main()
