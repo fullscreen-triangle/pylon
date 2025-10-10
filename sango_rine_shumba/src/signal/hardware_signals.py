@@ -1,0 +1,1 @@
+# this should measure all the hardware signals from the computer  system, that is, from cpu and other clocks, screen pixel changes, keyboard input, cursor/moise movements, ambient noise using the microphone,  and any other hardware part that produces a periodic signal, doesn't matter if its useful or practical 

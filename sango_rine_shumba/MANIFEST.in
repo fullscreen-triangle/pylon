@@ -1,0 +1,95 @@
+# MANIFEST.in for Sango Rine Shumba Network Validation Framework
+# Specifies additional files to include in the package distribution
+
+# Documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+recursive-include docs *
+
+# Configuration files
+include *.txt
+include *.cfg
+include *.ini
+include *.yml
+include *.yaml
+include pyproject.toml
+
+# Requirements files
+include requirements.txt
+include requirements-dev.txt
+
+# Source code and package files
+recursive-include src *.py
+recursive-include src *.pyx
+recursive-include src *.pxd
+
+# Test files
+recursive-include tests *.py
+
+# Data files
+recursive-include src *.json
+recursive-include src *.csv
+recursive-include src *.txt
+recursive-include src *.dat
+
+# Documentation and example files
+recursive-include examples *.py
+recursive-include examples *.md
+recursive-include examples *.txt
+recursive-include examples *.json
+
+# Jupyter notebooks (if any)
+recursive-include notebooks *.ipynb
+recursive-include examples *.ipynb
+
+# Static assets (if any)
+recursive-include src/assets *
+recursive-include docs/_static *
+
+# Configuration and setup files
+include setup.py
+include setup.cfg
+include pyproject.toml
+include tox.ini
+
+# Version control files to exclude
+global-exclude .git*
+global-exclude .hg*
+global-exclude .svn*
+
+# Compiled files to exclude
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
+global-exclude *.dll
+global-exclude *.dylib
+
+# Cache directories to exclude
+global-exclude __pycache__
+global-exclude *.egg-info
+prune **/__pycache__
+prune **/*.egg-info
+
+# IDE and editor files to exclude
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.swp
+global-exclude *.swo
+global-exclude *~
+
+# OS-specific files to exclude
+global-exclude .DS_Store
+global-exclude Thumbs.db
+
+# Build artifacts to exclude
+global-exclude build
+global-exclude dist
+prune build
+prune dist
+
+# Temporary and log files to exclude
+global-exclude *.log
+global-exclude *.tmp
+global-exclude validation_results

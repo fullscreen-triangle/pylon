@@ -1,0 +1,1 @@
+# this script should do all the statistical and metric validation/analysis of all signals

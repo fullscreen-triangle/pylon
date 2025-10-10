@@ -15,11 +15,20 @@ import random
 import hashlib
 import struct
 import statistics
+import json
+import math
 from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 import logging
 import numpy as np
 import uuid
+from pathlib import Path
+
+# Set matplotlib backend for non-interactive use
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 @dataclass
 class MessageFragment:

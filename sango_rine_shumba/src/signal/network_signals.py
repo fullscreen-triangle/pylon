@@ -1,0 +1,1 @@
+# these are all the signals that will come from the internet, wifi, bluetooth, cellular, etc .
