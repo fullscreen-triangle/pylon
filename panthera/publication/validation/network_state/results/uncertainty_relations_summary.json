@@ -1,0 +1,12 @@
+{
+  "test": "uncertainty_relations",
+  "temperatures_tested": [
+    1.0,
+    2.0,
+    5.0
+  ],
+  "min_ratio": 63170823864.419785,
+  "mean_ratio": 2.1195888019977044e+24,
+  "fraction_violating": 0.0,
+  "pass": true
+}

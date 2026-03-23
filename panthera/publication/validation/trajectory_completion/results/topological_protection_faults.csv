@@ -1,0 +1,6 @@
+fault_fraction,edge_mode_amplitude,edge_mode_survives,survival_rate
+0.01,0.3638608459802057,True,1.0
+0.05,0.37453172239819077,True,1.0
+0.1,0.35708685349687014,True,1.0
+0.2,0.3092554134023171,True,1.0
+0.3,0.30531381159543985,True,1.0

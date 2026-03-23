@@ -1,0 +1,30 @@
+{
+  "test": "renormalization_group",
+  "universality_validated": true,
+  "max_exponent_difference": 0.6295634215425441,
+  "exponent_differences": {
+    "beta": 0.6295634215425441,
+    "gamma": 0.26107976039258285,
+    "nu": 0.195823889488906
+  },
+  "mean_RG_error": 1.34692203909979,
+  "critical_temperatures": {
+    "network_A": 0.5,
+    "network_B": 0.5
+  },
+  "exponents": {
+    "network_A": {
+      "T_c": 0.5,
+      "beta": -0.041878808573679094,
+      "gamma": -0.04077720768780597,
+      "nu": 0.05620889002804535
+    },
+    "network_B": {
+      "T_c": 0.5,
+      "beta": 0.587684612968865,
+      "gamma": 0.22030255270477686,
+      "nu": 0.25203277951695136
+    }
+  },
+  "pass": false
+}

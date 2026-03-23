@@ -1,0 +1,12 @@
+{
+  "test": "s_space_clustering",
+  "mean_intra": 0.19185988306167948,
+  "mean_inter": 0.6012270974738717,
+  "separation_ratio": 3.1336780148072174,
+  "silhouette_score": 0.1161183977555084,
+  "adjusted_rand_index": 0.22071280991735534,
+  "NMI": 0.43386704172568547,
+  "num_programs": 48,
+  "num_categories": 7,
+  "pass": true
+}

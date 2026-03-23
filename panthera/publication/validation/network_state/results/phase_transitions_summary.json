@@ -1,0 +1,8 @@
+{
+  "test": "phase_transitions",
+  "T_c_estimated": 3.4176449485124603,
+  "T_m_estimated": 2.651947375820061,
+  "critical_exponent_beta": -0.033421203954756416,
+  "transitions_detected": true,
+  "pass": true
+}

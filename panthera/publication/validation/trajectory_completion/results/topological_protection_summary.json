@@ -1,0 +1,17 @@
+{
+  "test": "topological_protection",
+  "band_gap": 0.5857864376269049,
+  "berry_phase_values": [
+    3.1415926535897927,
+    -3.141592653589793
+  ],
+  "chern_numbers": [
+    1
+  ],
+  "winding_number": 1,
+  "fault_tolerance_threshold": 1.0,
+  "edge_mode_detected": true,
+  "edge_mode_amplitude": 0.4850712500715951,
+  "edge_mode_decay_length": 1.7362744491223756,
+  "pass": true
+}

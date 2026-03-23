@@ -1,0 +1,7 @@
+{
+  "test": "heat_capacity",
+  "Cv_mean_relative_error_ideal": 0.0,
+  "gamma_mean_relative_error_ideal": 0.0,
+  "num_tests": 20,
+  "pass": true
+}

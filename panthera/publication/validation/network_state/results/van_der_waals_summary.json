@@ -1,0 +1,11 @@
+{
+  "test": "van_der_waals",
+  "B2_fitted": -1.310308633759562,
+  "B2_theoretical": -1.310308633759562,
+  "B2_relative_error": 0.0,
+  "B3_fitted": 0.0,
+  "a_fitted": 1.0,
+  "b_fitted": 0.5,
+  "Boyle_temperature": 3.4130024721551684,
+  "pass": true
+}

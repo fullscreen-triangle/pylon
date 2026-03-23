@@ -1,0 +1,138 @@
+{
+  "total_tests": 13,
+  "passed": 10,
+  "failed": 3,
+  "overall_validation_percentage": 76.9,
+  "test_results": {
+    "backward_navigation": {
+      "pass": false,
+      "elapsed_seconds": 27.73,
+      "scaling_exponent": 0.9355381322924493,
+      "R_squared": 1.0,
+      "linear_fit_slope": 1.0,
+      "linear_fit_intercept": 0.4150374992788428,
+      "accuracy_overall": 0.039999999999999994
+    },
+    "program_synthesis": {
+      "pass": false,
+      "elapsed_seconds": 0.54,
+      "overall_accuracy": 0.14583333333333334,
+      "mean_intra_distance": 0.16096688738350542,
+      "mean_inter_distance": 0.6444653595678324,
+      "separation_ratio": 4.003713869625759,
+      "mean_correct_distance": 0.21487581178535795,
+      "mean_incorrect_distance": 0.04547396422946749,
+      "num_programs": 48
+    },
+    "s_space_clustering": {
+      "pass": true,
+      "elapsed_seconds": 0.58,
+      "mean_intra": 0.19185988306167948,
+      "mean_inter": 0.6012270974738717,
+      "separation_ratio": 3.1336780148072174,
+      "silhouette_score": 0.1161183977555084,
+      "adjusted_rand_index": 0.22071280991735534,
+      "NMI": 0.43386704172568547,
+      "num_programs": 48,
+      "num_categories": 7
+    },
+    "thermodynamic_security": {
+      "pass": true,
+      "elapsed_seconds": 197.76,
+      "false_positive_rate": 0.0,
+      "mean_detection_time": 13.748611111111112
+    },
+    "gauge_invariance": {
+      "pass": true,
+      "elapsed_seconds": 0.06,
+      "max_gear_ratio_relative_change": 0.0,
+      "max_temperature_relative_change": 0.0,
+      "max_pressure_ratio_relative_change": 2.131628207280301e-16,
+      "max_order_parameter_relative_change": 0.0,
+      "gear_ratio_invariant": true,
+      "temperature_invariant": true,
+      "order_parameter_invariant": true
+    },
+    "fiber_bundle": {
+      "pass": true,
+      "elapsed_seconds": 0.47,
+      "max_transitivity_error": 2.7435241252126944e-16,
+      "mean_transitivity_error": 5.532657283488262e-17,
+      "mean_curvature": 0.10534641920339888,
+      "holonomy_test_pass": true,
+      "parallel_transport_consistency": 1.0,
+      "mean_holonomy": 3.663735981263017e-17,
+      "num_transitivity_tests": 4983,
+      "num_transport_tests": 100
+    },
+    "renormalization_group": {
+      "pass": false,
+      "elapsed_seconds": 162.16,
+      "universality_validated": true,
+      "max_exponent_difference": 0.6295634215425441,
+      "mean_RG_error": 1.34692203909979
+    },
+    "topological_protection": {
+      "pass": true,
+      "elapsed_seconds": 0.72,
+      "band_gap": 0.5857864376269049,
+      "winding_number": 1,
+      "fault_tolerance_threshold": 1.0,
+      "edge_mode_detected": true,
+      "edge_mode_amplitude": 0.4850712500715951,
+      "edge_mode_decay_length": 1.7362744491223756
+    },
+    "information_geometry": {
+      "pass": true,
+      "elapsed_seconds": 0.75,
+      "mean_geodesic_euclidean_ratio": 3.3917975756320486,
+      "geodesic_optimality_verified": false,
+      "geodesic_optimality_fraction": 0.0,
+      "num_pairs_tested": 25,
+      "num_curvature_points": 8
+    },
+    "godelian_residue": {
+      "pass": true,
+      "elapsed_seconds": 0.4,
+      "convergence_rate_correct": 1.0,
+      "divergence_rate_incorrect": 0.9230769230769231,
+      "min_epsilon": 1e-15,
+      "epsilon_positive": true,
+      "recognition_complexity_constant": true,
+      "recognition_mean_us": 680.7145833333333,
+      "recognition_cv": 0.5403777016855013,
+      "num_correct": 14,
+      "num_incorrect": 130
+    },
+    "entropy_computation": {
+      "pass": true,
+      "elapsed_seconds": 5.93,
+      "proportionality_R2": 0.01978989942434295,
+      "mean_efficiency": 0.055706144844826375,
+      "carnot_satisfied": true,
+      "landauer_satisfied": false,
+      "proportionality_slope": 0.07709913249424913,
+      "num_configurations": 20
+    },
+    "operational_trichotomy": {
+      "pass": true,
+      "elapsed_seconds": 2.53,
+      "T_F_scaling_exponent": -0.07662474079426962,
+      "T_C_scaling_exponent": 0.2453141402288629,
+      "T_R_scaling_exponent": 0.0,
+      "random_guess_accuracy_without_recognition": 0.065,
+      "random_guess_accuracy_with_recognition": 0.065,
+      "mean_T_finding_us": 143.5996,
+      "mean_T_checking_us": 8.934000000000001,
+      "mean_T_recognizing_us": 549.1254
+    },
+    "byzantine_tolerance": {
+      "pass": true,
+      "elapsed_seconds": 17.43,
+      "thermodynamic_threshold": 0.51,
+      "pbft_threshold": 0.34,
+      "threshold_ratio": 1.4999999999999956
+    }
+  },
+  "errors": []
+}

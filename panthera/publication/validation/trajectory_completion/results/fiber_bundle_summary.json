@@ -1,0 +1,12 @@
+{
+  "test": "fiber_bundle",
+  "max_transitivity_error": 2.7435241252126944e-16,
+  "mean_transitivity_error": 5.532657283488262e-17,
+  "mean_curvature": 0.10534641920339888,
+  "holonomy_test_pass": true,
+  "parallel_transport_consistency": 1.0,
+  "mean_holonomy": 3.663735981263017e-17,
+  "num_transitivity_tests": 4983,
+  "num_transport_tests": 100,
+  "pass": true
+}

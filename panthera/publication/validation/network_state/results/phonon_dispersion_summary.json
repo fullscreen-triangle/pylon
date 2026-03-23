@@ -1,0 +1,9 @@
+{
+  "test": "phonon_dispersion",
+  "omega_0_sq_theory": 114.29287574171028,
+  "omega_0_sq_fitted": 11010.43988711834,
+  "omega_0_relative_error": 95.33531237765652,
+  "mean_relative_error": 9.737473480494824,
+  "max_relative_error": 240.45695943802676,
+  "pass": false
+}

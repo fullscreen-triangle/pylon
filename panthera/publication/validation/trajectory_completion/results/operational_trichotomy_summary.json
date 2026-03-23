@@ -1,0 +1,12 @@
+{
+  "test": "operational_trichotomy",
+  "T_F_scaling_exponent": -0.07662474079426962,
+  "T_C_scaling_exponent": 0.2453141402288629,
+  "T_R_scaling_exponent": 0.0,
+  "random_guess_accuracy_without_recognition": 0.065,
+  "random_guess_accuracy_with_recognition": 0.065,
+  "mean_T_finding_us": 143.5996,
+  "mean_T_checking_us": 8.934000000000001,
+  "mean_T_recognizing_us": 549.1254,
+  "pass": true
+}

@@ -1,0 +1,20 @@
+{
+  "test": "program_synthesis_accuracy",
+  "overall_accuracy": 0.14583333333333334,
+  "per_category_accuracy": {
+    "access": 0.0,
+    "aggregation": 0.0,
+    "arithmetic": 0.16666666666666666,
+    "composition": 0.0,
+    "conditional": 0.0,
+    "recursive": 0.25,
+    "transformation": 0.5
+  },
+  "mean_intra_distance": 0.16096688738350542,
+  "mean_inter_distance": 0.6444653595678324,
+  "separation_ratio": 4.003713869625759,
+  "mean_correct_distance": 0.21487581178535795,
+  "mean_incorrect_distance": 0.04547396422946749,
+  "num_programs": 48,
+  "pass": false
+}

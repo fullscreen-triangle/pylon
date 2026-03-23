@@ -1,0 +1,19 @@
+{
+  "test": "backward_navigation_scaling",
+  "scaling_exponent": 0.9355381322924493,
+  "R_squared": 1.0,
+  "linear_fit_slope": 1.0,
+  "linear_fit_intercept": 0.4150374992788428,
+  "accuracy_overall": 0.039999999999999994,
+  "accuracy_by_size": {
+    "12": 0.02,
+    "24": 0.12,
+    "48": 0.12,
+    "96": 0.02,
+    "192": 0.04,
+    "384": 0.0,
+    "768": 0.0,
+    "1536": 0.0
+  },
+  "pass": false
+}

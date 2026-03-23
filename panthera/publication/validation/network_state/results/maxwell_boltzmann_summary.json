@@ -1,0 +1,6 @@
+{
+  "test": "maxwell_boltzmann",
+  "mean_ks_p_value": 0.4649095420252654,
+  "fraction_passing": 1.0,
+  "pass": true
+}

@@ -1,0 +1,11 @@
+{
+  "test": "gauge_invariance",
+  "max_gear_ratio_relative_change": 0.0,
+  "max_temperature_relative_change": 0.0,
+  "max_pressure_ratio_relative_change": 2.131628207280301e-16,
+  "max_order_parameter_relative_change": 0.0,
+  "gear_ratio_invariant": true,
+  "temperature_invariant": true,
+  "order_parameter_invariant": true,
+  "pass": true
+}

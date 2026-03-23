@@ -1,0 +1,8 @@
+{
+  "test": "ideal_gas_law",
+  "mean_PV_NkT_ratio": 0.9988548564992896,
+  "std_PV_NkT_ratio": 0.0051884110485654385,
+  "max_deviation": 0.019291400194320074,
+  "num_tests": 80,
+  "pass": true
+}

@@ -1,0 +1,28 @@
+{
+  "test": "variance_restoration",
+  "tau_theoretical": 0.5,
+  "results_per_T0": [
+    {
+      "T0": 1.0,
+      "tau_fitted": 0.4992640571640305,
+      "relative_error": 0.0014718856719390105
+    },
+    {
+      "T0": 5.0,
+      "tau_fitted": 0.4992828514123776,
+      "relative_error": 0.001434297175244792
+    },
+    {
+      "T0": 10.0,
+      "tau_fitted": 0.49955733478894365,
+      "relative_error": 0.0008853304221126956
+    },
+    {
+      "T0": 20.0,
+      "tau_fitted": 0.5001661064282344,
+      "relative_error": 0.0003322128564688942
+    }
+  ],
+  "mean_tau_relative_error": 0.001030931531441348,
+  "pass": true
+}

@@ -1,0 +1,15 @@
+{
+  "test": "information_geometry",
+  "mean_geodesic_euclidean_ratio": 3.3917975756320486,
+  "curvature_statistics": {
+    "min": -0.000853753872906695,
+    "max": 3.4970954569141703,
+    "mean": 0.45029719953367336,
+    "std": 1.1521122229432357
+  },
+  "geodesic_optimality_verified": false,
+  "geodesic_optimality_fraction": 0.0,
+  "num_pairs_tested": 25,
+  "num_curvature_points": 8,
+  "pass": true
+}

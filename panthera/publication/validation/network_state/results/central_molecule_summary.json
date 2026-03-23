@@ -1,0 +1,16 @@
+{
+  "test": "central_molecule",
+  "mean_throughput_per_packet": 6941.840000000001,
+  "mean_throughput_variance": 6941.827500000001,
+  "throughput_ratio": 0.9999981993246747,
+  "mean_overhead_per_packet": 1000.1318168148352,
+  "mean_overhead_variance": 0.014405490421624456,
+  "overhead_ratio": 69427.12726485947,
+  "mean_recovery_per_packet": 0.006,
+  "mean_recovery_variance": 0.006,
+  "recovery_speedup": 1.0,
+  "p_value_throughput": 0.9978761712545986,
+  "p_value_overhead": 2.2097899504756386e-104,
+  "p_value_recovery": 1.0,
+  "pass": true
+}

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -c '\\\\\\\\\\\\\\\\begin{theorem}\\\\|\\\\\\\\\\\\\\\\begin{lemma}\\\\|\\\\\\\\\\\\\\\\begin{definition}\\\\|\\\\\\\\\\\\\\\\begin{corollary}\\\\|\\\\\\\\\\\\\\\\begin{axiom}\\\\|\\\\\\\\\\\\\\\\begin{proposition}\\\\|\\\\\\\\\\\\\\\\begin{principle}' \"c:/Users/kunda/Documents/distributed/pylon/panthera/publication/sango-rine-shumba-state/sango-rine-shumba-network-state.tex\" \"c:/Users/kunda/Documents/distributed/pylon/panthera/publication/sango-rine-shumba-trajectory/sango-rine-shumba-trajectory-completion.tex\")",
+      "Bash(grep -c '\\\\\\\\\\\\\\\\begin{proof}' \"c:/Users/kunda/Documents/distributed/pylon/panthera/publication/sango-rine-shumba-state/sango-rine-shumba-network-state.tex\" \"c:/Users/kunda/Documents/distributed/pylon/panthera/publication/sango-rine-shumba-trajectory/sango-rine-shumba-trajectory-completion.tex\")",
+      "Bash(python -c \"import numpy; import scipy; print\\(''numpy'', numpy.__version__\\); print\\(''scipy'', scipy.__version__\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(python test_ideal_gas_law.py)",
+      "Bash(python test_gauge_invariance.py)",
+      "Bash(python run_all.py)",
+      "Bash(python test_backward_navigation.py)",
+      "Bash(python test_fiber_bundle.py)",
+      "Bash(python test_information_geometry.py)",
+      "Bash(python test_uncertainty_relations.py)",
+      "Bash(echo \"EXIT: $?\")"
+    ]
+  }
+}

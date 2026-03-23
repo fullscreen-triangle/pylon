@@ -1,0 +1,7 @@
+{
+  "test": "thermodynamic_potentials",
+  "mu_mean_relative_error": 2.346867345636282e-16,
+  "S_mean_relative_error": 0.6079455732980645,
+  "num_configurations": 16,
+  "pass": true
+}

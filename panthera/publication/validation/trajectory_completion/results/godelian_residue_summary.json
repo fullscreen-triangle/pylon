@@ -1,0 +1,13 @@
+{
+  "test": "godelian_residue",
+  "convergence_rate_correct": 1.0,
+  "divergence_rate_incorrect": 0.9230769230769231,
+  "min_epsilon": 1e-15,
+  "epsilon_positive": true,
+  "recognition_complexity_constant": true,
+  "recognition_mean_us": 680.7145833333333,
+  "recognition_cv": 0.5403777016855013,
+  "num_correct": 14,
+  "num_incorrect": 130,
+  "pass": true
+}

@@ -1,0 +1,10 @@
+{
+  "test": "entropy_computation",
+  "proportionality_R2": 0.01978989942434295,
+  "mean_efficiency": 0.055706144844826375,
+  "carnot_satisfied": true,
+  "landauer_satisfied": false,
+  "proportionality_slope": 0.07709913249424913,
+  "num_configurations": 20,
+  "pass": true
+}
