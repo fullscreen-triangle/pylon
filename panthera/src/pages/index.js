@@ -89,7 +89,7 @@ export default function Home() {
           <section className="flex w-full items-center justify-between gap-8 lg:flex-col">
             <div className="w-1/2 lg:w-full lg:text-center">
               <AnimatedText
-                text="Pylon"
+                text="SRS Panthera"
                 className="!text-left !text-8xl xl:!text-7xl lg:!text-center lg:!text-6xl md:!text-5xl"
               />
               <motion.h2
