@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: sango-rine-shumba-network-state.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+You've used 31 entries,
+            2118 wiz_defined-function locations,
+            704 strings with 8267 characters,
+and the built_in function-call counts, 8081 in all, are:
+= -- 835
+> -- 234
+< -- 0
++ -- 101
+- -- 68
+* -- 486
+:= -- 1407
+add.period$ -- 99
+call.type$ -- 31
+change.case$ -- 124
+chr.to.int$ -- 0
+cite$ -- 31
+duplicate$ -- 341
+empty$ -- 718
+format.name$ -- 68
+if$ -- 1663
+int.to.chr$ -- 0
+int.to.str$ -- 31
+missing$ -- 38
+newline$ -- 164
+num.names$ -- 62
+pop$ -- 113
+preamble$ -- 1
+purify$ -- 96
+quote$ -- 0
+skip$ -- 208
+stack$ -- 0
+substring$ -- 548
+swap$ -- 31
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 108
+warning$ -- 0
+while$ -- 94
+width$ -- 33
+write$ -- 348

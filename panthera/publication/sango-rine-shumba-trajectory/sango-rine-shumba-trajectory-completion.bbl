@@ -1,0 +1,212 @@
+\begin{thebibliography}{10}
+
+\bibitem{altland1997}
+Alexander Altland and Martin~R. Zirnbauer.
+\newblock Nonstandard symmetry classes in mesoscopic normal-superconducting
+  hybrid structures.
+\newblock {\em Physical Review B}, 55(2):1142--1161, 1997.
+
+\bibitem{atiyah1963}
+Michael~F. Atiyah and Isadore~M. Singer.
+\newblock The index of elliptic operators on compact manifolds.
+\newblock {\em Bulletin of the American Mathematical Society}, 69(3):422--433,
+  1963.
+
+\bibitem{bekenstein1973}
+Jacob~D. Bekenstein.
+\newblock Black holes and entropy.
+\newblock {\em Physical Review D}, 7(8):2333--2346, 1973.
+
+\bibitem{bentley1975}
+Jon~Louis Bentley.
+\newblock Multidimensional binary search trees used for associative searching.
+\newblock {\em Communications of the ACM}, 18(9):509--517, 1975.
+
+\bibitem{berry1984}
+Michael~V. Berry.
+\newblock Quantal phase factors accompanying adiabatic changes.
+\newblock {\em Proceedings of the Royal Society of London A}, 392(1802):45--57,
+  1984.
+
+\bibitem{boltzmann1877}
+Ludwig Boltzmann.
+\newblock {\"U}ber die {B}eziehung zwischen dem zweiten {H}auptsatze der
+  mechanischen {W}{\"a}rmetheorie und der {W}ahrscheinlichkeitsrechnung
+  respektive den {S}{\"a}tzen {\"u}ber das {W}{\"a}rmegleichgewicht.
+\newblock {\em Wiener Berichte}, 76:373--435, 1877.
+
+\bibitem{castro1999}
+Miguel Castro and Barbara Liskov.
+\newblock Practical {B}yzantine fault tolerance.
+\newblock In {\em Proceedings of the Third Symposium on Operating Systems
+  Design and Implementation}, pages 173--186, 1999.
+
+\bibitem{cook1971}
+Stephen~A. Cook.
+\newblock The complexity of theorem-proving procedures.
+\newblock In {\em Proceedings of the Third Annual ACM Symposium on Theory of
+  Computing}, pages 151--158, 1971.
+
+\bibitem{cover2006}
+Thomas~M. Cover and Joy~A. Thomas.
+\newblock {\em Elements of Information Theory}.
+\newblock Wiley-Interscience, Hoboken, NJ, 2nd edition, 2006.
+
+\bibitem{diffie1976}
+Whitfield Diffie and Martin~E. Hellman.
+\newblock New directions in cryptography.
+\newblock {\em IEEE Transactions on Information Theory}, 22(6):644--654, 1976.
+
+\bibitem{fisher1925}
+Ronald~A. Fisher.
+\newblock Theory of statistical estimation.
+\newblock {\em Mathematical Proceedings of the Cambridge Philosophical
+  Society}, 22(5):700--725, 1925.
+
+\bibitem{godel1931}
+Kurt G{\"o}del.
+\newblock {\"U}ber formal unentscheidbare {S}{\"a}tze der {P}rincipia
+  {M}athematica und verwandter {S}ysteme {I}.
+\newblock {\em Monatshefte f{\"u}r Mathematik und Physik}, 38(1):173--198,
+  1931.
+
+\bibitem{grover1996}
+Lov~K. Grover.
+\newblock A fast quantum mechanical algorithm for database search.
+\newblock In {\em Proceedings of the Twenty-Eighth Annual ACM Symposium on
+  Theory of Computing}, pages 212--219, 1996.
+
+\bibitem{hasan2010}
+M.~Zahid Hasan and Charles~L. Kane.
+\newblock Colloquium: Topological insulators.
+\newblock {\em Reviews of Modern Physics}, 82(4):3045--3067, 2010.
+
+\bibitem{heisenberg1927}
+Werner Heisenberg.
+\newblock {\"U}ber den anschaulichen {I}nhalt der quantentheoretischen
+  {K}inematik und {M}echanik.
+\newblock {\em Zeitschrift f{\"u}r Physik}, 43(3--4):172--198, 1927.
+
+\bibitem{amari1985}
+Shun ichi Amari.
+\newblock {\em Differential-Geometrical Methods in Statistics}, volume~28 of
+  {\em Lecture Notes in Statistics}.
+\newblock Springer-Verlag, Berlin, 1985.
+
+\bibitem{amari2000}
+Shun ichi Amari and Hiroshi Nagaoka.
+\newblock {\em Methods of Information Geometry}, volume 191 of {\em
+  Translations of Mathematical Monographs}.
+\newblock American Mathematical Society, Providence, RI, 2000.
+
+\bibitem{kadanoff1966}
+Leo~P. Kadanoff.
+\newblock Scaling laws for {I}sing models near {$T_c$}.
+\newblock {\em Physics Physique Fizika}, 2(6):263--272, 1966.
+
+\bibitem{kobayashi1963}
+Shoshichi Kobayashi and Katsumi Nomizu.
+\newblock {\em Foundations of Differential Geometry}, volume~I.
+\newblock Interscience Publishers, New York, 1963.
+
+\bibitem{kullback1951}
+Solomon Kullback and Richard~A. Leibler.
+\newblock On information and sufficiency.
+\newblock {\em The Annals of Mathematical Statistics}, 22(1):79--86, 1951.
+
+\bibitem{lamport1978}
+Leslie Lamport.
+\newblock Time, clocks, and the ordering of events in a distributed system.
+\newblock {\em Communications of the ACM}, 21(7):558--565, 1978.
+
+\bibitem{landauer1961}
+Rolf Landauer.
+\newblock Irreversibility and heat generation in the computing process.
+\newblock {\em IBM Journal of Research and Development}, 5(3):183--191, 1961.
+
+\bibitem{nakahara2003}
+Mikio Nakahara.
+\newblock {\em Geometry, Topology and Physics}.
+\newblock Institute of Physics Publishing, Bristol, 2nd edition, 2003.
+
+\bibitem{onsager1944}
+Lars Onsager.
+\newblock Crystal statistics. {I}. {A} two-dimensional model with an
+  order-disorder transition.
+\newblock {\em Physical Review}, 65(3--4):117--149, 1944.
+
+\bibitem{pathria2011}
+Raj~Kumar Pathria and Paul~D. Beale.
+\newblock {\em Statistical Mechanics}.
+\newblock Academic Press, Boston, 3rd edition, 2011.
+
+\bibitem{rivest1978}
+Ronald~L. Rivest, Adi Shamir, and Leonard Adleman.
+\newblock A method for obtaining digital signatures and public-key
+  cryptosystems.
+\newblock {\em Communications of the ACM}, 21(2):120--126, 1978.
+
+\bibitem{sachikonye2024a}
+Kundai~Farai Sachikonye.
+\newblock Sango rine shumba: Transcendent observer networks for distributed
+  communication.
+\newblock {\em Preprint}, 2024.
+\newblock Technical University of Munich.
+
+\bibitem{sachikonye2024b}
+Kundai~Farai Sachikonye.
+\newblock Spatio-temporal precision in transcendent observer networks:
+  {GPS}-disciplined oscillator synchronization.
+\newblock {\em Preprint}, 2024.
+\newblock Technical University of Munich.
+
+\bibitem{sachikonye2025d}
+Kundai~Farai Sachikonye.
+\newblock Backward trajectory completion: From forward routing to geometric
+  navigation.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{sachikonye2025e}
+Kundai~Farai Sachikonye.
+\newblock Equations of state for transcendent observer networks: Thermodynamic
+  phase structure and critical phenomena.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich, companion paper.
+
+\bibitem{sachikonye2025a}
+Kundai~Farai Sachikonye.
+\newblock Gas computing: Thermodynamic foundations of transcendent observer
+  networks.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{sachikonye2025c}
+Kundai~Farai Sachikonye.
+\newblock Trajectory computing: Phase space navigation in bounded distributed
+  systems.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{shannon1948}
+Claude~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock {\em The Bell System Technical Journal}, 27(3):379--423, 1948.
+
+\bibitem{thouless1982}
+David~J. Thouless, Mahito Kohmoto, M.~Peter Nightingale, and Marcel den Nijs.
+\newblock Quantized {H}all conductance in a two-dimensional periodic potential.
+\newblock {\em Physical Review Letters}, 49(6):405--408, 1982.
+
+\bibitem{wilson1971}
+Kenneth~G. Wilson.
+\newblock Renormalization group and critical phenomena. {I}. {R}enormalization
+  group and the {K}adanoff scaling picture.
+\newblock {\em Physical Review B}, 4(9):3174--3183, 1971.
+
+\bibitem{yangmills1954}
+Chen~Ning Yang and Robert~L. Mills.
+\newblock Conservation of isotopic spin and isotopic gauge invariance.
+\newblock {\em Physical Review}, 96(1):191--195, 1954.
+
+\end{thebibliography}

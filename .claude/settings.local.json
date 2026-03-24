@@ -12,7 +12,8 @@
       "Bash(python test_fiber_bundle.py)",
       "Bash(python test_information_geometry.py)",
       "Bash(python test_uncertainty_relations.py)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npm install:*)"
     ]
   }
 }

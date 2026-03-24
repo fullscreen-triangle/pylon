@@ -1,0 +1,180 @@
+\begin{thebibliography}{10}
+
+\bibitem{Arnold1989}
+Vladimir~I. Arnold.
+\newblock {\em Mathematical Methods of Classical Mechanics}.
+\newblock Springer-Verlag, 2nd edition, 1989.
+
+\bibitem{Boltzmann1877}
+Ludwig Boltzmann.
+\newblock {\"U}ber die {B}eziehung zwischen dem zweiten {H}auptsatze der
+  mechanischen {W}{\"a}rmetheorie und der {W}ahrscheinlichkeitsrechnung
+  respektive den {S}{\"a}tzen {\"u}ber das {W}{\"a}rmegleichgewicht.
+\newblock {\em Wiener Berichte}, 76:373--435, 1877.
+
+\bibitem{Callen1985}
+Herbert~B. Callen.
+\newblock {\em Thermodynamics and an Introduction to Thermostatistics}.
+\newblock John Wiley \& Sons, 2nd edition, 1985.
+
+\bibitem{Chandrasekhar1943}
+Subrahmanyan Chandrasekhar.
+\newblock Stochastic problems in physics and astronomy.
+\newblock {\em Reviews of Modern Physics}, 15(1):1--89, 1943.
+
+\bibitem{Debye1912}
+Peter Debye.
+\newblock Zur {T}heorie der spezifischen {W}{\"a}rmen.
+\newblock {\em Annalen der Physik}, 344(14):789--839, 1912.
+
+\bibitem{Dirac1958}
+Paul Adrien~Maurice Dirac.
+\newblock {\em The Principles of Quantum Mechanics}.
+\newblock Oxford University Press, 4th edition, 1958.
+
+\bibitem{Einstein1905}
+Albert Einstein.
+\newblock {\"U}ber die von der molekularkinetischen {T}heorie der {W}{\"a}rme
+  geforderte {B}ewegung von in ruhenden {F}l{\"u}ssigkeiten suspendierten
+  {T}eilchen.
+\newblock {\em Annalen der Physik}, 322(8):549--560, 1905.
+
+\bibitem{Gibbs1902}
+Josiah~Willard Gibbs.
+\newblock {\em Elementary Principles in Statistical Mechanics}.
+\newblock Charles Scribner's Sons, New York, 1902.
+
+\bibitem{Goldstein2002}
+Herbert Goldstein, Charles~P. Poole, and John~L. Safko.
+\newblock {\em Classical Mechanics}.
+\newblock Addison-Wesley, 3rd edition, 2002.
+
+\bibitem{Green1954}
+Melville~S. Green.
+\newblock Markoff random processes and the statistical mechanics of
+  time-dependent phenomena. {II}. {I}rreversible processes in fluids.
+\newblock {\em The Journal of Chemical Physics}, 22(3):398--413, 1954.
+
+\bibitem{Heisenberg1927}
+Werner Heisenberg.
+\newblock {\"U}ber den anschaulichen {I}nhalt der quantentheoretischen
+  {K}inematik und {M}echanik.
+\newblock {\em Zeitschrift f{\"u}r Physik}, 43(3--4):172--198, 1927.
+
+\bibitem{Huang1987}
+Kerson Huang.
+\newblock {\em Statistical Mechanics}.
+\newblock John Wiley \& Sons, 2nd edition, 1987.
+
+\bibitem{Jaynes1957}
+Edwin~T. Jaynes.
+\newblock Information theory and statistical mechanics.
+\newblock {\em Physical Review}, 106(4):620--630, 1957.
+
+\bibitem{Kubo1957}
+Ryogo Kubo.
+\newblock Statistical-mechanical theory of irreversible processes. {I}.
+  {G}eneral theory and simple applications to magnetic and conduction problems.
+\newblock {\em Journal of the Physical Society of Japan}, 12(6):570--586, 1957.
+
+\bibitem{Kuramoto1975}
+Yoshiki Kuramoto.
+\newblock Self-entrainment of a population of coupled non-linear oscillators.
+\newblock {\em International Symposium on Mathematical Problems in Theoretical
+  Physics}, 39:420--422, 1975.
+
+\bibitem{Lamport1978}
+Leslie Lamport.
+\newblock Time, clocks, and the ordering of events in a distributed system.
+\newblock {\em Communications of the ACM}, 21(7):558--565, 1978.
+
+\bibitem{Landauer1961}
+Rolf Landauer.
+\newblock Irreversibility and heat generation in the computing process.
+\newblock {\em IBM Journal of Research and Development}, 5(3):183--191, 1961.
+
+\bibitem{LennardJones1924}
+John~Edward Lennard-Jones.
+\newblock On the determination of molecular fields.
+\newblock {\em Proceedings of the Royal Society of London A},
+  106(738):463--477, 1924.
+
+\bibitem{Liouville1838}
+Joseph Liouville.
+\newblock Note sur la {T}h{\'e}orie de la {V}ariation des constantes
+  arbitraires.
+\newblock {\em Journal de Math{\'e}matiques Pures et Appliqu{\'e}es},
+  3:342--349, 1838.
+
+\bibitem{Mills1991}
+David~L. Mills.
+\newblock Internet time synchronization: The network time protocol.
+\newblock {\em IEEE Transactions on Communications}, 39(10):1482--1493, 1991.
+
+\bibitem{Pathria2011}
+Raj~Kumar Pathria and Paul~D. Beale.
+\newblock {\em Statistical Mechanics}.
+\newblock Elsevier, 3rd edition, 2011.
+
+\bibitem{Poincare1890}
+Henri Poincar{\'e}.
+\newblock Sur le probl{\`e}me des trois corps et les {\'e}quations de la
+  dynamique.
+\newblock {\em Acta Mathematica}, 13:1--270, 1890.
+
+\bibitem{Reif1965}
+Frederick Reif.
+\newblock {\em Fundamentals of Statistical and Thermal Physics}.
+\newblock McGraw-Hill, 1965.
+
+\bibitem{Sachikonye2024a}
+Kundai~Farai Sachikonye.
+\newblock Sango rine shumba: A transcendent observer framework for distributed
+  communication networks.
+\newblock {\em Preprint}, 2024.
+\newblock Technical University of Munich.
+
+\bibitem{Sachikonye2024b}
+Kundai~Farai Sachikonye.
+\newblock Spatio-temporal precision in distributed observer networks: From gear
+  ratios to phase-locked hierarchies.
+\newblock {\em Preprint}, 2024.
+\newblock Technical University of Munich.
+
+\bibitem{Sachikonye2025d}
+Kundai~Farai Sachikonye.
+\newblock Backward trajectory completion in distributed observer networks.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{Sachikonye2025a}
+Kundai~Farai Sachikonye.
+\newblock Gas computing: Thermodynamic foundations of distributed communication
+  networks.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{Sachikonye2025b}
+Kundai~Farai Sachikonye.
+\newblock Single particle statistical mechanics of network observers.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{Sachikonye2025c}
+Kundai~Farai Sachikonye.
+\newblock Trajectory computing: Phase space methods for distributed network
+  coordination.
+\newblock {\em Preprint}, 2025.
+\newblock Technical University of Munich.
+
+\bibitem{Shannon1948}
+Claude~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock {\em The Bell System Technical Journal}, 27(3):379--423, 1948.
+
+\bibitem{vanderWaals1873}
+Johannes~Diderik van~der Waals.
+\newblock {\em Over de Continu{\"i}teit van den Gas- en Vloeistoftoestand}.
+\newblock PhD thesis, University of Leiden, 1873.
+
+\end{thebibliography}

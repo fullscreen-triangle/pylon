@@ -10,25 +10,35 @@ const Footer = () => {
     "
     >
       <Layout className="py-8 flex items-center justify-between lg:flex-col lg:py-6">
-        <span>{new Date().getFullYear()} &copy; All Rights Reserved.</span>
+        <span>&copy; 2025 Pylon Framework. Technical University of Munich.</span>
 
-        <div className="flex items-center lg:py-2">
-          Sango Rine Shumba <span className="text-primary text-2xl px-1 dark:text-primaryDark">&#9825;	</span> by&nbsp;
-          <Link
-            href="https://github.com/fullscreen-triangle/pylon"
-            target="_blank"
-            className="underline underline-offset-2"
-          >
-            Panthera
-          </Link>
+        <div className="flex flex-col items-center lg:py-2">
+          <div className="flex items-center">
+            <Link
+              href="mailto:kundai.sachikonye@wzw.tum.de"
+              className="underline underline-offset-2"
+            >
+              Collaborate
+            </Link>
+            <span className="text-primary text-2xl px-1 dark:text-primaryDark">&#9825;</span>
+            <Link
+              href="https://github.com/fullscreen-triangle/pylon"
+              target="_blank"
+              className="underline underline-offset-2"
+            >
+              GitHub
+            </Link>
+          </div>
+          <span className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Kundai Farai Sachikonye &middot; School of Life Sciences
+          </span>
         </div>
 
         <Link
-          href="https://github.com/fullscreen-triangle/pylon"
-          target="_blank"
+          href="mailto:kundai.sachikonye@wzw.tum.de"
           className="underline underline-offset-2"
         >
-          Collaborate
+          Contact
         </Link>
       </Layout>
     </footer>
