@@ -91,6 +91,7 @@ const Navbar = () => {
         <CustomLink className="mx-4" href="/state" title="Equations of State" />
         <CustomLink className="mx-4" href="/trajectory" title="Trajectory Completion" />
         <CustomLink className="mx-4" href="/validation" title="Validation" />
+        <CustomLink className="mx-4" href="/demo" title="Live Demo" />
         <CustomLink className="ml-4" href="/publications" title="Publications" />
       </nav>
       <nav
@@ -149,6 +150,7 @@ const Navbar = () => {
         <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/state" title="Equations of State" />
         <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/trajectory" title="Trajectory Completion" />
         <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/validation" title="Validation" />
+        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/demo" title="Live Demo" />
         <CustomMobileLink toggle={handleClick} className="ml-4 lg:m-0 lg:my-2" href="/publications" title="Publications" />
       </nav>
       <nav

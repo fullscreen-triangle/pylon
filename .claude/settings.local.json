@@ -13,7 +13,11 @@
       "Bash(python test_information_geometry.py)",
       "Bash(python test_uncertainty_relations.py)",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/@react-three/fiber/package.json''\\); console.log\\(''fiber:'', pkg.version\\)\")",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/@react-three/drei/package.json''\\); console.log\\(''drei:'', pkg.version\\)\")",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/three/package.json''\\); console.log\\(''three:'', pkg.version\\)\")",
+      "Bash(node -e \"const pkg = require\\(''./node_modules/its-fine/package.json''\\); console.log\\(''its-fine:'', pkg.version\\)\")"
     ]
   }
 }
