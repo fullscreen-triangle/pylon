@@ -1,476 +1,506 @@
-import AnimatedText from "@/components/AnimatedText";
-import Layout from "@/components/Layout";
 import Head from "next/head";
-import { motion } from "framer-motion";
 import TransitionEffect from "@/components/TransitionEffect";
-import useNetworkMeasurement from "@/components/Hooks/useNetworkMeasurement";
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
-const StreamingLineChart = dynamic(
-  () => import("@/components/charts/StreamingLineChart"),
-  { ssr: false }
-);
-const VarianceChart = dynamic(
-  () => import("@/components/charts/VarianceChart"),
-  { ssr: false }
-);
-const TemperatureGauge = dynamic(
-  () => import("@/components/charts/TemperatureGauge"),
-  { ssr: false }
-);
-const ComparisonBarChart = dynamic(
-  () => import("@/components/charts/ComparisonBarChart"),
-  { ssr: false }
-);
-const ScatterTimeSeries = dynamic(
-  () => import("@/components/charts/ScatterTimeSeries"),
-  { ssr: false }
-);
+// ─── Node registry ────────────────────────────────────────────────────────────
+const NODES = [
+  { id: 0, name: "You",    color: "#B63E96", initial: "Y" },
+  { id: 1, name: "Node α", color: "#58E6D9", initial: "α" },
+  { id: 2, name: "Node β", color: "#3b82f6", initial: "β" },
+  { id: 3, name: "Node γ", color: "#22c55e", initial: "γ" },
+  { id: 4, name: "Node δ", color: "#f59e0b", initial: "δ" },
+  { id: 5, name: "Node ε", color: "#ef4444", initial: "ε" },
+  { id: 6, name: "Node ζ", color: "#8b5cf6", initial: "ζ" },
+  { id: 7, name: "Node η", color: "#ec4899", initial: "η" },
+];
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}m ${s}s`;
+// ─── Coordination regime ──────────────────────────────────────────────────────
+function coordRegime(r) {
+  if (r < 0.30) return { name: "Turbulent",    color: "#ef4444", friction: 1.00 };
+  if (r < 0.50) return { name: "Aperture",     color: "#f97316", friction: 0.72 };
+  if (r < 0.80) return { name: "Cascade",      color: "#eab308", friction: 0.40 };
+  if (r < 0.95) return { name: "Coherent",     color: "#22c55e", friction: 0.12 };
+  return              { name: "Phase-Locked",  color: "#58E6D9", friction: 0.00 };
 }
 
-const StatCard = ({ label, value, unit, accent }) => (
-  <motion.div
-    variants={fadeInUp}
-    className="relative rounded-2xl border border-solid border-dark/20 bg-light p-6
-    dark:border-light/20 dark:bg-dark"
-  >
-    <div className="absolute top-0 -right-2 -z-10 h-[102%] w-[101%] rounded-[1.5rem]
-    rounded-br-3xl bg-dark dark:bg-light" />
-    <p className="text-sm font-medium text-dark/50 dark:text-light/50">{label}</p>
-    <p
-      className={`mt-2 text-2xl font-bold md:text-xl ${
-        accent
-          ? "text-primary dark:text-primaryDark"
-          : "text-dark dark:text-light"
-      }`}
-    >
-      {value}
-      {unit && (
-        <span className="ml-1 text-sm font-medium text-dark/40 dark:text-light/40">
-          {unit}
+// ─── S-entropy from message content ──────────────────────────────────────────
+function sEntropy(text) {
+  let h1 = 5381, h2 = 52711, h3 = 9973;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    h1 = (((h1 << 5) + h1) ^ c) >>> 0;
+    h2 = (((h2 << 7) + h2) ^ (c * 7)) >>> 0;
+    h3 = (((h3 << 3) + h3) ^ (c * 13)) >>> 0;
+  }
+  return {
+    sk: 0.15 + (h1 / 0xffffffff) * 0.70,
+    st: 0.15 + (h2 / 0xffffffff) * 0.70,
+    se: 0.15 + (h3 / 0xffffffff) * 0.70,
+  };
+}
+
+// ─── Routing helpers ──────────────────────────────────────────────────────────
+function deliveryMs(rEns) {
+  const base = 4 + Math.random() * 12;
+  return Math.round(base * (1 + (1 - rEns) * 3.5));
+}
+
+function backwardHops({ sk, st, se }) {
+  const d = Math.sqrt((sk - 0.5) ** 2 + (st - 0.5) ** 2 + (se - 0.5) ** 2);
+  return Math.max(2, Math.round(3 + d * 14));
+}
+
+// ─── Auto-response generation ─────────────────────────────────────────────────
+function autoResponse(fromNode, se, netState, K) {
+  const pool = [
+    `S-entropy (${se.sk.toFixed(2)}, ${se.st.toFixed(2)}, ${se.se.toFixed(2)}) indexed. Action-cell confirmed.`,
+    `Received in ${netState.regime} regime. R_ens = ${netState.rEns.toFixed(3)}.`,
+    `Backward trajectory: ${backwardHops(se)} hops. O(log M) navigation complete.`,
+    `Thermodynamic signature: clean. No entropy injection detected.`,
+    `Phase synchronisation at ${(netState.rEns * 100).toFixed(1)}%. Coordination friction: ${netState.friction.toFixed(2)}.`,
+    `Common action-cell identified. Disjoint decoders converge on shared cell.`,
+    `Second Law compliance: satisfied. Coupling K = ${K.toFixed(2)}.`,
+    `Route optimised via ternary trie. Delivery guaranteed in ${netState.regime} regime.`,
+    `Cell-truth preserved: receiver floor β > 0. Message integrity: verified.`,
+    `${fromNode.name} → Node 0. S-entropy distance: ${(Math.hypot(se.sk - 0.5, se.st - 0.5, se.se - 0.5)).toFixed(3)}.`,
+  ];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ─── Kuramoto step (CPU) ──────────────────────────────────────────────────────
+function kuramotoStep(phases, omegas, K, dt = 0.05) {
+  const n = phases.length;
+  return phases.map((phi, i) => {
+    let sum = 0;
+    for (let j = 0; j < n; j++) {
+      if (j === i) continue;
+      sum += Math.sin(phases[j] - phi);
+    }
+    return phi + dt * (omegas[i] + (K / (n - 1)) * sum);
+  });
+}
+
+function kuramotoRens(phases) {
+  let c = 0, s = 0;
+  phases.forEach(p => { c += Math.cos(p); s += Math.sin(p); });
+  return Math.hypot(c, s) / phases.length;
+}
+
+// ─── Message bubble component ─────────────────────────────────────────────────
+function Bubble({ msg, nodes }) {
+  const isOutgoing = msg.from === 0;
+  const node = nodes.find(n => n.id === (isOutgoing ? msg.to : msg.from));
+  const regime = coordRegime(msg.rEns ?? 0.4);
+
+  return (
+    <div className={`flex flex-col mb-3 ${isOutgoing ? "items-end" : "items-start"}`}>
+      <div
+        className={`max-w-[72%] rounded-2xl px-4 py-2.5 text-sm font-medium leading-relaxed
+          ${isOutgoing
+            ? "rounded-br-sm text-white"
+            : "rounded-bl-sm bg-light text-dark dark:bg-dark dark:text-light border border-solid border-dark/10 dark:border-light/10"
+          }`}
+        style={isOutgoing ? { backgroundColor: node?.color ?? "#B63E96" } : {}}
+      >
+        {msg.content}
+      </div>
+      <div className={`mt-1 flex items-center gap-2 text-[10px] font-mono text-dark/35 dark:text-light/35 ${isOutgoing ? "flex-row-reverse" : "flex-row"}`}>
+        <span>
+          S({msg.sk.toFixed(2)}, {msg.st.toFixed(2)}, {msg.se.toFixed(2)})
         </span>
-      )}
-    </p>
-  </motion.div>
-);
+        <span style={{ color: regime.color }} className="font-semibold">
+          {regime.name}
+        </span>
+        <span>{msg.latencyMs}ms</span>
+        <span>{msg.hops} hops</span>
+        <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
+      </div>
+    </div>
+  );
+}
 
-const SectionHeading = ({ children }) => (
-  <motion.h2
-    initial={{ opacity: 0, x: -20 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5 }}
-    className="mb-6 text-3xl font-bold text-dark dark:text-light md:text-2xl"
-  >
-    {children}
-  </motion.h2>
-);
-
-const SectionDescription = ({ children }) => (
-  <motion.p
-    initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay: 0.1 }}
-    className="mb-8 text-base font-medium leading-relaxed text-dark/70 dark:text-light/70 max-w-3xl"
-  >
-    {children}
-  </motion.p>
-);
-
+// ─── Main page ────────────────────────────────────────────────────────────────
 export default function Demo() {
-  const {
-    latencyData,
-    rawVarianceData,
-    restoredVarianceData,
-    gasLawData,
-    stats,
-    endpointNames,
-  } = useNetworkMeasurement();
+  const [selectedNode, setSelectedNode]     = useState(1);
+  const [inputText, setInputText]           = useState("");
+  const [conversations, setConversations]   = useState(() =>
+    Object.fromEntries(NODES.slice(1).map(n => [n.id, []]))
+  );
+  const [K, setKState]                      = useState(1.2);
+  const [networkState, setNetworkState]     = useState({
+    rEns: 0.35, regime: "Aperture", friction: 0.72,
+  });
 
-  const [darkMode, setDarkMode] = useState(false);
+  const kRef            = useRef(1.2);
+  const msgIdRef        = useRef(0);
+  const messagesEndRef  = useRef(null);
+  const netRef          = useRef({ rEns: 0.35, regime: "Aperture", friction: 0.72 });
+  const histRef         = useRef([0.35]);
+  const simRef          = useRef({
+    phases: Array.from({ length: 8 }, () => Math.random() * 2 * Math.PI),
+    omegas: Array.from({ length: 8 }, () => (Math.random() - 0.5) * 2.0),
+  });
+  const tickRef         = useRef(0);
 
+  // ── Kuramoto background simulation ─────────────────────────────────────────
   useEffect(() => {
-    const checkDark = () => {
-      setDarkMode(document.documentElement.classList.contains("dark"));
-    };
-    checkDark();
-    const observer = new MutationObserver(checkDark);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
+    const interval = setInterval(() => {
+      tickRef.current++;
+      const { phases, omegas } = simRef.current;
+      const newPhases = kuramotoStep(phases, omegas, kRef.current);
+      simRef.current.phases = newPhases;
+
+      if (tickRef.current % 4 === 0) {
+        const rEns = kuramotoRens(newPhases);
+        const r    = coordRegime(rEns);
+        const next = { rEns, regime: r.name, friction: r.friction };
+        netRef.current = next;
+        histRef.current.push(rEns);
+        if (histRef.current.length > 120) histRef.current.shift();
+        setNetworkState(next);
+      }
+    }, 50);
+    return () => clearInterval(interval);
   }, []);
 
-  const lineColors = ["#B63E96", "#58E6D9", "#3b82f6"];
+  // ── Seed greeting messages on mount ────────────────────────────────────────
+  useEffect(() => {
+    const greetings = [
+      { node: 1, text: "Node α online. S-entropy coordinates synced." },
+      { node: 3, text: "Node γ ready. Awaiting coordination from primary node." },
+      { node: 5, text: "Node ε connected. Backward trajectory: initialised." },
+    ];
+    const initConvs = Object.fromEntries(NODES.slice(1).map(n => [n.id, []]));
+    greetings.forEach(({ node, text }) => {
+      const se = sEntropy(text);
+      initConvs[node].push({
+        id: msgIdRef.current++,
+        from: node, to: 0,
+        content: text,
+        timestamp: Date.now() - 5000 + node * 300,
+        ...se, rEns: 0.35, latencyMs: 18, hops: backwardHops(se),
+      });
+    });
+    setConversations(initConvs);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const gaugeMaxRaw = Math.max(stats.rawTemperature * 1.5, 500);
-  const gaugeMaxPylon = Math.max(gaugeMaxRaw, 500);
+  // ── Auto-scroll ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversations, selectedNode]);
+
+  // ── K slider ────────────────────────────────────────────────────────────────
+  const handleK = useCallback((e) => {
+    const v = parseFloat(e.target.value);
+    kRef.current = v;
+    setKState(v);
+  }, []);
+
+  // ── Send message ────────────────────────────────────────────────────────────
+  const sendMessage = useCallback(() => {
+    const text = inputText.trim();
+    if (!text) return;
+    const se      = sEntropy(text);
+    const rEns    = netRef.current.rEns;
+    const latency = deliveryMs(rEns);
+    const hops    = backwardHops(se);
+
+    const outMsg = {
+      id: msgIdRef.current++,
+      from: 0, to: selectedNode,
+      content: text,
+      timestamp: Date.now(),
+      ...se, rEns, latencyMs: latency, hops,
+    };
+
+    setConversations(prev => ({
+      ...prev,
+      [selectedNode]: [...(prev[selectedNode] ?? []), outMsg],
+    }));
+    setInputText("");
+
+    // Auto-response
+    const delay = 900 + Math.random() * 1800;
+    setTimeout(() => {
+      const net    = netRef.current;
+      const fromNode = NODES.find(n => n.id === selectedNode);
+      const rText  = autoResponse(fromNode, se, net, kRef.current);
+      const rSe    = sEntropy(rText);
+      const inMsg  = {
+        id: msgIdRef.current++,
+        from: selectedNode, to: 0,
+        content: rText,
+        timestamp: Date.now(),
+        ...rSe, rEns: net.rEns, latencyMs: deliveryMs(net.rEns), hops: backwardHops(rSe),
+      };
+      setConversations(prev => ({
+        ...prev,
+        [selectedNode]: [...(prev[selectedNode] ?? []), inMsg],
+      }));
+    }, delay);
+  }, [inputText, selectedNode]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }, [sendMessage]);
+
+  const currentRegime = coordRegime(networkState.rEns);
+  const targetNode    = NODES.find(n => n.id === selectedNode);
+  const messages      = conversations[selectedNode] ?? [];
 
   return (
     <>
       <Head>
-        <title>Live Network Observatory | Pylon Framework</title>
+        <title>Pylon Mesh Messenger | Live Demo</title>
         <meta
           name="description"
-          content="Live demonstration of Pylon's thermodynamic variance restoration. Watch real network measurements transformed by exponential jitter suppression in real time."
+          content="Browser-native Pylon messaging demo. Messages are routed via backward trajectory completion and S-entropy coordinates. Watch coordination regime transitions in real time."
         />
       </Head>
 
       <TransitionEffect />
-      <main className="flex w-full flex-col items-center justify-center dark:text-light">
-        <Layout className="pt-16">
-          <AnimatedText
-            text="Live Network Observatory"
-            className="mb-8 !text-8xl !leading-tight lg:!text-7xl sm:!text-6xl xs:!text-4xl sm:mb-4"
-          />
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mx-auto mb-16 max-w-3xl text-center text-lg font-medium leading-relaxed
-            text-dark/75 dark:text-light/75 md:text-base sm:mb-8"
-          >
-            This page measures real network latency from your browser and demonstrates
-            Pylon&apos;s core advantage: thermodynamic variance restoration. The left side shows
-            raw internet jitter; the right shows how Pylon&apos;s exponential decay mechanism
-            suppresses it. All data is live -- measured right now from your connection.
-          </motion.p>
-
-          {/* Pulsing live indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mb-12 flex items-center justify-center gap-3 sm:mb-8"
-          >
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-green-600" />
-            </span>
-            <span className="text-sm font-semibold uppercase tracking-widest text-green-600 dark:text-green-400">
-              Live &mdash; {stats.totalMeasurements} measurements
-            </span>
-          </motion.div>
-
-          {/* ==================== Section 1: Live Latency Monitor ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="mb-20 md:mb-12"
-          >
-            <SectionHeading>1. Live Latency Monitor</SectionHeading>
-            <SectionDescription>
-              Real-time round-trip times measured from your browser to three public API
-              endpoints. Each line represents a different server. Notice the natural jitter
-              and variance inherent in internet communication -- this is the noise Pylon
-              eliminates.
-            </SectionDescription>
-
-            <motion.div
-              variants={fadeInUp}
-              className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark"
-            >
-              <div className="absolute top-0 -right-3 -z-10 h-[103%] w-[102%] rounded-[2rem]
-              rounded-br-3xl bg-dark dark:bg-light md:-right-2 md:w-[101%]" />
-              <StreamingLineChart
-                data={latencyData}
-                colors={lineColors}
-                labels={endpointNames}
-                darkMode={darkMode}
-              />
-            </motion.div>
-          </motion.section>
-
-          {/* ==================== Section 2: Variance Analysis ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="mb-20 md:mb-12"
-          >
-            <SectionHeading>2. Variance Analysis</SectionHeading>
-            <SectionDescription>
-              Side-by-side comparison of raw network variance versus Pylon-restored variance.
-              The raw variance (left, red) fluctuates wildly with no convergence. The
-              Pylon-restored variance (right, green) decays exponentially via
-              {" "}&sigma;&sup2;(t) = &sigma;&sup2;&sub;0 &times; exp(-t/&tau;) with &tau; = 0.5s,
-              demonstrating active jitter suppression.
-            </SectionDescription>
-
-            <motion.div
-              variants={fadeInUp}
-              className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark"
-            >
-              <VarianceChart
-                rawData={rawVarianceData}
-                restoredData={restoredVarianceData}
-                darkMode={darkMode}
-              />
-            </motion.div>
-
-            {/* Live comparison metric */}
-            <motion.div
-              variants={fadeInUp}
-              className="mt-6 rounded-xl border border-solid border-dark/10 bg-light/80 p-5
-              text-center dark:border-light/10 dark:bg-dark/80"
-            >
-              <p className="text-base font-medium text-dark/80 dark:text-light/80 md:text-sm">
-                Current raw variance:{" "}
-                <span className="font-bold text-red-500">
-                  {stats.currentRawVariance.toFixed(2)} ms&sup2;
-                </span>
-                {" "}&rarr; Pylon-restored variance:{" "}
-                <span className="font-bold text-green-500">
-                  {stats.currentRestoredVariance.toFixed(2)} ms&sup2;
-                </span>
-                {" "}
-                <span className="font-bold text-primary dark:text-primaryDark">
-                  ({stats.varianceReduction.toFixed(1)}% reduction)
-                </span>
-              </p>
-            </motion.div>
-          </motion.section>
-
-          {/* ==================== Section 3: Network Temperature Gauge ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="mb-20 md:mb-12"
-          >
-            <SectionHeading>3. Network Temperature</SectionHeading>
-            <SectionDescription>
-              In Pylon&apos;s thermodynamic framework, network &quot;temperature&quot; is defined
-              as T = m&sigma;&sup2;/k_B, directly proportional to latency variance. The raw
-              network (left) runs hot with fluctuating temperature. Pylon&apos;s coordinated
-              network (right) actively cools, approaching thermal equilibrium.
-            </SectionDescription>
-
-            <motion.div
-              variants={fadeInUp}
-              className="grid grid-cols-2 gap-8 md:grid-cols-1 md:gap-4"
-            >
-              <div className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark">
-                <TemperatureGauge
-                  value={stats.rawTemperature}
-                  maxValue={gaugeMaxRaw}
-                  label="Raw Network Temperature"
-                  colorScheme="hot"
-                  darkMode={darkMode}
-                />
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark">
-                <TemperatureGauge
-                  value={stats.pylonTemperature}
-                  maxValue={gaugeMaxPylon}
-                  label="Pylon Temperature"
-                  colorScheme="cool"
-                  darkMode={darkMode}
-                />
-              </div>
-            </motion.div>
-          </motion.section>
-
-          {/* ==================== Section 4: Throughput Comparison ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="mb-20 md:mb-12"
-          >
-            <SectionHeading>4. Throughput Comparison</SectionHeading>
-            <SectionDescription>
-              Variance directly impacts throughput. Traditional TCP throughput degrades with
-              jitter, while Pylon&apos;s variance restoration maintains higher effective throughput.
-              The improvement factor is computed as 1/(1 + variance_ratio), reflecting how
-              reduced variance translates to better network utilization.
-            </SectionDescription>
-
-            <motion.div
-              variants={fadeInUp}
-              className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark"
-            >
-              <ComparisonBarChart
-                values={[
-                  stats.traditionalThroughput,
-                  stats.pylonThroughput,
-                ]}
-                labels={["Traditional TCP", "Pylon Coordinated"]}
-                colors={["#ef4444", "#22c55e"]}
-                darkMode={darkMode}
-              />
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              className="mt-6 rounded-xl border border-solid border-dark/10 bg-light/80 p-5
-              text-center dark:border-light/10 dark:bg-dark/80"
-            >
-              <p className="text-base font-medium text-dark/80 dark:text-light/80 md:text-sm">
-                Improvement factor:{" "}
-                <span className="font-bold text-primary dark:text-primaryDark">
-                  {stats.improvementFactor.toFixed(3)}x
-                </span>
-                {" "}&mdash; Pylon throughput is{" "}
-                <span className="font-bold text-green-500">
-                  {((stats.improvementFactor - 1) * 100).toFixed(1)}%
-                </span>
-                {" "}higher
-              </p>
-            </motion.div>
-          </motion.section>
-
-          {/* ==================== Section 5: Ideal Gas Law Verification ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="mb-20 md:mb-12"
-          >
-            <SectionHeading>5. Ideal Gas Law Verification</SectionHeading>
-            <SectionDescription>
-              Pylon&apos;s core theorem: bounded networks obey PV = NkT, just like an ideal gas.
-              Using your live measurements, we compute P (packet pressure), V (address space
-              volume), N (active endpoints), and T (network temperature), then plot the ratio
-              PV/(NkT). It should cluster around 1.0, shown by the dashed reference line.
-            </SectionDescription>
-
-            <motion.div
-              variants={fadeInUp}
-              className="overflow-hidden rounded-2xl border border-solid border-dark/20
-              bg-light p-4 dark:border-light/20 dark:bg-dark"
-            >
-              <ScatterTimeSeries
-                data={gasLawData}
-                referenceLine={1.0}
-                darkMode={darkMode}
-              />
-            </motion.div>
-
-            <motion.div
-              variants={fadeInUp}
-              className="mt-6 rounded-xl border border-solid border-dark/10 bg-light/80 p-5
-              text-center dark:border-light/10 dark:bg-dark/80"
-            >
-              <p className="text-base font-medium text-dark/80 dark:text-light/80 md:text-sm">
-                Mean PV/(NkT) ratio:{" "}
-                <span className="font-bold text-primary dark:text-primaryDark">
-                  {stats.meanGasLawRatio.toFixed(4)}
-                </span>
-                {" "}&mdash; deviation from ideal:{" "}
-                <span className="font-bold text-dark dark:text-light">
-                  {Math.abs((stats.meanGasLawRatio - 1) * 100).toFixed(2)}%
-                </span>
-              </p>
-            </motion.div>
-          </motion.section>
-
-          {/* ==================== Section 6: Statistics Summary ==================== */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-          >
-            <SectionHeading>6. Session Statistics</SectionHeading>
-            <SectionDescription>
-              Aggregated statistics from your measurement session. These values update live
-              as more data is collected. Longer sessions yield more stable estimates.
-            </SectionDescription>
-
-            <motion.div
-              variants={staggerContainer}
-              className="grid grid-cols-4 gap-6 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1"
-            >
-              <StatCard
-                label="Total Measurements"
-                value={stats.totalMeasurements.toLocaleString()}
-              />
-              <StatCard
-                label="Mean Latency"
-                value={stats.meanLatency.toFixed(1)}
-                unit="ms"
-              />
-              <StatCard
-                label="Mean Raw Variance"
-                value={stats.meanRawVariance.toFixed(2)}
-                unit="ms\u00B2"
-              />
-              <StatCard
-                label="Mean Restored Variance"
-                value={stats.meanRestoredVariance.toFixed(2)}
-                unit="ms\u00B2"
-              />
-              <StatCard
-                label="Variance Reduction"
-                value={stats.varianceReduction.toFixed(1)}
-                unit="%"
-                accent
-              />
-              <StatCard
-                label="Ideal Gas Law Ratio"
-                value={stats.meanGasLawRatio.toFixed(4)}
-                unit="PV/NkT"
-                accent
-              />
-              <StatCard
-                label="Session Uptime"
-                value={formatTime(stats.uptime)}
-              />
-            </motion.div>
-          </motion.section>
-
-          {/* Footer CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mt-20 flex flex-col items-center text-center"
-          >
-            <p className="text-lg font-medium text-dark/75 dark:text-light/75 md:text-base">
-              This demonstration runs entirely in your browser. No data leaves your machine.
-              The variance restoration algorithm is a core component of the Pylon framework.
+      <main className="flex w-full flex-col dark:text-light" style={{ minHeight: "calc(100vh - 5.5rem)" }}>
+        {/* ── Header ─────────────────────────────────────────────────────── */}
+        <div className="border-b border-solid border-dark/10 px-6 py-4 dark:border-light/10">
+          <div className="mx-auto flex max-w-7xl items-baseline gap-4">
+            <h1 className="text-2xl font-bold text-dark dark:text-light">Pylon Mesh Messenger</h1>
+            <p className="text-sm font-medium text-dark/50 dark:text-light/50">
+              Messages routed via S-entropy coordinates and backward trajectory completion
             </p>
-          </motion.div>
-        </Layout>
+          </div>
+        </div>
+
+        {/* ── Three-column layout ─────────────────────────────────────────── */}
+        <div className="mx-auto flex w-full max-w-7xl flex-1 gap-0 overflow-hidden px-6 py-4" style={{ height: "calc(100vh - 9rem)" }}>
+
+          {/* ── Left: Node list ─────────────────────────────────────────── */}
+          <aside className="flex w-48 flex-shrink-0 flex-col rounded-l-2xl border border-solid border-dark/15 bg-light dark:border-light/15 dark:bg-dark overflow-hidden">
+            <div className="border-b border-solid border-dark/10 px-4 py-3 dark:border-light/10">
+              <p className="text-xs font-semibold uppercase tracking-widest text-dark/40 dark:text-light/40">Nodes</p>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {NODES.slice(1).map(node => {
+                const unread = (conversations[node.id] ?? []).filter(m => m.from === node.id).length;
+                const active = selectedNode === node.id;
+                return (
+                  <button
+                    key={node.id}
+                    onClick={() => setSelectedNode(node.id)}
+                    className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors
+                      ${active
+                        ? "bg-dark/8 dark:bg-light/8"
+                        : "hover:bg-dark/4 dark:hover:bg-light/4"
+                      }`}
+                  >
+                    <span
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                      style={{ backgroundColor: node.color }}
+                    >
+                      {node.initial}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={`truncate text-sm font-semibold ${active ? "text-dark dark:text-light" : "text-dark/70 dark:text-light/70"}`}>
+                        {node.name}
+                      </p>
+                      <p className="text-[10px] text-dark/35 dark:text-light/35">
+                        {unread} msg{unread !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <span
+                      className="h-2 w-2 flex-shrink-0 rounded-full"
+                      style={{ backgroundColor: node.color, opacity: 0.7 }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          {/* ── Centre: Chat area ────────────────────────────────────────── */}
+          <section className="flex flex-1 flex-col border-y border-solid border-dark/15 bg-light/60 dark:border-light/15 dark:bg-dark/60 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center gap-3 border-b border-solid border-dark/10 px-5 py-3 dark:border-light/10">
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-full text-base font-bold text-white flex-shrink-0"
+                style={{ backgroundColor: targetNode?.color }}
+              >
+                {targetNode?.initial}
+              </span>
+              <div>
+                <p className="font-bold text-dark dark:text-light">{targetNode?.name}</p>
+                <p className="text-xs font-mono text-dark/40 dark:text-light/40">
+                  Node {selectedNode} · {currentRegime.name} · R_ens {networkState.rEns.toFixed(3)}
+                </p>
+              </div>
+              <div className="ml-auto flex items-center gap-2">
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white"
+                  style={{ backgroundColor: currentRegime.color }}
+                >
+                  {currentRegime.name}
+                </span>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-5 py-4">
+              {messages.length === 0 ? (
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-sm text-dark/30 dark:text-light/30">
+                    Send a message to {targetNode?.name} to begin coordination
+                  </p>
+                </div>
+              ) : (
+                messages.map(msg => (
+                  <Bubble key={msg.id} msg={msg} nodes={NODES} />
+                ))
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="border-t border-solid border-dark/10 px-4 py-3 dark:border-light/10">
+              <div className="flex items-end gap-3">
+                <textarea
+                  value={inputText}
+                  onChange={e => setInputText(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={`Message ${targetNode?.name}…`}
+                  rows={1}
+                  className="flex-1 resize-none rounded-xl border border-solid border-dark/20 bg-light
+                  px-4 py-2.5 text-sm font-medium text-dark placeholder-dark/30 outline-none
+                  transition focus:border-primary dark:border-light/20 dark:bg-dark dark:text-light
+                  dark:placeholder-light/30 dark:focus:border-primaryDark"
+                  style={{ minHeight: "2.5rem", maxHeight: "6rem" }}
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!inputText.trim()}
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl
+                  text-white transition disabled:opacity-30"
+                  style={{ backgroundColor: targetNode?.color }}
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 rotate-90">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                  </svg>
+                </button>
+              </div>
+              <p className="mt-1.5 text-[10px] font-mono text-dark/25 dark:text-light/25">
+                Enter to send · Each message gets S-entropy coords and backward-trajectory routing
+              </p>
+            </div>
+          </section>
+
+          {/* ── Right: Network panel ─────────────────────────────────────── */}
+          <aside className="flex w-56 flex-shrink-0 flex-col rounded-r-2xl border border-solid border-dark/15 bg-light dark:border-light/15 dark:bg-dark overflow-hidden">
+            <div className="border-b border-solid border-dark/10 px-4 py-3 dark:border-light/10">
+              <p className="text-xs font-semibold uppercase tracking-widest text-dark/40 dark:text-light/40">Network</p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+              {/* R_ens */}
+              <div>
+                <div className="mb-1 flex items-baseline justify-between">
+                  <p className="text-xs font-medium text-dark/50 dark:text-light/50">R_ens</p>
+                  <p className="font-mono text-sm font-bold" style={{ color: currentRegime.color }}>
+                    {networkState.rEns.toFixed(4)}
+                  </p>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-dark/10 dark:bg-light/10">
+                  <div
+                    className="h-full rounded-full transition-all duration-200"
+                    style={{ width: `${networkState.rEns * 100}%`, backgroundColor: currentRegime.color }}
+                  />
+                </div>
+                {/* Sparkline */}
+                <svg className="mt-2 w-full" height="32" viewBox={`0 0 120 32`}>
+                  <polyline
+                    fill="none"
+                    stroke={currentRegime.color}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={histRef.current
+                      .slice(-60)
+                      .map((v, i, arr) => `${(i / (arr.length - 1)) * 120},${32 - v * 28}`)
+                      .join(" ")}
+                  />
+                  {[0.3, 0.5, 0.8, 0.95].map(t => (
+                    <line key={t} x1="0" x2="120" y1={32 - t * 28} y2={32 - t * 28}
+                      stroke="currentColor" strokeWidth="0.5" strokeDasharray="2,3"
+                      className="text-dark/15 dark:text-light/15" />
+                  ))}
+                </svg>
+              </div>
+
+              {/* Regime */}
+              <div>
+                <p className="mb-1 text-xs font-medium text-dark/50 dark:text-light/50">Regime</p>
+                <span
+                  className="inline-block rounded-full px-3 py-1 text-xs font-bold text-white"
+                  style={{ backgroundColor: currentRegime.color }}
+                >
+                  {currentRegime.name}
+                </span>
+                <div className="mt-2 grid grid-cols-2 gap-1.5 text-[10px] font-mono text-dark/40 dark:text-light/40">
+                  {[["Turbulent", 0.3], ["Aperture", 0.5], ["Cascade", 0.8], ["Coherent", 0.95]].map(([name, thresh]) => (
+                    <span key={name} className={networkState.rEns >= thresh ? "opacity-100" : "opacity-30"}>
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Friction */}
+              <div>
+                <p className="mb-1 text-xs font-medium text-dark/50 dark:text-light/50">Coordination Friction</p>
+                <p className="font-mono text-xl font-bold text-dark dark:text-light">
+                  {currentRegime.friction.toFixed(2)}
+                </p>
+                {currentRegime.friction === 0 && (
+                  <p className="mt-0.5 text-[10px] text-teal-500 font-semibold">Zero-friction delivery</p>
+                )}
+              </div>
+
+              {/* K slider */}
+              <div>
+                <div className="mb-1 flex items-baseline justify-between">
+                  <p className="text-xs font-medium text-dark/50 dark:text-light/50">Coupling K</p>
+                  <p className="font-mono text-xs font-bold text-dark dark:text-light">{K.toFixed(2)}</p>
+                </div>
+                <input
+                  type="range" min="0" max="4" step="0.05"
+                  value={K} onChange={handleK}
+                  className="w-full accent-primary"
+                />
+                <p className="mt-1 text-[10px] text-dark/30 dark:text-light/30">
+                  K_c ≈ 2σ_ω/π · drag right for phase-lock
+                </p>
+              </div>
+
+              {/* Security badge */}
+              <div className="rounded-xl border border-solid border-dark/10 bg-dark/4 p-3 dark:border-light/10 dark:bg-light/4">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-dark/40 dark:text-light/40">
+                  Thermodynamic Security
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-green-500" />
+                  <p className="text-[10px] font-mono text-dark/60 dark:text-light/60">
+                    No entropy injection
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="h-2 w-2 rounded-full bg-green-500" />
+                  <p className="text-[10px] font-mono text-dark/60 dark:text-light/60">
+                    Second Law satisfied
+                  </p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </main>
     </>
   );

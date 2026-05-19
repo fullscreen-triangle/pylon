@@ -551,7 +551,8 @@ async function readbackGPU(gpu, buffers, tick) {
   const enc1 = device.createCommandEncoder();
   enc1.copyBufferToBuffer(buffers.srcBuf, 0, readBuf, 0, agentSize);
   device.queue.submit([enc1.finish()]);
-  await readBuf.mapAsync(GPUMapMode.READ, 0, agentSize);
+  try { await readBuf.mapAsync(GPUMapMode.READ, 0, agentSize); }
+  catch { return null; }
   const agentArr = new Float32Array(readBuf.getMappedRange(0, agentSize).slice());
   readBuf.unmap();
 
@@ -570,7 +571,8 @@ async function readbackGPU(gpu, buffers, tick) {
   const enc2 = device.createCommandEncoder();
   enc2.copyBufferToBuffer(buffers.simBuf, 0, readBuf, 0, simSize);
   device.queue.submit([enc2.finish()]);
-  await readBuf.mapAsync(GPUMapMode.READ, 0, simSize);
+  try { await readBuf.mapAsync(GPUMapMode.READ, 0, simSize); }
+  catch { return null; }
   const simMatrix = new Float32Array(readBuf.getMappedRange(0, simSize).slice());
   readBuf.unmap();
 
@@ -580,7 +582,8 @@ async function readbackGPU(gpu, buffers, tick) {
     const enc3 = device.createCommandEncoder();
     enc3.copyBufferToBuffer(buffers.resultBuf, 0, readBuf, 0, rensSize);
     device.queue.submit([enc3.finish()]);
-    await readBuf.mapAsync(GPUMapMode.READ, 0, rensSize);
+    try { await readBuf.mapAsync(GPUMapMode.READ, 0, rensSize); }
+    catch { return null; }
     const rArr = new Float32Array(readBuf.getMappedRange(0, rensSize).slice());
     readBuf.unmap();
     rEns = rArr[2];
@@ -692,7 +695,7 @@ export default function Shaders() {
           // GPU path
           const buffers = encodeGPUFrame(gpu, K, DT, tick * DT, tick);
           const rb = await readbackGPU(gpu, buffers, tick);
-          if (destroyed) return;
+          if (destroyed || !rb) return;
           cpuRef.current.agents = rb.agents;
           simMatrix = rb.simMatrix;
           if (rb.rEns !== null) rEnsRef.current = rb.rEns;
@@ -726,10 +729,10 @@ export default function Shaders() {
     return () => {
       destroyed = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (gpuRef.current) {
-        gpuRef.current.device.destroy();
-        gpuRef.current = null;
-      }
+      // Delay device destruction so any in-flight mapAsync resolves/rejects cleanly
+      const staleGpu = gpuRef.current;
+      gpuRef.current = null;
+      if (staleGpu) setTimeout(() => { try { staleGpu.device.destroy(); } catch (_) {} }, 300);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
