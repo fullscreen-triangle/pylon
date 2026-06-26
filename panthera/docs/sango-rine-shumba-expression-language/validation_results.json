@@ -1,0 +1,869 @@
+{
+  "timestamp": "2026-06-26T19:00:14.194155+00:00",
+  "paper": "C:\\Users\\kunda\\Documents\\distributed\\pylon\\panthera\\docs\\sango-rine-shumba-expression-language\\srn-expression-transmission-protocol.tex",
+  "bibliography": "C:\\Users\\kunda\\Documents\\distributed\\pylon\\panthera\\docs\\sango-rine-shumba-expression-language\\references.bib",
+  "total_checks": 15,
+  "passed": 15,
+  "failed": 0,
+  "all_passed": true,
+  "checks": {
+    "STRUCTURE": {
+      "passed": true,
+      "found_count": 12,
+      "required_count": 12,
+      "missing": [],
+      "order_correct": true,
+      "order_errors": []
+    },
+    "THEOREM_PROOFS": {
+      "passed": true,
+      "proof_required_count": 23,
+      "corollary_count": 6,
+      "proof_count": 24,
+      "matched_proofs": 23,
+      "unmatched": [],
+      "note": "Corollaries are exempt: they are derived facts, not independent claims."
+    },
+    "LABELS": {
+      "passed": true,
+      "label_count": 57,
+      "ref_count": 29,
+      "unreferenced_labels": [
+        "cor:boundary",
+        "cor:floor",
+        "cor:structsec",
+        "cor:time",
+        "def:boundary",
+        "def:glyph",
+        "def:node",
+        "def:receiver",
+        "def:region",
+        "def:registry",
+        "def:threereps",
+        "prop:regconsist",
+        "sec:conclusion",
+        "sec:discussion",
+        "sec:floor",
+        "sec:freedom",
+        "sec:indiv",
+        "sec:intro",
+        "sec:partcoord",
+        "subsec:exprsyntax",
+        "thm:catalyst",
+        "thm:channels",
+        "thm:encoding",
+        "thm:floor",
+        "thm:forest",
+        "thm:forgery",
+        "thm:monoidal",
+        "thm:rr"
+      ],
+      "dangling_refs": [],
+      "note": "Unreferenced labels are warnings (not failures); dangling refs are errors."
+    },
+    "CITATIONS": {
+      "passed": true,
+      "cited_count": 8,
+      "bib_entry_count": 32,
+      "missing_in_bib": [],
+      "uncited_in_bib": [
+        "anderson2020security",
+        "awodey2010category",
+        "billingsley1995probability",
+        "birkhoff1967lattice",
+        "bollobas1998modern",
+        "bröcker1985representations",
+        "cover2006elements",
+        "diestel2017graph",
+        "eidson2002ieee",
+        "fischer1985impossibility",
+        "flajolet2009analytic",
+        "halmos1950measure",
+        "lamport1978time",
+        "lynch1996distributed",
+        "mills1991internet",
+        "pierce2002types",
+        "plotkin2004structural",
+        "poincare1892methodes",
+        "royden1988real",
+        "saltzer1975protection",
+        "serre1977linear",
+        "shannon1948mathematical",
+        "stanley2011enumerative",
+        "walters1982introduction"
+      ]
+    },
+    "SHELL_CAPACITY": {
+      "passed": true,
+      "description": "Shell capacity |Shell(n)| = 2n² verified for n=1..10",
+      "results": [
+        {
+          "n": 1,
+          "direct_count": 2,
+          "formula_2n2": 2,
+          "match": true
+        },
+        {
+          "n": 2,
+          "direct_count": 8,
+          "formula_2n2": 8,
+          "match": true
+        },
+        {
+          "n": 3,
+          "direct_count": 18,
+          "formula_2n2": 18,
+          "match": true
+        },
+        {
+          "n": 4,
+          "direct_count": 32,
+          "formula_2n2": 32,
+          "match": true
+        },
+        {
+          "n": 5,
+          "direct_count": 50,
+          "formula_2n2": 50,
+          "match": true
+        },
+        {
+          "n": 6,
+          "direct_count": 72,
+          "formula_2n2": 72,
+          "match": true
+        },
+        {
+          "n": 7,
+          "direct_count": 98,
+          "formula_2n2": 98,
+          "match": true
+        },
+        {
+          "n": 8,
+          "direct_count": 128,
+          "formula_2n2": 128,
+          "match": true
+        },
+        {
+          "n": 9,
+          "direct_count": 162,
+          "formula_2n2": 162,
+          "match": true
+        },
+        {
+          "n": 10,
+          "direct_count": 200,
+          "formula_2n2": 200,
+          "match": true
+        }
+      ],
+      "errors": []
+    },
+    "FLOOR_THEOREM": {
+      "passed": true,
+      "description": "S_flat(R) = 100*(1 - 1/|K|) > 0 for all finite K ≥ 2",
+      "results": [
+        {
+          "K": 2,
+          "S_flat": 50.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 3,
+          "S_flat": 66.666667,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 4,
+          "S_flat": 75.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 5,
+          "S_flat": 80.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 10,
+          "S_flat": 90.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 20,
+          "S_flat": 95.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 50,
+          "S_flat": 98.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 100,
+          "S_flat": 99.0,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 500,
+          "S_flat": 99.8,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 1000,
+          "S_flat": 99.9,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true
+        },
+        {
+          "K": 1000000,
+          "S_flat": 99.9999,
+          "strictly_positive": true,
+          "below_100": true,
+          "valid": true,
+          "note": "limit as K→∞ approaches 100 but never reaches it"
+        }
+      ],
+      "errors": []
+    },
+    "COMPOSITION_INFLATION": {
+      "passed": true,
+      "description": "T(n,d) = d*(1+d)^(n-1) verified via binomial expansion for n,d in 1..8",
+      "spot_checks": [
+        {
+          "n": 1,
+          "d": 4,
+          "expected": 4,
+          "got": 4
+        },
+        {
+          "n": 2,
+          "d": 4,
+          "expected": 20,
+          "got": 20
+        },
+        {
+          "n": 3,
+          "d": 4,
+          "expected": 100,
+          "got": 100
+        },
+        {
+          "n": 1,
+          "d": 1,
+          "expected": 1,
+          "got": 1
+        },
+        {
+          "n": 5,
+          "d": 2,
+          "expected": 162,
+          "got": 162
+        }
+      ],
+      "errors": [],
+      "total_cases": 64
+    },
+    "BNF_KEYWORDS": {
+      "passed": true,
+      "declared_keywords": [
+        "M",
+        "as",
+        "catalyst",
+        "close",
+        "compose",
+        "do",
+        "else",
+        "emit",
+        "fetch",
+        "floor",
+        "forward",
+        "if",
+        "in",
+        "install",
+        "l",
+        "let",
+        "m",
+        "match",
+        "n",
+        "node",
+        "not",
+        "open",
+        "region",
+        "return",
+        "s",
+        "self",
+        "then",
+        "to",
+        "with"
+      ],
+      "used_in_examples": [
+        "M",
+        "as",
+        "catalyst",
+        "do",
+        "emit",
+        "fetch",
+        "forward",
+        "in",
+        "install",
+        "l",
+        "let",
+        "m",
+        "match",
+        "n",
+        "not",
+        "s",
+        "self",
+        "to",
+        "with"
+      ],
+      "declared_but_unused_in_examples": [
+        "close",
+        "compose",
+        "else",
+        "floor",
+        "if",
+        "node",
+        "open",
+        "region",
+        "return",
+        "then"
+      ],
+      "note": "Unused keywords are warnings only; they may be used in grammar definitions"
+    },
+    "CROSS_REFS": {
+      "passed": true,
+      "total_refs": 37,
+      "defined_labels": 57,
+      "dangling_refs": [],
+      "dangling_count": 0
+    },
+    "ENVIRONMENTS": {
+      "passed": true,
+      "environment_counts": {
+        "document": {
+          "opens": 1,
+          "closes": 1,
+          "balanced": true
+        },
+        "abstract": {
+          "opens": 1,
+          "closes": 1,
+          "balanced": true
+        },
+        "theorem": {
+          "opens": 20,
+          "closes": 20,
+          "balanced": true
+        },
+        "lemma": {
+          "opens": 0,
+          "closes": 0,
+          "balanced": true
+        },
+        "proposition": {
+          "opens": 3,
+          "closes": 3,
+          "balanced": true
+        },
+        "corollary": {
+          "opens": 6,
+          "closes": 6,
+          "balanced": true
+        },
+        "definition": {
+          "opens": 33,
+          "closes": 33,
+          "balanced": true
+        },
+        "proof": {
+          "opens": 24,
+          "closes": 24,
+          "balanced": true
+        },
+        "example": {
+          "opens": 0,
+          "closes": 0,
+          "balanced": true
+        },
+        "remark": {
+          "opens": 3,
+          "closes": 3,
+          "balanced": true
+        },
+        "align": {
+          "opens": 0,
+          "closes": 0,
+          "balanced": true
+        },
+        "align*": {
+          "opens": 16,
+          "closes": 16,
+          "balanced": true
+        },
+        "itemize": {
+          "opens": 4,
+          "closes": 4,
+          "balanced": true
+        },
+        "enumerate": {
+          "opens": 10,
+          "closes": 10,
+          "balanced": true
+        },
+        "lstlisting": {
+          "opens": 7,
+          "closes": 7,
+          "balanced": true
+        },
+        "algorithm": {
+          "opens": 0,
+          "closes": 0,
+          "balanced": true
+        },
+        "algorithmic": {
+          "opens": 0,
+          "closes": 0,
+          "balanced": true
+        },
+        "description": {
+          "opens": 1,
+          "closes": 1,
+          "balanced": true
+        }
+      },
+      "imbalances": []
+    },
+    "SRN_EXAMPLES": {
+      "passed": true,
+      "listing_count": 7,
+      "captions": [
+        "Bootstrap meta-expression",
+        "Receiver-relative value",
+        "Catalytic compression",
+        "Protocol meta-expression",
+        "Cross-representation composition",
+        "Self-propagating expression with parallel composition",
+        "Region-gated content"
+      ],
+      "examples": [
+        {
+          "caption": "Bootstrap meta-expression",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Receiver-relative value",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Catalytic compression",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Protocol meta-expression",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Cross-representation composition",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Self-propagating expression with parallel composition",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        },
+        {
+          "caption": "Region-gated content",
+          "has_not_clause": true,
+          "has_do_clause": true,
+          "has_to_clause": true,
+          "structurally_valid": true
+        }
+      ],
+      "errors": []
+    },
+    "OPERATOR_COVERAGE": {
+      "passed": true,
+      "operator_coverage": {
+        "<>": {
+          "description": "cross-representation composition",
+          "appears_in_examples": true
+        },
+        ">>": {
+          "description": "catalysis",
+          "appears_in_examples": true
+        },
+        "||": {
+          "description": "parallel composition",
+          "appears_in_examples": true
+        },
+        ";": {
+          "description": "sequential composition (in body)",
+          "appears_in_examples": true
+        }
+      },
+      "missing_operators": []
+    },
+    "CATALYTIC_ALGEBRA": {
+      "passed": true,
+      "description": "Catalytic power algebra: κ(γ1∘γ2)=1-(1-κ1)(1-κ2), cascade, Borel-Cantelli",
+      "results": [
+        {
+          "kappa_1": 0.0,
+          "kappa_2": 0.0,
+          "combined": 0.0,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 0.5,
+          "kappa_2": 0.5,
+          "combined": 0.75,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 0.3,
+          "kappa_2": 0.7,
+          "combined": 0.79,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 0.1,
+          "kappa_2": 0.9,
+          "combined": 0.91,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 0.0,
+          "kappa_2": 1.0,
+          "combined": 1.0,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 1.0,
+          "kappa_2": 0.0,
+          "combined": 1.0,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 1.0,
+          "kappa_2": 1.0,
+          "combined": 1.0,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "kappa_1": 0.25,
+          "kappa_2": 0.75,
+          "combined": 0.8125,
+          "dominates_max": true,
+          "bounded_by_1": true,
+          "valid": true
+        },
+        {
+          "cascade_kappas": [
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5
+          ],
+          "cascade_result": 0.8488,
+          "dominates_max_single": true
+        },
+        {
+          "borel_cantelli_check": {
+            "kappa": 0.1,
+            "N": 200,
+            "residual": 7e-10,
+            "converges_to_1": true
+          }
+        }
+      ],
+      "errors": []
+    },
+    "COORDINATE_VALIDITY": {
+      "passed": true,
+      "description": "Partition coordinate validity: constraints and shell enumeration",
+      "results": [
+        {
+          "coord": [
+            1,
+            0,
+            0,
+            "+"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "coord": [
+            2,
+            1,
+            0,
+            "+"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "coord": [
+            3,
+            2,
+            1,
+            "-"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "coord": [
+            4,
+            2,
+            -1,
+            "-"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "coord": [
+            1,
+            0,
+            0,
+            "+"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "coord": [
+            3,
+            0,
+            0,
+            "+"
+          ],
+          "valid_n": true,
+          "valid_l": true,
+          "valid_m": true,
+          "valid_s": true,
+          "valid": true
+        },
+        {
+          "n": 1,
+          "enumerated_count": 2,
+          "formula_2n2": 2,
+          "match": true
+        },
+        {
+          "n": 2,
+          "enumerated_count": 8,
+          "formula_2n2": 8,
+          "match": true
+        },
+        {
+          "n": 3,
+          "enumerated_count": 18,
+          "formula_2n2": 18,
+          "match": true
+        },
+        {
+          "n": 4,
+          "enumerated_count": 32,
+          "formula_2n2": 32,
+          "match": true
+        },
+        {
+          "n": 5,
+          "enumerated_count": 50,
+          "formula_2n2": 50,
+          "match": true
+        },
+        {
+          "n": 6,
+          "enumerated_count": 72,
+          "formula_2n2": 72,
+          "match": true
+        },
+        {
+          "n": 7,
+          "enumerated_count": 98,
+          "formula_2n2": 98,
+          "match": true
+        },
+        {
+          "n": 8,
+          "enumerated_count": 128,
+          "formula_2n2": 128,
+          "match": true
+        },
+        {
+          "n": 9,
+          "enumerated_count": 162,
+          "formula_2n2": 162,
+          "match": true
+        },
+        {
+          "n": 10,
+          "enumerated_count": 200,
+          "formula_2n2": 200,
+          "match": true
+        }
+      ],
+      "errors": []
+    },
+    "TRIPLE_EQUIVALENCE": {
+      "passed": true,
+      "description": "Triple equivalence round-trip: Osc→Cat→Part→Osc preserves cell and S-value",
+      "K": 10,
+      "omega_max": 1000.0,
+      "results": [
+        {
+          "omega_input": 100.0,
+          "cell_index": 1,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 250.0,
+          "cell_index": 2,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 500.0,
+          "cell_index": 5,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 750.0,
+          "cell_index": 7,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 999.0,
+          "cell_index": 9,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 50.0,
+          "cell_index": 0,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 1.0,
+          "cell_index": 0,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        },
+        {
+          "omega_input": 444.4,
+          "cell_index": 4,
+          "mu_A": 0.1,
+          "cell_preserved": true,
+          "S_original": 90.0,
+          "S_recovered": 90.0,
+          "S_preserved": true,
+          "valid": true
+        }
+      ],
+      "errors": []
+    }
+  }
+}
