@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T19:00:14.194155+00:00",
+  "timestamp": "2026-06-26T19:57:06.913101+00:00",
   "paper": "C:\\Users\\kunda\\Documents\\distributed\\pylon\\panthera\\docs\\sango-rine-shumba-expression-language\\srn-expression-transmission-protocol.tex",
   "bibliography": "C:\\Users\\kunda\\Documents\\distributed\\pylon\\panthera\\docs\\sango-rine-shumba-expression-language\\references.bib",
   "total_checks": 15,
@@ -26,8 +26,8 @@
     },
     "LABELS": {
       "passed": true,
-      "label_count": 57,
-      "ref_count": 29,
+      "label_count": 62,
+      "ref_count": 33,
       "unreferenced_labels": [
         "cor:boundary",
         "cor:floor",
@@ -40,6 +40,8 @@
         "def:region",
         "def:registry",
         "def:threereps",
+        "fig:panel2",
+        "fig:panel3",
         "prop:regconsist",
         "sec:conclusion",
         "sec:discussion",
@@ -48,11 +50,10 @@
         "sec:indiv",
         "sec:intro",
         "sec:partcoord",
+        "sec:validation",
         "subsec:exprsyntax",
-        "thm:catalyst",
         "thm:channels",
         "thm:encoding",
-        "thm:floor",
         "thm:forest",
         "thm:forgery",
         "thm:monoidal",
@@ -353,8 +354,8 @@
     },
     "CROSS_REFS": {
       "passed": true,
-      "total_refs": 37,
-      "defined_labels": 57,
+      "total_refs": 43,
+      "defined_labels": 62,
       "dangling_refs": [],
       "dangling_count": 0
     },
