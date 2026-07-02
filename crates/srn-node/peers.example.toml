@@ -1,0 +1,68 @@
+# peers.toml — copy this file to peers.toml and fill in real IP addresses.
+#
+# Each device gets a unique partition coordinate.
+# The SRN address space is structured like SO(3) shells:
+#
+#   n=1 shell (capacity 2):  the minimal node — good for a reference/timing device
+#   n=2 shell (capacity 8):  general compute nodes
+#   n=3 shell (capacity 18): richer nodes (sensors, phones)
+#
+# Assign coordinates so that no two devices share the same (n,l,m,s).
+#
+# Rule: l < n, |m| ≤ l, s ∈ {1, -1}
+
+[[peers]]
+name    = "laptop"
+addr    = "192.168.1.10:7700"   # ← change to your laptop's IP
+n = 2
+l = 1
+m = 0
+s = 1
+
+[[peers]]
+name    = "chromebook"
+addr    = "192.168.1.11:7700"   # ← change to your Chromebook's IP
+n = 1
+l = 0
+m = 0
+s = 1
+
+[[peers]]
+name    = "iphone"
+addr    = "192.168.1.20:7700"   # ← change to your iPhone's IP
+n = 2
+l = 1
+m = -1
+s = 1
+
+[[peers]]
+name    = "ipad"
+addr    = "192.168.1.21:7700"   # ← change to your iPad's IP
+n = 2
+l = 1
+m = 1
+s = 1
+
+[[peers]]
+name    = "samsung"
+addr    = "192.168.1.22:7700"   # ← change to your Samsung's IP
+n = 2
+l = 1
+m = 0
+s = -1
+
+[[peers]]
+name    = "watch-1"
+addr    = "192.168.1.30:7700"
+n = 3
+l = 2
+m = -1
+s = 1
+
+[[peers]]
+name    = "watch-2"
+addr    = "192.168.1.31:7700"
+n = 3
+l = 2
+m = 1
+s = 1
