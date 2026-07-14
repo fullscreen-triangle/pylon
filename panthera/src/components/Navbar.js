@@ -2,207 +2,83 @@ import Link from "next/link";
 import React, { useState } from "react";
 import Logo from "./Logo";
 import { useRouter } from "next/router";
-import {
-  GithubIcon,
-  MoonIcon,
-  SunIcon,
-} from "./Icons";
-import { motion } from "framer-motion";
-import { useThemeSwitch } from "./Hooks/useThemeSwitch";
+import { GithubIcon } from "./Icons";
+import { motion, AnimatePresence } from "framer-motion";
 
-const CustomLink = ({ href, title, className = "" }) => {
+const NavLink = ({ href, title, onClick }) => {
   const router = useRouter();
+  const active = router.asPath === href;
 
   return (
-    <Link href={href} className={`${className}  rounded relative group lg:text-light lg:dark:text-dark`}>
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`relative text-sm tracking-widest uppercase text-zinc-400 hover:text-white transition-colors duration-200 ${
+        active ? "text-white" : ""
+      }`}
+    >
       {title}
-      <span
-        className={`
-              inline-block h-[1px]  bg-dark absolute left-0 -bottom-0.5
-              group-hover:w-full transition-[width] ease duration-300 dark:bg-light
-              ${router.asPath === href ? "w-full" : " w-0"} lg:bg-light lg:dark:bg-dark
-              `}
-      >
-        &nbsp;
-      </span>
+      {active && (
+        <span className="absolute -bottom-0.5 left-0 w-full h-px bg-white/40" />
+      )}
     </Link>
   );
 };
 
-const CustomMobileLink = ({ href, title, className = "", toggle }) => {
-  const router = useRouter();
-
-  const handleClick = () =>{
-    toggle();
-    router.push(href)
-  }
-
-  return (
-    <button className={`${className}  rounded relative group lg:text-light lg:dark:text-dark`} onClick={handleClick}>
-      {title}
-      <span
-        className={`
-              inline-block h-[1px]  bg-dark absolute left-0 -bottom-0.5
-              group-hover:w-full transition-[width] ease duration-300 dark:bg-light
-              ${router.asPath === href ? "w-full" : " w-0"} lg:bg-light lg:dark:bg-dark
-              `}
-      >
-        &nbsp;
-      </span>
-    </button>
-  );
-};
-
-
-
 const Navbar = () => {
-  const [mode, setMode] = useThemeSwitch();
-    const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-
+  const close = () => setOpen(false);
 
   return (
-    <header className="w-full flex items-center justify-between px-32 py-8 font-medium z-10 dark:text-light
-    lg:px-16 relative z-1 md:px-12 sm:px-8
-    ">
+    <>
+      {/* invisible hover strip at top of screen */}
+      <div
+        className="fixed top-0 left-0 w-full h-6 z-50"
+        onMouseEnter={() => setOpen(true)}
+      />
 
-      <button
-        type="button"
-        className=" flex-col items-center justify-center hidden lg:flex"
-        aria-controls="mobile-menu"
-        aria-expanded={isOpen}
-        onClick={handleClick}
-      >
-        <span className="sr-only">Open main menu</span>
-        <span className={`bg-dark dark:bg-light block h-0.5 w-6 rounded-sm transition-all duration-300 ease-out ${isOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
-        <span className={`bg-dark dark:bg-light block h-0.5 w-6 rounded-sm transition-all duration-300 ease-out ${isOpen ? 'opacity-0' : 'opacity-100'} my-0.5`}></span>
-        <span className={`bg-dark dark:bg-light block h-0.5 w-6 rounded-sm transition-all duration-300 ease-out ${isOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
-      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.header
+            initial={{ y: "-100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-100%" }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            onMouseLeave={() => setOpen(false)}
+            className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-12 py-5
+              bg-black/80 backdrop-blur-md border-b border-white/5"
+          >
+            {/* logo */}
+            <Logo />
 
-      <div className="w-full flex justify-between items-center lg:hidden"
-      >
-      <nav className="flex items-center justify-center">
-        <CustomLink className="mr-4" href="/" title="Home" />
-        <CustomLink className="mx-4" href="/framework" title="Framework" />
-        <CustomLink className="mx-4" href="/state" title="Equations of State" />
-        <CustomLink className="mx-4" href="/trajectory" title="Trajectory Completion" />
-        <CustomLink className="mx-4" href="/validation" title="Validation" />
-        <CustomLink className="mx-4" href="/demo" title="Live Demo" />
-        <CustomLink className="mx-4" href="/shaders" title="Shader VM" />
-        <CustomLink className="ml-4" href="/publications" title="Publications" />
-      </nav>
-      <nav
-        className="flex items-center justify-center flex-wrap lg:mt-2
-      "
-      >
-        <motion.a
-          target={"_blank"}
-          className="w-6 mr-3"
-          href="https://github.com/fullscreen-triangle/pylon"
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.9 }}
-          aria-label="Visit the Pylon GitHub repository"
-        >
-          <GithubIcon />
-        </motion.a>
+            {/* nav links */}
+            <nav className="flex items-center gap-8">
+              <NavLink href="/" title="Home" onClick={close} />
+              <NavLink href="/framework" title="Framework" onClick={close} />
+              <NavLink href="/state" title="State" onClick={close} />
+              <NavLink href="/trajectory" title="Trajectory" onClick={close} />
+              <NavLink href="/demo" title="Demo" onClick={close} />
+              <NavLink href="/mesh" title="Mesh" onClick={close} />
+              <NavLink href="/publications" title="Papers" onClick={close} />
+            </nav>
 
-        <motion.a
-          className="w-auto mx-3 text-sm font-medium underline underline-offset-2"
-          href="mailto:kundai.sachikonye@wzw.tum.de"
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.9 }}
-          aria-label="Contact us"
-        >
-          Contact
-        </motion.a>
-
-        <button
-          onClick={() => setMode(mode === "light" ? "dark" : "light")}
-          className={`w-6 h-6 ease ml-3 flex items-center justify-center rounded-full p-1
-            ${mode === "light" ? "bg-dark  text-light" : "bg-light  text-dark"}
-            `}
-          aria-label="theme-switcher"
-        >
-          {mode === "light" ? (
-            <SunIcon className={"fill-dark"} />
-          ) : (
-            <MoonIcon className={"fill-dark"} />
-          )}
-        </button>
-      </nav>
-      </div>
-    {
-      isOpen ?
-
-      <motion.div className="min-w-[70vw] sm:min-w-[90vw] flex justify-between items-center flex-col fixed top-1/2 left-1/2 -translate-x-1/2
-      -translate-y-1/2
-      py-32 bg-dark/90 dark:bg-light/75 rounded-lg z-50 backdrop-blur-md
-      "
-      initial={{scale:0,x:"-50%",y:"-50%", opacity:0}}
-      animate={{scale:1,opacity:1}}
-      >
-      <nav className="flex items-center justify-center flex-col">
-        <CustomMobileLink toggle={handleClick} className="mr-4 lg:m-0 lg:my-2" href="/" title="Home" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/framework" title="Framework" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/state" title="Equations of State" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/trajectory" title="Trajectory Completion" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/validation" title="Validation" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/demo" title="Live Demo" />
-        <CustomMobileLink toggle={handleClick} className="mx-4 lg:m-0 lg:my-2" href="/shaders" title="Shader VM" />
-        <CustomMobileLink toggle={handleClick} className="ml-4 lg:m-0 lg:my-2" href="/publications" title="Publications" />
-      </nav>
-      <nav
-        className="flex items-center justify-center  mt-2
-      "
-      >
-        <motion.a
-          target={"_blank"}
-          className="w-6 m-1 mx-3 bg-light rounded-full dark:bg-dark sm:mx-1"
-          href="https://github.com/fullscreen-triangle/pylon"
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.9 }}
-          aria-label="Visit the Pylon GitHub repository"
-        >
-          <GithubIcon />
-        </motion.a>
-
-        <motion.a
-          className="w-auto m-1 mx-3 text-sm font-medium underline underline-offset-2 text-light dark:text-dark sm:mx-1"
-          href="mailto:kundai.sachikonye@wzw.tum.de"
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.9 }}
-          aria-label="Contact us"
-        >
-          Contact
-        </motion.a>
-
-        <button
-          onClick={() => setMode(mode === "light" ? "dark" : "light")}
-          className={`w-6 h-6 ease m-1 ml-3 sm:mx-1 flex items-center justify-center rounded-full p-1
-            ${mode === "light" ? "bg-dark  text-light" : "bg-light  text-dark"}
-            `}
-          aria-label="theme-switcher"
-        >
-          {mode === "light" ? (
-            <SunIcon className={"fill-dark"} />
-          ) : (
-            <MoonIcon className={"fill-dark"} />
-          )}
-        </button>
-      </nav>
-      </motion.div>
-
-      : null
-    }
-
-      <div className="absolute left-[50%] top-2 translate-x-[-50%] ">
-        <Logo />
-      </div>
-    </header>
+            {/* github */}
+            <motion.a
+              href="https://github.com/fullscreen-triangle/pylon"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.9 }}
+              aria-label="GitHub"
+              className="w-5 h-5 text-zinc-400 hover:text-white transition-colors"
+            >
+              <GithubIcon />
+            </motion.a>
+          </motion.header>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

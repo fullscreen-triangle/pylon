@@ -19,5 +19,9 @@
       "Bash(node -e \"const pkg = require\\(''./node_modules/three/package.json''\\); console.log\\(''three:'', pkg.version\\)\")",
       "Bash(node -e \"const pkg = require\\(''./node_modules/its-fine/package.json''\\); console.log\\(''its-fine:'', pkg.version\\)\")"
     ]
+  },
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://compat.bitagent.dev",
+    "ANTHROPIC_CUSTOM_HEADERS": "x-gateway-credential:gw_7b69dcb2e33764203618548ed346d98df6696ed17fda20d83219c29c572af425"
   }
 }
