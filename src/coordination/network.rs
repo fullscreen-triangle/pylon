@@ -9,10 +9,10 @@ use tokio::sync::{RwLock, mpsc};
 use tracing::{info, warn, error, debug};
 use serde::{Serialize, Deserialize};
 
+use async_trait::async_trait;
 use crate::types::{
-    PylonId, NetworkNode, NodeStatus, NodeCapabilities, NodeMetrics,
+    PylonId, NetworkNode, NodeStatus, NodeMetrics,
     CoordinationRequest, CoordinationResponse, TemporalCoordinate,
-    CoordinationDomain, PrecisionLevel,
 };
 use crate::errors::{PylonError, NetworkError};
 use crate::config::NetworkConfig;
@@ -49,6 +49,7 @@ pub struct ConnectedNode {
 }
 
 /// Network connection handle
+#[derive(Debug)]
 pub struct NetworkConnection {
     /// Connection identifier
     pub connection_id: PylonId,
@@ -305,6 +306,7 @@ pub enum NetworkEvent {
 }
 
 /// Message handler trait
+#[async_trait]
 pub trait MessageHandler: Send + Sync {
     /// Handle incoming network message
     async fn handle_message(
@@ -334,6 +336,33 @@ pub struct NetworkMetrics {
 }
 
 use std::time::Duration;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+// ---------------------------------------------------------------------------
+// Wire protocol helpers — 4-byte big-endian length prefix + JSON body
+// ---------------------------------------------------------------------------
+
+async fn write_message(stream: &mut tokio::io::WriteHalf<TcpStream>, msg: &NetworkMessage) -> std::io::Result<()> {
+    let json = serde_json::to_vec(msg).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+    let len = json.len() as u32;
+    stream.write_all(&len.to_be_bytes()).await?;
+    stream.write_all(&json).await?;
+    stream.flush().await
+}
+
+async fn read_message(stream: &mut tokio::io::ReadHalf<TcpStream>) -> std::io::Result<NetworkMessage> {
+    let mut len_buf = [0u8; 4];
+    stream.read_exact(&mut len_buf).await?;
+    let len = u32::from_be_bytes(len_buf) as usize;
+    if len > 16 * 1024 * 1024 {
+        return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "message too large"));
+    }
+    let mut buf = vec![0u8; len];
+    stream.read_exact(&mut buf).await?;
+    serde_json::from_slice(&buf).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
+}
+
+// ---------------------------------------------------------------------------
 
 impl NetworkLayer {
     /// Create new network layer
@@ -371,40 +400,36 @@ impl NetworkLayer {
 
     /// Start TCP listener for incoming connections
     async fn start_listener(&self) -> Result<(), PylonError> {
-        let bind_addr = "0.0.0.0:8080"; // TODO: Use from config
-        let listener = TcpListener::bind(bind_addr).await
+        let bind_addr = format!("0.0.0.0:{}", self.config.listen_port);
+        let listener = TcpListener::bind(&bind_addr).await
             .map_err(|e| NetworkError::ConnectionFailure {
-                address: bind_addr.to_string(),
+                address: bind_addr.clone(),
                 error: e.to_string(),
             })?;
 
         info!("Network listener started on {}", bind_addr);
 
-        // Spawn connection handler
         let connected_nodes = Arc::clone(&self.connected_nodes);
         let event_sender = self.event_sender.clone();
         let message_handlers = Arc::clone(&self.message_handlers);
+        let local_node = self.local_node.clone();
+        let metrics = Arc::clone(&self.metrics);
 
         tokio::spawn(async move {
             loop {
                 match listener.accept().await {
                     Ok((stream, addr)) => {
                         debug!("Incoming connection from {}", addr);
-                        
-                        // Handle connection
-                        let connected_nodes_clone = Arc::clone(&connected_nodes);
-                        let event_sender_clone = event_sender.clone();
-                        let handlers_clone = Arc::clone(&message_handlers);
-                        
+                        let cn = Arc::clone(&connected_nodes);
+                        let es = event_sender.clone();
+                        let mh = Arc::clone(&message_handlers);
+                        let ln = local_node.clone();
+                        let mx = Arc::clone(&metrics);
                         tokio::spawn(async move {
                             if let Err(e) = Self::handle_incoming_connection(
-                                stream,
-                                addr,
-                                connected_nodes_clone,
-                                event_sender_clone,
-                                handlers_clone,
+                                stream, addr, cn, es, mh, ln, mx,
                             ).await {
-                                error!("Failed to handle incoming connection from {}: {}", addr, e);
+                                error!("Connection from {} failed: {}", addr, e);
                             }
                         });
                     }
@@ -418,36 +443,241 @@ impl NetworkLayer {
         Ok(())
     }
 
-    /// Handle incoming connection
+    /// Handle incoming TCP connection: handshake → register → message loop.
     async fn handle_incoming_connection(
-        _stream: TcpStream,
+        stream: TcpStream,
         addr: SocketAddr,
-        _connected_nodes: Arc<RwLock<HashMap<PylonId, ConnectedNode>>>,
-        _event_sender: mpsc::UnboundedSender<NetworkEvent>,
-        _message_handlers: Arc<RwLock<HashMap<MessageType, Arc<dyn MessageHandler>>>>,
+        connected_nodes: Arc<RwLock<HashMap<PylonId, ConnectedNode>>>,
+        event_sender: mpsc::UnboundedSender<NetworkEvent>,
+        message_handlers: Arc<RwLock<HashMap<MessageType, Arc<dyn MessageHandler>>>>,
+        local_node: NetworkNode,
+        metrics: Arc<RwLock<NetworkMetrics>>,
     ) -> Result<(), PylonError> {
         debug!("Handling connection from {}", addr);
-        
-        // TODO: Implement connection handling
-        // 1. Perform handshake
-        // 2. Exchange node information
-        // 3. Register connection
-        // 4. Start message processing loop
-        
+
+        let (mut reader, mut writer) = tokio::io::split(stream);
+
+        // ── Handshake: send NodeAnnouncement, receive theirs ─────────────────
+        let announce = NetworkMessage {
+            message_id: PylonId::new_v4(),
+            message_type: MessageType::NodeAnnouncement,
+            source_node: local_node.node_id,
+            target_node: None,
+            payload: MessagePayload::NodeAnnouncement(NodeAnnouncementPayload {
+                node: local_node.clone(),
+                available_services: vec!["coordination".into(), "fragment".into()],
+                topology_info: NetworkTopologyInfo {
+                    neighbors: {
+                        connected_nodes.read().await.keys().cloned().collect()
+                    },
+                    distances: HashMap::new(),
+                    last_update: TemporalCoordinate::now(),
+                },
+            }),
+            timestamp: TemporalCoordinate::now(),
+            priority: MessagePriority::High,
+        };
+
+        write_message(&mut writer, &announce).await
+            .map_err(|e| NetworkError::TransmissionFailure {
+                message_id: announce.message_id,
+                error: e.to_string(),
+            })?;
+
+        // Read remote's announcement
+        let remote_msg = read_message(&mut reader).await
+            .map_err(|e| NetworkError::ProtocolError {
+                protocol: "pylon-handshake".into(),
+                error: e.to_string(),
+            })?;
+
+        let remote_node = match &remote_msg.payload {
+            MessagePayload::NodeAnnouncement(a) => a.node.clone(),
+            _ => {
+                return Err(NetworkError::ProtocolError {
+                    protocol: "pylon-handshake".into(),
+                    error: "expected NodeAnnouncement".into(),
+                }.into());
+            }
+        };
+
+        let remote_id = remote_node.node_id;
+        info!("Handshake complete with node {} ({})", remote_id, addr);
+
+        // ── Register connection ───────────────────────────────────────────────
+        let (msg_tx, mut msg_rx) = mpsc::unbounded_channel::<NetworkMessage>();
+        let connection = Arc::new(NetworkConnection {
+            connection_id: PylonId::new_v4(),
+            remote_addr: addr,
+            message_sender: msg_tx,
+            status: Arc::new(RwLock::new(ConnectionStatus::Active)),
+        });
+
+        {
+            let mut nodes = connected_nodes.write().await;
+            nodes.insert(remote_id, ConnectedNode {
+                node: remote_node.clone(),
+                connection: Arc::clone(&connection),
+                connected_at: TemporalCoordinate::now(),
+                last_activity: TemporalCoordinate::now(),
+                metrics: ConnectionMetrics::new(),
+            });
+            let mut m = metrics.write().await;
+            m.total_connections += 1;
+            m.active_connections = nodes.len();
+        }
+
+        let _ = event_sender.send(NetworkEvent::NodeConnected {
+            node_id: remote_id,
+            node_info: remote_node,
+        });
+
+        // ── Outbound writer task ──────────────────────────────────────────────
+        tokio::spawn(async move {
+            while let Some(msg) = msg_rx.recv().await {
+                if let Err(e) = write_message(&mut writer, &msg).await {
+                    warn!("Write to {} failed: {}", addr, e);
+                    break;
+                }
+            }
+        });
+
+        // ── Inbound message loop ──────────────────────────────────────────────
+        loop {
+            match read_message(&mut reader).await {
+                Ok(msg) => {
+                    debug!("Received {:?} from {}", msg.message_type, remote_id);
+
+                    // Update last_activity
+                    {
+                        let mut nodes = connected_nodes.write().await;
+                        if let Some(cn) = nodes.get_mut(&remote_id) {
+                            cn.last_activity = TemporalCoordinate::now();
+                            cn.metrics.messages_received += 1;
+                        }
+                    }
+
+                    let _ = event_sender.send(NetworkEvent::MessageReceived {
+                        message: msg.clone(),
+                        connection_id: connection.connection_id,
+                    });
+
+                    // Dispatch to registered handler
+                    let msg_type = msg.message_type;
+                    let handlers = message_handlers.read().await;
+                    if let Some(handler) = handlers.get(&msg_type) {
+                        if let Err(e) = handler.handle_message(msg, &connection).await {
+                            warn!("Handler error for {:?}: {}", msg_type, e);
+                        }
+                    }
+                }
+                Err(e) => {
+                    if e.kind() != std::io::ErrorKind::UnexpectedEof {
+                        warn!("Read from {} failed: {}", remote_id, e);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // ── Cleanup ───────────────────────────────────────────────────────────
+        {
+            let mut status = connection.status.write().await;
+            *status = ConnectionStatus::Closed;
+        }
+        {
+            let mut nodes = connected_nodes.write().await;
+            nodes.remove(&remote_id);
+            let mut m = metrics.write().await;
+            m.active_connections = nodes.len();
+        }
+        let _ = event_sender.send(NetworkEvent::NodeDisconnected {
+            node_id: remote_id,
+            reason: "connection closed".into(),
+        });
+
         Ok(())
     }
 
-    /// Start network discovery
+    /// Start network discovery: connect to each seed node and maintain connections.
     async fn start_discovery(&self) -> Result<(), PylonError> {
-        debug!("Starting network discovery");
-        
-        // TODO: Implement network discovery
-        // 1. Broadcast discovery messages
-        // 2. Listen for discovery responses
-        // 3. Maintain node registry
-        // 4. Update network topology
-        
+        let seeds = self.config.seed_nodes.clone();
+        if seeds.is_empty() {
+            debug!("No seed nodes configured — running as bootstrap node");
+            return Ok(());
+        }
+
+        let connected_nodes = Arc::clone(&self.connected_nodes);
+        let event_sender = self.event_sender.clone();
+        let message_handlers = Arc::clone(&self.message_handlers);
+        let local_node = self.local_node.clone();
+        let metrics = Arc::clone(&self.metrics);
+        let timeout = self.config.connection_timeout;
+
+        tokio::spawn(async move {
+            // Stagger initial connections to avoid thundering-herd on a shared bootstrap
+            for (i, addr) in seeds.iter().enumerate() {
+                let addr = addr.clone();
+                let cn = Arc::clone(&connected_nodes);
+                let es = event_sender.clone();
+                let mh = Arc::clone(&message_handlers);
+                let ln = local_node.clone();
+                let mx = Arc::clone(&metrics);
+                tokio::time::sleep(Duration::from_millis(100 * i as u64)).await;
+                tokio::spawn(async move {
+                    Self::connect_to_peer(addr, cn, es, mh, ln, mx, timeout).await;
+                });
+            }
+        });
+
         Ok(())
+    }
+
+    /// Outbound connection to a peer: connect, handshake, register, run message loop.
+    async fn connect_to_peer(
+        addr: String,
+        connected_nodes: Arc<RwLock<HashMap<PylonId, ConnectedNode>>>,
+        event_sender: mpsc::UnboundedSender<NetworkEvent>,
+        message_handlers: Arc<RwLock<HashMap<MessageType, Arc<dyn MessageHandler>>>>,
+        local_node: NetworkNode,
+        metrics: Arc<RwLock<NetworkMetrics>>,
+        timeout: Duration,
+    ) {
+        use tokio::time::timeout as with_timeout;
+
+        let socket_addr: SocketAddr = match addr.parse() {
+            Ok(a) => a,
+            Err(e) => {
+                warn!("Invalid peer address {}: {}", addr, e);
+                return;
+            }
+        };
+
+        let stream = match with_timeout(timeout, TcpStream::connect(socket_addr)).await {
+            Ok(Ok(s)) => s,
+            Ok(Err(e)) => {
+                warn!("Failed to connect to peer {}: {}", addr, e);
+                return;
+            }
+            Err(_) => {
+                warn!("Connection to peer {} timed out", addr);
+                return;
+            }
+        };
+
+        info!("Outbound connection to {} established", addr);
+
+        if let Err(e) = Self::handle_incoming_connection(
+            stream,
+            socket_addr,
+            connected_nodes,
+            event_sender,
+            message_handlers,
+            local_node,
+            metrics,
+        ).await {
+            warn!("Peer session with {} ended: {}", addr, e);
+        }
     }
 
     /// Start heartbeat mechanism

@@ -730,6 +730,34 @@ pub struct NetworkConfig {
     pub buffer_sizes: BufferSizeConfig,
     /// Protocol configuration
     pub protocols: ProtocolConfig,
+    /// Seed nodes for initial discovery (host:port pairs)
+    pub seed_nodes: Vec<String>,
+    /// Bind port for TCP listener
+    pub listen_port: u16,
+}
+
+impl Default for NetworkConfig {
+    fn default() -> Self {
+        Self {
+            max_connections: 64,
+            connection_timeout: Duration::from_secs(10),
+            message_timeout: Duration::from_secs(30),
+            retry_attempts: 3,
+            buffer_sizes: BufferSizeConfig {
+                send_buffer: 65536,
+                receive_buffer: 65536,
+                fragment_buffer: 1048576,
+            },
+            protocols: ProtocolConfig {
+                rest_api: true,
+                websocket: false,
+                grpc: false,
+                version: "1.0".to_string(),
+            },
+            seed_nodes: Vec::new(),
+            listen_port: 8080,
+        }
+    }
 }
 
 /// Buffer size configuration

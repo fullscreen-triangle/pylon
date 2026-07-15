@@ -7,14 +7,16 @@ use std::time::{Duration, Instant};
 use tokio::sync::RwLock;
 use tracing::{debug, info, warn, error};
 
+use async_trait::async_trait;
 use crate::types::{
     PylonId, CoordinationDomain, CoordinationRequest, CoordinationResult,
-    UnifiedCoordination, PrecisionLevel, TemporalCoordinate, NetworkNode,
+    UnifiedCoordination, TemporalCoordinate, NetworkNode,
     CoordinationFragment, FragmentType, FragmentData, TemporalWindow,
     ReconstructionKey, CoherenceSignature,
 };
-use crate::errors::{PylonError, CoordinationError};
+use crate::errors::{PylonError, CoordinationError, FragmentError};
 use crate::core::{PrecisionCalculator, LocalValue};
+use crate::coordination::network::{NetworkLayer, NetworkMessage, MessageType, MessagePayload, MessagePriority, FragmentPayload, FragmentMetadata, ReconstructionInfo};
 
 /// Unified coordination engine that orchestrates precision-by-difference calculations
 pub struct CoordinationEngine {
@@ -28,6 +30,10 @@ pub struct CoordinationEngine {
     state_manager: Arc<RwLock<CoordinationStateManager>>,
     /// Performance metrics
     performance_metrics: Arc<RwLock<EngineMetrics>>,
+    /// Network layer for fragment distribution
+    network_layer: Option<Arc<NetworkLayer>>,
+    /// Local node identifier
+    local_node_id: PylonId,
 }
 
 /// Fragment processor for distributed coordination
@@ -41,6 +47,7 @@ pub struct FragmentProcessor {
 }
 
 /// Fragment generator trait
+#[async_trait]
 pub trait FragmentGenerator: Send + Sync {
     /// Generate fragments for coordination data
     async fn generate_fragments(
@@ -52,13 +59,14 @@ pub trait FragmentGenerator: Send + Sync {
 }
 
 /// Fragment reconstructor trait
+#[async_trait]
 pub trait FragmentReconstructor: Send + Sync {
     /// Reconstruct data from fragments
     async fn reconstruct_data(
         &self,
         fragments: &[CoordinationFragment],
     ) -> Result<Vec<u8>, PylonError>;
-    
+
     /// Validate fragment coherence
     async fn validate_coherence(
         &self,
@@ -224,7 +232,16 @@ impl CoordinationEngine {
             fragment_processor,
             state_manager,
             performance_metrics,
+            network_layer: None,
+            local_node_id: PylonId::new_v4(),
         }
+    }
+
+    /// Attach a network layer so the engine can distribute fragments.
+    pub fn with_network(mut self, layer: Arc<NetworkLayer>, local_node_id: PylonId) -> Self {
+        self.network_layer = Some(layer);
+        self.local_node_id = local_node_id;
+        self
     }
 
     /// Execute unified coordination request
@@ -491,19 +508,88 @@ impl CoordinationEngine {
         Ok(fragments)
     }
 
-    /// Distribute fragments to participating nodes
+    /// Distribute fragments to participating nodes via the network layer.
     async fn distribute_fragments(&self, session: &CoordinationSession) -> Result<(), PylonError> {
-        // TODO: Implement actual fragment distribution
-        // This would involve:
-        // 1. Selecting target nodes for each fragment
-        // 2. Encrypting fragments for secure transmission
-        // 3. Sending fragments through network layer
-        // 4. Tracking fragment delivery status
-        
-        debug!("Distributing {} fragments for session {}", 
-               session.fragments.len(), session.session_id);
-        
-        // For now, just log the distribution
+        if session.fragments.is_empty() {
+            return Ok(());
+        }
+
+        let Some(ref network) = self.network_layer else {
+            debug!("No network layer attached — skipping fragment distribution");
+            return Ok(());
+        };
+
+        let connected = network.get_connected_nodes().await;
+        if connected.is_empty() {
+            debug!("No connected nodes — holding fragments locally");
+            return Ok(());
+        }
+
+        let total = session.fragments.len() as u32;
+        let fragment_ids: Vec<PylonId> = session.fragments.iter().map(|f| f.fragment_id).collect();
+
+        // Round-robin: assign each fragment to the next connected node.
+        for (seq, fragment) in session.fragments.iter().enumerate() {
+            let target_node = &connected[seq % connected.len()];
+
+            // Compute a trivial XOR checksum over the raw bytes.
+            let checksum: u64 = fragment.fragment_data.data
+                .chunks(8)
+                .fold(0u64, |acc, chunk| {
+                    let mut buf = [0u8; 8];
+                    buf[..chunk.len()].copy_from_slice(chunk);
+                    acc ^ u64::from_le_bytes(buf)
+                });
+
+            let msg = NetworkMessage {
+                message_id: PylonId::new_v4(),
+                message_type: MessageType::FragmentDistribution,
+                source_node: self.local_node_id,
+                target_node: Some(target_node.node_id),
+                payload: MessagePayload::Fragment(FragmentPayload {
+                    fragment_data: fragment.fragment_data.data.clone(),
+                    metadata: FragmentMetadata {
+                        fragment_id: fragment.fragment_id,
+                        sequence_number: seq as u32,
+                        total_fragments: total,
+                        checksum,
+                    },
+                    reconstruction_info: ReconstructionInfo {
+                        required_fragments: fragment_ids.clone(),
+                        algorithm: "xor-concat".into(),
+                        parameters: {
+                            let mut p = HashMap::new();
+                            p.insert("session_id".into(), session.session_id.to_string());
+                            p
+                        },
+                    },
+                }),
+                timestamp: TemporalCoordinate::now(),
+                priority: MessagePriority::High,
+            };
+
+            if let Err(e) = network.send_message(target_node.node_id, msg).await {
+                warn!("Failed to send fragment {} to node {}: {}",
+                      fragment.fragment_id, target_node.node_id, e);
+                return Err(FragmentError::Distribution {
+                    fragment_id: fragment.fragment_id,
+                    target_nodes: vec![target_node.node_id],
+                    error: e.to_string(),
+                }.into());
+            }
+
+            debug!("Fragment {} ({}/{}) sent to node {}",
+                   fragment.fragment_id, seq + 1, total, target_node.node_id);
+        }
+
+        info!("Distributed {} fragments for session {}", total, session.session_id);
+
+        // Update fragment metrics
+        {
+            let mut metrics = self.performance_metrics.write().await;
+            metrics.fragment_metrics.total_generated += total as u64;
+        }
+
         Ok(())
     }
 
