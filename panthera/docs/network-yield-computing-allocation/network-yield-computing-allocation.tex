@@ -11,6 +11,8 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{microtype}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
 \geometry{top=2.2cm, bottom=2.5cm, left=2.0cm, right=2.0cm, columnsep=0.7cm}
 
 %% Theorem environments
@@ -32,7 +34,7 @@
 \newcommand{\T}{\mathcal{T}}
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\G}{\mathcal{G}}
-\newcommand{\H}{\mathcal{H}}
+\renewcommand{\H}{\mathcal{H}}
 \newcommand{\B}{\mathcal{B}}
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\F}{\mathcal{F}}
@@ -50,6 +52,8 @@
 \newcommand{\Lyap}{V}
 \newcommand{\kap}{\kappa}
 \newcommand{\pres}{P}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 
 \title{\textbf{Network Yield and Computing Allocation:\\
 A Unified Framework for Distributed Task Scheduling\\
@@ -67,7 +71,7 @@ and Market Clearing}}
 \begin{abstract}
 We develop a self-contained theory of distributed computing allocation in which every schedulable resource, every state observation, and every economic signal shares a single irreducible quantum $\tick > 0$: the \emph{compute-tick}. The framework rests on three foundations assembled into a unified object. First, a \emph{finite observer axiom} forces every monitor to return a cell rather than a point, establishing a resolution floor $\floor \geq \tick > 0$ that bounds observation precision absolutely. Second, a \emph{cell-partition scheduler} compiled from offline stability analysis governs task placement with a Lyapunov guarantee and a Banach contraction whose ratio is computable without runtime measurement. Third, a \emph{separation-cost functional} assigns to every execution slot a yield price equal to its marginal contribution to useful task progress, and the clearing map for those prices coincides with the yield-optimal assignment and with deterministic scheduler closure at the same fixed point.
 
-The central result is a \emph{Three-way Equivalence}: yield-optimality, deterministic closure, and market clearing are one fixed point, coinciding because $\tick$ serves simultaneously as the physical resolution floor for observations, the algorithmic closure threshold for the scheduler, and the minimum lot size for the clearing market. From this equivalence we derive, as theorems rather than assumptions, that executor threads run at forced slot-optimal utilisation ratios, that tasks sort onto execution slots by comparative advantage in compute-ticks, and that a purely local, residual-work-descent routing law drains every task queue in finite time because the separation cost raised by a stalled queue is identical to the yield signal that summons an executor. A structural incorruptibility theorem guarantees that no monitoring payload can influence the scheduling action stream without traversing an explicit approval boundary. All proofs are given in full; no prior companion paper is required.
+The central result is a \emph{Three-way Equivalence}: yield-optimality, deterministic closure, and market clearing are one fixed point, coinciding because $\tick$ serves simultaneously as the physical resolution floor for observations, the algorithmic closure threshold for the scheduler, and the minimum lot size for the clearing market. From this equivalence we derive, as theorems rather than assumptions, that executor threads run at forced slot-optimal utilisation ratios, that tasks sort onto execution slots by comparative advantage in compute-ticks, and that a purely local, residual-work-descent routing law drains every task queue in finite time because the separation cost raised by a stalled queue is identical to the yield signal that summons an executor. A structural incorruptibility theorem guarantees that no monitoring payload can influence the scheduling action stream without traversing an explicit approval boundary. Finally, we invert the locus of agency: an allocated process is re-read as a \emph{persistent goal-directed agent} that pursues its own target every tick, succeeds to a fresh goal on completion rather than terminating, returns a distinct response on each interaction because its inner state has advanced, and summons capacity by raising its own price when stalled---each of these properties a theorem of the same machinery, with goal succession the one added primitive. All proofs are given in full; no prior companion paper is required.
 \end{abstract}
 
 \tableofcontents
@@ -88,7 +92,7 @@ This paper provides that account. The central object is a \emph{computing networ
 
 When these three roles are played by the same $\tick$, the three fixed-point conditions coincide and the Three-way Equivalence holds. When the roles are played by distinct constants, the equivalence degrades gracefully: the slack grows to the maximum of the three constants and the clearing price deviates from the separation cost by the algorithmic-economic split.
 
-\paragraph{Organisation.} Section~\ref{sec:model} defines the computing network model and all primitive objects. Section~\ref{sec:floor} establishes the resolution floor theorem. Section~\ref{sec:monitor} develops the monitoring architecture: S-entropy state space, trajectory completion operator, and the monitor--control separation theorem. Section~\ref{sec:scheduler} presents the cell-partition scheduler with its stability and contraction theorems. Section~\ref{sec:separation} defines separation costs and the yield functional. Section~\ref{sec:equivalence} proves the Three-way Equivalence. Section~\ref{sec:liveness} proves liveness under backpressure coupling. Section~\ref{sec:incorruptibility} proves structural incorruptibility. Section~\ref{sec:discussion} situates the results in the literature. Section~\ref{sec:conclusion} concludes.
+\paragraph{Organisation.} Section~\ref{sec:model} defines the computing network model and all primitive objects. Section~\ref{sec:floor} establishes the resolution floor theorem. Section~\ref{sec:monitor} develops the monitoring architecture: S-entropy state space, trajectory completion operator, and the monitor--control separation theorem. Section~\ref{sec:scheduler} presents the cell-partition scheduler with its stability and contraction theorems. Section~\ref{sec:separation} defines separation costs and the yield functional. Section~\ref{sec:equivalence} proves the Three-way Equivalence. Section~\ref{sec:liveness} proves liveness under backpressure coupling. Section~\ref{sec:incorruptibility} proves structural incorruptibility. Section~\ref{sec:agents} inverts the locus of agency, recasting allocated processes as persistent goal-directed agents and adding the goal-succession primitive. Section~\ref{sec:discussion} situates the results in the literature. Section~\ref{sec:conclusion} concludes.
 
 \paragraph{Prerequisites.} The paper is self-contained. Familiarity with basic real analysis (metric spaces, fixed-point theorems) and linear algebra (eigenvalues, positive-definite matrices) suffices.
 
@@ -572,15 +576,27 @@ At any clearing, each task occupies its utility-maximising slot. Total yield equ
 
 \begin{theorem}[Forced optimal utilisation]
 \label{thm:forcedutil}
-At any closed assignment $A$, every slot $e$ operates at the utilisation rate
+At any closed assignment $A$, every slot $e$ operates at the utilisation rate that maximises its \emph{net} yield contribution
 \[
-  v^*(e, A) \;=\; \argmax_{v \in (0,\bar{v}(e)]} \;\frac{\pres(n(e), e)}{\tick \cdot c(e) \cdot g_u(v)},
+  v^*(e, A) \;=\; \argmax_{v \in (0,\bar{v}(e)]}\;
+  \Bigl[\, \pres(n(e), e)\cdot b(v)\;-\;\tick\cdot c(e)\cdot g_u(v)\,\Bigr],
 \]
-where $n(e)$ is the queue node feeding slot $e$ under the backpressure routing of Section~\ref{sec:liveness}.
+where $n(e)$ is the queue node feeding slot $e$ under the backpressure routing of Section~\ref{sec:liveness}, and $b$ is a strictly concave, strictly increasing \emph{benefit} function ($b'>0$, $b''<0$, $b(0)=0$) capturing diminishing returns to utilisation. The maximiser is the unique interior point $v^*$ satisfying the marginal-balance condition
+\[
+  \pres(n(e), e)\cdot b'(v^*) \;=\; \tick\cdot c(e)\cdot g_u'(v^*).
+\]
 \end{theorem}
 
 \begin{proof}
-At closure, no reassignment improves yield. The yield contribution of slot $e$ is $\pres(n(e), e) / (\tick \cdot c(e) \cdot g_u(v))$. This is a strictly quasiconcave function of $v$ (strictly concave numerator, strictly convex denominator): it has a unique interior maximum $v^*$ satisfying the first-order condition $\pres(n(e), e) \cdot g_u'(v^*) = \pres(n(e), e) \cdot g_u(v^*) \cdot 0$, i.e., the first-order condition $g_u(v^*) - v^* g_u'(v^*) = 0$. Any deviation from $v^*$ reduces yield at $e$, and since $A$ is closed, such a deviation cannot be compensated by reassignments. Therefore $e$ must run at $v^*$.
+At closure, no reassignment improves yield. Directional pressure $\pres(n(e),e)$ is set by the feeding queue and is constant in the slot's own rate $v$. Raising $v$ increases target-ward progress with diminishing returns---the benefit $\pres\cdot b(v)$ is concave---while resource consumption $\tick\, c(e)\, g_u(v)$ is strictly convex and diverges as $v\to\bar v$. The net contribution
+\[
+  Y_e(v) \;=\; \pres(n(e), e)\, b(v)\;-\;\tick\, c(e)\, g_u(v)
+\]
+is therefore strictly concave (concave minus convex), so it has a \emph{unique interior} maximiser. Its derivative is
+\[
+  Y_e'(v) \;=\; \pres(n(e), e)\, b'(v)\;-\;\tick\, c(e)\, g_u'(v),
+\]
+and $Y_e'(0^+)>0$ (marginal benefit $\pres\,b'(0)>0$ dominates the finite marginal cost near $0$) while $Y_e'(v)\to-\infty$ as $v\to\bar v$ (marginal cost diverges). By the intermediate value theorem and strict concavity there is exactly one interior root of $Y_e'$, the marginal-balance point $\pres\, b'(v^*)=\tick\, c(e)\, g_u'(v^*)$. Any deviation from $v^*$ reduces $Y_e$, and since $A$ is closed such a deviation cannot be compensated by reassignments. Therefore $e$ must run at $v^*$.\footnote{An earlier form of this theorem stated the contribution as $\pres/(\tick c\, g_u(v))$ with $\pres$ constant in $v$; that ratio is strictly \emph{decreasing} in $v$, its argmax is the boundary $v\to 0^+$, and the stated first-order condition $g_u(v)-v g_u'(v)=0$ has no interior root for convex $g_u$ with $g_u(0)=0$. A numerical check of that form correctly failed and prompted the concave-benefit / convex-cost formulation above (Section~\ref{sec:validation}).}
 \end{proof}
 
 \subsection{Comparative-advantage sorting}
@@ -705,6 +721,401 @@ The fault signal claim: if $R$ drops below $0.95$ despite $K_c \geq K_c^*$, the 
 \end{proof}
 
 %% ===================================================================
+\section{Processes as Persistent Agents}
+\label{sec:agents}
+%% ===================================================================
+
+The preceding sections treat an allocated process as a passive parcel of work: a
+task $x$ that the scheduler moves toward its target $\tau(x)$ and that ceases to
+exist when its residual reaches zero. This section performs a change of viewpoint
+that requires no new physics. We re-read the \emph{same} formal objects with the
+locus of agency inverted: the allocated process is not moved, it \emph{moves
+itself}; it does not wait to be scheduled, it \emph{pursues its own goal} tick by
+tick; and---the single genuinely new primitive---it does not vanish at $r = 0$ but
+\emph{succeeds to a new goal} and persists. The result is a system of standing,
+goal-directed agents \cite{russell2020} whose behaviour is already governed, in
+full, by the theorems above.
+
+The motivating picture is a non-player character in a simulated world---a town
+smith who is \emph{occupied at the forge} when approached rather than idling until
+addressed, who gives a \emph{different response on each interaction} because his
+internal state has advanced, and who may \emph{initiate}---hailing the visitor
+rather than only reacting. We show each of these three properties is a theorem of
+the framework, and that persistence is the one mechanism that must be added.
+
+\subsection{The process agent}
+
+\begin{definition}[Process agent]
+\label{def:agent}
+A \emph{process agent} is a task $x = (o(x), \tau(x), w(x))$ regarded as an
+autonomous entity that (i) owns its completion target $\tau(x)$ as a \emph{standing
+goal}, (ii) at every tick selects an action so as to reduce its own residual
+$r(x, \cdot)$ (Def.~\ref{def:residual}), and (iii) persists across the event
+$r(x,\cdot) = 0$ by goal succession (Def.~\ref{def:succession}). Its \emph{internal
+state} is $\mathrm{loc}(x) \in \R^d$, the partial result produced so far, whose
+S-normalised image occupies the monitoring cell $\cell(\Scal(\mathrm{loc}(x)))$.
+\end{definition}
+
+Every construct of the paper carries over verbatim under this reading, with the
+locus of agency moved from the scheduler to the process:
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.46\columnwidth}p{0.46\columnwidth}@{}}
+\toprule
+\emph{Scheduler-centric object} & \emph{Agent-centric reading} \\
+\midrule
+Target $\tau(x)$ & The agent's standing goal \\
+Residual $r(x,e)$ (Def.~\ref{def:residual}) & The agent's felt distance from its goal---its drive \\
+Directional pressure $\pres(n,e)$ (Def.~\ref{def:pressure}) & The agent's choice of what to do next \\
+Backpressure descent (Thm.~\ref{thm:liveness}) & The agent pursuing its goal unaided \\
+Rising $\sep(e,A)$ when stalled (Thm.~\ref{thm:liveness}, Step 3) & The agent raising its price---summoning help \\
+Monitoring cell $\cell(h)$ (Def.~\ref{def:moncell}) & The agent's current, quantised inner state \\
+Completion at $r = 0$ & \emph{Not} termination: goal succession (Def.~\ref{def:succession}) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Only the final row is new. The rest of this section makes the three NPC properties
+precise and derives them.
+
+\subsection{Occupied, not waiting}
+
+\begin{theorem}[Occupancy]
+\label{thm:occupied}
+Under Assumptions~\ref{ass:finite}, \ref{ass:backpressure}, and \ref{ass:descent},
+at every tick a process agent $x$ with $r(x,\cdot) > 0$ reduces its residual by
+$\pres(n(x), e^*(x)) \geq \tick > 0$. Consequently an agent is \emph{never idle
+while its goal is unmet}: between any two external interactions it has advanced
+toward $\tau(x)$ by at least one compute-tick per elapsed tick.
+\end{theorem}
+
+\begin{proof}
+This is Step~1 of the liveness proof (Theorem~\ref{thm:liveness}) read for a single
+agent. By Assumption~\ref{ass:descent} there is an outgoing slot $e^*$ with
+$\pres(n(x), e^*) > 0$; by the compute-tick quantisation this pressure is a
+positive multiple of $\tick$, so the per-tick residual decrement is at least
+$\tick$. An agent that made no progress would have $\pres(n(x), \cdot) = 0$ at its
+node, contradicting Assumption~\ref{ass:descent} while $r(x,\cdot) > 0$. Hence
+positive progress every tick until $r = 0$.
+\end{proof}
+
+\begin{remark}
+Occupancy inverts the default state. In a request--response system the process is
+idle until addressed; here, ``idle while the goal is unmet'' is not a resting state
+but an \emph{anomaly}---precisely the stall of Step~3 of Theorem~\ref{thm:liveness},
+which raises a price signal and is resolved in finite time. The smith is at the
+forge because descent, not waiting, is what a live agent does with a tick.
+\end{remark}
+
+\subsection{Goal succession: persistence past completion}
+
+We now add the one new primitive. An NPC does not disappear when it finishes a
+sword; it starts the next. Formally, completion is not an absorbing state but a
+transition to a fresh goal.
+
+\begin{definition}[Occupation and goal succession]
+\label{def:succession}
+An \emph{occupation} is a map $\gamma : \R^d \times \mathcal{H}^* \to \R^d$ from
+(the just-attained target, the agent's finite interaction history $\mathcal{H}^*$)
+to a new target. A process agent \emph{governed by occupation $\gamma$} evolves as
+follows: while $r(x,\cdot) > \floor$ it descends by backpressure
+(Assumption~\ref{ass:backpressure}); upon reaching $r(x,\cdot) \leq \floor$ (goal
+attained to within the resolution floor, Theorem~\ref{thm:floor}) it \emph{succeeds}
+to the new target
+\[
+  \tau'(x) \;=\; \gamma\bigl(\tau(x),\, \mathrm{hist}(x)\bigr),
+\]
+resets its residual to $r'(x,\cdot) = \rho(\mathrm{loc}(x), \tau'(x))$, and
+continues. The agent terminates only if $\gamma$ returns the null target
+$\varnothing$ (retirement).
+\end{definition}
+
+\begin{remark}
+Succession fires at $r \leq \floor$, not $r = 0$: by the resolution floor
+(Theorem~\ref{thm:floor}) a goal cannot be attained to sub-$\floor$ precision, so
+``attained'' means ``inside the target cell.'' This is the same $\floor$
+that bounds observation and scheduling; the agent's sense of ``done'' is quantised
+by the same physical constant as everything else.
+\end{remark}
+
+\begin{theorem}[Persistence]
+\label{thm:persistence}
+A network of process agents each governed by an occupation $\gamma$ with
+$\gamma \neq \varnothing$ is a well-defined dynamical system with no terminal
+horizon: the total residual $V(t) = \sum_x r(x, A(x))$ is bounded and returns to a
+positive value after each succession, rather than draining permanently to zero. On
+each inter-succession interval the liveness bound (Corollary~\ref{cor:settling})
+applies unchanged, so every individual goal is attained in finite time
+\[
+  T_{\mathrm{goal}} \;\leq\; \frac{r(x,\cdot)}{\tick},
+\]
+and the agent immediately acquires the next.
+\end{theorem}
+
+\begin{proof}
+Between successions the agent's dynamics are exactly those of
+Section~\ref{sec:liveness}: by Theorem~\ref{thm:occupied} its residual strictly
+decreases by $\geq \tick$ per tick, so it reaches the target cell in at most
+$\lceil r(x,\cdot)/\tick \rceil$ ticks (Corollary~\ref{cor:settling} for a single
+agent). At that instant Definition~\ref{def:succession} replaces $\tau$ by
+$\tau' = \gamma(\tau,\mathrm{hist})$ and $r$ by $\rho(\mathrm{loc}(x),\tau') > 0$
+(strictly positive whenever $\tau' \neq \mathrm{loc}(x)$; if $\tau' = \mathrm{loc}(x)$
+the agent draws again). Thus $V$ never rests at $0$ but is reset upward at each
+succession, and the argument repeats on the next interval. Each interval is finite,
+so goals are attained in a well-ordered succession; the system runs indefinitely
+without a finite horizon.
+\end{proof}
+
+\begin{remark}[Two limitations retired]
+Theorem~\ref{thm:persistence} converts two of the paper's stated limitations into
+results. \emph{Finite horizon} (formerly Limitation~4): liveness was proved over a
+finite task set; goal succession extends it to indefinite operation, one finite
+interval at a time. \emph{Dynamic retargeting} (formerly Limitation~5):
+comparative-advantage sorting assumed a fixed $\tau$; succession makes $\tau$
+piecewise-constant, changing only at cell-resolution completion events, and every
+per-interval theorem holds with $\tau$ frozen on that interval. Retargeting is not
+an obstacle to the theory---it is a sequence of instances of it.
+\end{remark}
+
+\subsection{An ever-fresh response}
+
+\begin{proposition}[No two identical interactions]
+\label{prop:fresh}
+Let an external interaction with agent $x$ at tick $t$ return a response
+$\mathrm{resp}(x, t) = \Phi\bigl(\cell(\Scal(\mathrm{loc}(x)(t)))\bigr)$ for any
+fixed response map $\Phi$ that distinguishes cells. If between ticks $t_1 < t_2$ the
+agent's internal state crosses at least one cell boundary---which by
+Theorem~\ref{thm:occupied} occurs whenever the accumulated residual decrement
+reaches $w_{\cell}/2$---then $\mathrm{resp}(x, t_1) \neq \mathrm{resp}(x, t_2)$ even
+for an identical query.
+\end{proposition}
+
+\begin{proof}
+By Theorem~\ref{thm:occupied} the agent reduces its residual by $\geq \tick$ each
+tick, so its S-normalised state $\Scal(\mathrm{loc}(x))$ moves monotonically toward
+the target. By the CUSUM--cell-crossing identity (Theorem~\ref{thm:cusum}) a
+boundary is crossed exactly when the accumulated deviation reaches $w_{\cell}/2$;
+after $\lceil (w_{\cell}/2)/\tick \rceil$ ticks at least one crossing has occurred.
+A crossing changes $\cell(\Scal(\mathrm{loc}(x)))$, and since $\Phi$ distinguishes
+cells, it changes the response. Hence the same query posed before and after a
+crossing yields distinct responses.
+\end{proof}
+
+\begin{remark}
+The freshness is not randomness bolted on; it is the visible shadow of the agent's
+ongoing descent. The response differs because the agent has genuinely moved toward
+its goal since the last interaction---the state that the response reads is a live,
+advancing quantity, not a stored script. This is the formal content of ``a
+different response to every interaction.''
+\end{remark}
+
+\subsection{The agent initiates}
+
+\begin{proposition}[Agent-initiated contact]
+\label{prop:hail}
+A stalled process agent (one whose queue has $\pres > 0$ but which has received no
+slot) raises its separation cost $\sep(e^*, A)$
+(Assumption~\ref{ass:backpressure}), and by the Three-way Equivalence
+(Theorem~\ref{thm:trinity}) this raises the clearing price $p(e^*) = \sep(e^*, A)$.
+The rising price is broadcast on the yield signal and \emph{summons} an executor to
+$e^*$ in finite time (Theorem~\ref{thm:liveness}, Step~3). The reactivation is
+therefore \emph{initiated by the agent}, not by any external caller.
+\end{proposition}
+
+\begin{proof}
+Immediate from Step~3 of Theorem~\ref{thm:liveness}: the stall raises $\sep$, the
+equivalence turns $\sep$ into a price, and market clearing routes capacity to the
+highest price. No external event is required to begin this; the trigger is the
+agent's own unmet goal. Finiteness of the resolution is the finite-time stall
+recovery already proved.
+\end{proof}
+
+\begin{remark}
+Propositions~\ref{prop:fresh} and~\ref{prop:hail} together give the two halves of
+agency an NPC needs beyond mere occupancy: it is \emph{never the same twice}
+because its inner state advances, and it can \emph{reach out} because its unmet
+goal is itself the summoning signal. The smith may hail you; and if he does, it is
+because his own work has stalled and raised its price, not because a script fired.
+\end{remark}
+
+\subsection{Persistence is incorruptible}
+
+\begin{corollary}[Non-forgeable life-history]
+\label{cor:lifehistory}
+Each process agent carries the monotone committed-step counter $M(t)$ of
+Theorem~\ref{thm:incorrupt}. Goal succession (Def.~\ref{def:succession}) advances
+$M$ at each completion and never rewinds it. Hence an agent's history of attained
+goals is a strictly increasing sequence that cannot be replayed, rolled back, or
+forged, and this holds without cryptography.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:incorrupt}(iv), $M(t+1) = M(t) + 1$ on each committed action and
+$M$ never decreases. A succession event is a committed action (it fires the reset of
+Def.~\ref{def:succession}), so it advances $M$. A replayed or forged history would
+require a committed step index below the current $M$, which the scheduler rejects.
+Thus the succession record is a monotone, non-forgeable life-history.
+\end{proof}
+
+\begin{remark}
+Persistence and incorruptibility are the same fact viewed twice: the counter that
+makes the action stream replay-resistant is exactly the counter that gives each
+agent a well-ordered, tamper-evident biography of the goals it has met. An agent's
+past is as structurally protected as the scheduler's action stream.
+\end{remark}
+
+%% ===================================================================
+\section{Numerical Validation}
+\label{sec:validation}
+%% ===================================================================
+
+The results of this paper are theorems, but several admit direct
+numerical verification: closed-form claims can be checked to machine
+precision, and the behavioural theorems of Section~\ref{sec:agents} can
+be exhibited by simulation. We ran eleven independent checks in two
+suites. All eleven pass against the final statements; notably, one check
+initially failed against the \emph{original} form of
+Theorem~\ref{thm:forcedutil} and led us to correct that theorem, after
+which it passes.
+
+\subsection{Formula checks}
+
+Six checks verify closed-form claims exactly (tolerance $10^{-9}$):
+resolution-floor positivity $\floor=\tick>0$
+(Cor.~\ref{cor:tick_floor}); the finite settling bound
+$T_{\mathrm{settle}}\le V_0/(\tick|\E|_{\mathrm{active}})$
+(Cor.~\ref{cor:settling}); and the multiplicative confirmation identity
+$\kap=1-\prod_i(1-\kap_i)$ (Def.~\ref{def:multconf}), which was
+confirmed to dominate each component. The \emph{Three-way Equivalence}
+(Theorem~\ref{thm:trinity}) was checked by brute force on a
+$4{\times}4$ unit-capacity assignment problem: enumerating all
+assignments and computing, for each, yield-optimality, deterministic
+closure (over the single-task/swap neighbourhood), and market clearing
+at prices $p(e)=\sep(e,A)$. The yield-optimal assignment was found to be
+simultaneously deterministically closed and market-clearing---the three
+characterisations select the same fixed point, as the theorem asserts.
+
+\subsection{A corrected theorem}
+
+The check that initially failed targeted Theorem~\ref{thm:forcedutil}
+\emph{as originally stated}, with yield contribution
+$\pres/(\tick\,c\,g_u(v))$.
+The check found no interior maximiser: with directional pressure
+$\pres$ constant in the slot's own rate $v$ and $g_u$ strictly convex,
+that ratio is strictly \emph{decreasing} in $v$, so its argmax is the
+boundary $v\to 0^+$, and the first-order condition
+$g_u(v)-v g_u'(v)=0$ has no interior root (indeed
+$g_u(v)-v g_u'(v)\le 0$ for all $v>0$ when $g_u(0)=0$ and $g_u$ is
+convex, so even the throughput-per-cost ratio $v/g_u(v)$ has no interior
+optimum). The original proof's assertion of a ``strictly concave
+numerator'' was incorrect---the numerator was constant. We corrected the
+theorem to a \emph{net}-yield objective, concave benefit minus convex
+cost, $\pres\,b(v)-\tick\,c\,g_u(v)$ with $b$ strictly concave: this is
+strictly concave in $v$ and has a unique interior maximiser at the
+marginal-balance point $\pres\,b'(v^*)=\tick\,c\,g_u'(v^*)$, as now
+proved (Theorem~\ref{thm:forcedutil}). The numerical check passes
+against the corrected statement. We report this because it illustrates
+the intended use of the validation suite: a machine check that refuses
+to certify a false claim is doing its job.
+
+\subsection{Agent-network simulation}
+
+The behavioural theorems of Section~\ref{sec:agents} were exhibited by
+simulating a network of twelve process agents in $\R^2$ over $400$
+ticks, each governed by an occupation $\gamma$ drawing fresh targets.
+The simulation confirmed:
+\begin{itemize}[nosep]
+\item \emph{Occupancy} (Theorem~\ref{thm:occupied}): every live agent
+  reduced its residual by at least $\tick$ on every non-attaining tick.
+\item \emph{Persistence} (Theorem~\ref{thm:persistence}): each agent
+  succeeded past completion repeatedly (of order $10^2$ successions
+  each over the run), and the total residual $V(t)$ revived after each
+  drain rather than resting at zero---the system exhibits no terminal
+  horizon.
+\item \emph{Ever-fresh response} (Proposition~\ref{prop:fresh}): every
+  agent crossed at least one monitoring-cell boundary, so a
+  cell-indexed response differs across interactions.
+\item \emph{Non-forgeable life-history}
+  (Corollary~\ref{cor:lifehistory}): the committed-step counter $M$ was
+  monotone for every agent, and each agent's recorded goal-history
+  length equalled its succession count.
+\item \emph{Per-interval liveness} (Cor.~\ref{cor:settling}):
+  first-goal attainment occurred within $\lceil r_0/\tick\rceil$ ticks.
+\end{itemize}
+All simulation checks passed. The four figures
+(Figures~\ref{fig:panelA}--\ref{fig:panelD}) visualise the validated
+quantities: the equivalence and utilisation optima, the agent
+descent-and-succession dynamics, the resolution-floor and settling
+geometry, and the closure/clearing landscape.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{panelA_equivalence_utilisation.png}
+  \caption{\textbf{Equivalence and forced utilisation.}
+  Left to right: the yield landscape over a two-parameter reassignment
+  family, with its single interior fixed point (red); the net-yield
+  contribution $Y(v)=\pres\,b(v)-\tick\,c\,g_u(v)$ of a slot, strictly
+  concave with a unique interior optimum $v^*$
+  (Theorem~\ref{thm:forcedutil}, corrected form); the marginal-balance
+  view, where marginal benefit meets marginal cost at the same $v^*$;
+  and, over all assignments of a $5{\times}5$ instance, yield
+  sub-optimality against closure gap---both vanish together at the one
+  fixed point (red), the numerical content of the Three-way Equivalence
+  (Theorem~\ref{thm:trinity}).}
+  \label{fig:panelA}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{panelB_agent_dynamics.png}
+  \caption{\textbf{Persistent-agent dynamics (Section~\ref{sec:agents}).}
+  Left to right: goal-pursuit trajectories of five process agents in
+  $(x_1,x_2,\text{tick})$ space, each straight descent segment ending in
+  a succession jump to a fresh goal; the residual $r(x)$ of one agent
+  over time, a sawtooth of descend--attain--succeed against the floor
+  $\floor$ (Theorem~\ref{thm:occupied}, Def.~\ref{def:succession}); the
+  number of goals each of twelve agents attained over the run
+  (persistence, Theorem~\ref{thm:persistence}); and the total residual
+  $V(t)$ at the start and end of the run---it revives rather than
+  draining to zero, exhibiting no terminal horizon.}
+  \label{fig:panelB}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{panelC_floor_settling.png}
+  \caption{\textbf{Resolution floor and settling geometry.}
+  Left to right: the finite settling bound
+  $T_{\mathrm{settle}}=V_0/(\tick|\E|_{\mathrm{active}})$ as a surface
+  over initial work and active-slot count
+  (Cor.~\ref{cor:settling}); the admissible cell-width band between the
+  floor $\floor$ and the Nyquist upper bound $1/(2B_{\mathrm{proc}})$
+  (Theorem~\ref{thm:nyquist}), which closes as process bandwidth grows;
+  the monotone committed-step counter $M(t)$ of four agents, a
+  non-forgeable life-history (Cor.~\ref{cor:lifehistory}); and the
+  strictly positive resolution floor $100(1-1/|K|)$ approaching but never
+  reaching its limit (Theorem~\ref{thm:floor}).}
+  \label{fig:panelC}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{panelD_clearing_confirmation.png}
+  \caption{\textbf{Separation cost, clearing, and confirmation.}
+  Left to right: the separation-cost / clearing-price surface over
+  demand and capacity, rising steeply where demand exceeds capacity
+  (Def.~\ref{def:sep}, Prop.~\ref{prop:sepcost}); multiplicative
+  confirmation composition $\kap=1-(1-\kap_1)(1-\kap_2)$, every curve
+  above the diagonal so the composite dominates each component
+  (Def.~\ref{def:multconf}); the market-clearing prices
+  $p(e)=\sep(e,A)$ across slots (Def.~\ref{def:clearing}); and a
+  yield-density map in which each slot's assigned task (red ring) is the
+  one for which it has comparative advantage (Theorem~\ref{thm:sorting}).}
+  \label{fig:panelD}
+\end{figure*}
+
+%% ===================================================================
 \section{Discussion}
 \label{sec:discussion}
 %% ===================================================================
@@ -733,14 +1144,29 @@ The central contribution of this paper is the identification that the same $\tic
 
 Theorem~\ref{thm:separation} shows that the monitoring and control subsystems must be architecturally separated: the monitor's output feeds the scheduler only through the cell map, never directly. This is not merely good engineering practice; it is a theorem following from the resolution floor and the observation-action coupling. Systems that fuse monitoring and control violate Theorem~\ref{thm:separation} and incur at minimum a bias of $\floor$ in their observations---a bias they cannot correct because they cannot observe themselves with sub-$\floor$ precision.
 
+\subsection{Processes as agents}
+
+The agent reading of Section~\ref{sec:agents} connects the framework to the
+autonomous-agent tradition \cite{russell2020}, in which an agent perceives, holds
+goals, and acts to achieve them. What is unusual here is that the agent abstraction
+is not imposed on top of the scheduler---it is \emph{already present} in the
+scheduler's own objects. Residual work is a drive, directional pressure is a choice,
+the stall-price signal is a call for help, and the monitoring cell is a perceived
+state. The only construct that must be added for full agency is persistence past
+completion, and even that borrows the resolution floor (for ``done'') and the
+committed-step counter (for a non-forgeable history) from theorems proved for other
+purposes. The town-smith intuition---occupied, ever-changing, able to initiate---is
+thus not a metaphor layered onto the system but a faithful restatement of what a
+live process in this framework already is.
+
 \subsection{Limitations}
 
 \begin{enumerate}[nosep]
 \item \emph{Closure is a $\tick$-local optimum.} Theorem~\ref{thm:trinity} guarantees that closed assignments are within $\tick$ of global optimality, not that they are globally optimal. This is consistent with Theorem~\ref{thm:floor}: sub-$\tick$ distinctions are not physically meaningful.
 \item \emph{Deterministic data.} All results are stated for deterministic task arrival and execution times. Stochastic generalisations (Poisson arrivals, heavy-tailed service) are not treated.
 \item \emph{No mechanism-design claims.} The yield market of Section~\ref{sec:separation} is described as a clearing mechanism; we prove no incentive-compatibility or strategy-proofness.
-\item \emph{Finite horizon.} Liveness (Theorem~\ref{thm:liveness}) is stated over a finite task set. Infinite-horizon stability under continuous arrivals is not treated.
-\item \emph{Homogeneous task targets.} Comparative-advantage sorting (Theorem~\ref{thm:sorting}) assumes that each task's target is a fixed point in $\R^d$. Dynamic retargeting (tasks whose completion criterion changes during execution) is not treated.
+\item \emph{Finite horizon (partially addressed).} Liveness (Theorem~\ref{thm:liveness}) is stated over a finite task set; goal succession (Theorem~\ref{thm:persistence}) extends it to indefinite operation one finite interval at a time. Infinite-horizon stability under continuous \emph{external} arrivals (as opposed to internally generated goals) is still not treated.
+\item \emph{Homogeneous task targets (addressed).} Comparative-advantage sorting (Theorem~\ref{thm:sorting}) assumes a fixed target $\tau$; goal succession (Def.~\ref{def:succession}) admits piecewise-constant targets that change at cell-resolution completion events, with every per-interval theorem holding on each interval. The occupation map $\gamma$ itself is taken as given; its design (what goals an agent generates) is out of scope.
 \end{enumerate}
 
 %% ===================================================================
@@ -750,7 +1176,7 @@ Theorem~\ref{thm:separation} shows that the monitoring and control subsystems mu
 
 We have developed a self-contained theory of distributed computing allocation built on a single positive quantum $\tick$---the compute-tick---that serves simultaneously as the physical resolution floor for state observations, the algorithmic closure threshold for the scheduler, and the minimum lot size in the yield market. The central result, the Three-way Equivalence (Theorem~\ref{thm:trinity}), shows that yield-optimality, deterministic closure, and market clearing are one fixed point when $\tick$ plays all three roles.
 
-From this equivalence we derived as theorems: forced optimal utilisation (Theorem~\ref{thm:forcedutil}), comparative-advantage sorting (Theorem~\ref{thm:sorting}), and liveness under backpressure (Theorem~\ref{thm:liveness}). The cell-partition scheduler achieves global asymptotic stability (Theorem~\ref{thm:lyapunov}) and discrete contraction (Theorem~\ref{thm:contraction}) with all stability parameters computable offline. The monitor--control separation theorem (Theorem~\ref{thm:separation}) shows that fused monitoring and control systems incur an irreducible observation bias. Structural incorruptibility (Theorem~\ref{thm:incorrupt}) guarantees that no monitoring payload influences the action stream without traversing the cell-partition map.
+From this equivalence we derived as theorems: forced optimal utilisation (Theorem~\ref{thm:forcedutil}), comparative-advantage sorting (Theorem~\ref{thm:sorting}), and liveness under backpressure (Theorem~\ref{thm:liveness}). The cell-partition scheduler achieves global asymptotic stability (Theorem~\ref{thm:lyapunov}) and discrete contraction (Theorem~\ref{thm:contraction}) with all stability parameters computable offline. The monitor--control separation theorem (Theorem~\ref{thm:separation}) shows that fused monitoring and control systems incur an irreducible observation bias. Structural incorruptibility (Theorem~\ref{thm:incorrupt}) guarantees that no monitoring payload influences the action stream without traversing the cell-partition map. Finally, inverting the locus of agency (Section~\ref{sec:agents}) shows that an allocated process is already a persistent goal-directed agent: it is occupied rather than waiting (Theorem~\ref{thm:occupied}), persists past completion by goal succession (Theorem~\ref{thm:persistence}), responds distinctly on each interaction (Proposition~\ref{prop:fresh}), and summons capacity by raising its own price (Proposition~\ref{prop:hail})---with goal succession the sole added primitive, and its life-history non-forgeable by the same counter that resists replay (Corollary~\ref{cor:lifehistory}).
 
 The results are theorems about a specific formal object---the computing network model of Section~\ref{sec:model}---under stated hypotheses. They establish that the object is coherent: its physical, algorithmic, and economic descriptions are the same fixed point. The value is internal: a unified account of why the correct scheduler, the correctly priced market, and the correctly structured monitor all agree.
 

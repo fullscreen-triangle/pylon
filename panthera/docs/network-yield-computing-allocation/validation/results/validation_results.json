@@ -1,0 +1,326 @@
+{
+  "paper": "Network Yield and Computing Allocation",
+  "source_tex": "network-yield-computing-allocation.tex",
+  "generated_utc": "2026-07-21T19:17:09.787728+00:00",
+  "tau_0": 1.0,
+  "tolerance": 1e-09,
+  "summary": {
+    "passed": 11,
+    "total": 11,
+    "all_pass": true
+  },
+  "suite_A_formula_checks": [
+    {
+      "name": "shell_capacity",
+      "theorem": "Prop. shell capacity |Shell(n)|=2n^2",
+      "claim": "enumerated (l,m,s) count equals 2n^2 for n=1..10",
+      "ok": true,
+      "per_depth": [
+        {
+          "n": 1,
+          "enumerated": 2,
+          "formula": 2,
+          "match": true
+        },
+        {
+          "n": 2,
+          "enumerated": 8,
+          "formula": 8,
+          "match": true
+        },
+        {
+          "n": 3,
+          "enumerated": 18,
+          "formula": 18,
+          "match": true
+        },
+        {
+          "n": 4,
+          "enumerated": 32,
+          "formula": 32,
+          "match": true
+        },
+        {
+          "n": 5,
+          "enumerated": 50,
+          "formula": 50,
+          "match": true
+        },
+        {
+          "n": 6,
+          "enumerated": 72,
+          "formula": 72,
+          "match": true
+        },
+        {
+          "n": 7,
+          "enumerated": 98,
+          "formula": 98,
+          "match": true
+        },
+        {
+          "n": 8,
+          "enumerated": 128,
+          "formula": 128,
+          "match": true
+        },
+        {
+          "n": 9,
+          "enumerated": 162,
+          "formula": 162,
+          "match": true
+        },
+        {
+          "n": 10,
+          "enumerated": 200,
+          "formula": 200,
+          "match": true
+        }
+      ]
+    },
+    {
+      "name": "resolution_floor_positive",
+      "theorem": "Thm. resolution floor + Cor. tick_floor",
+      "claim": "beta = tau_0 and beta > 0 (no monitor returns a point)",
+      "ok": true,
+      "beta": 1.0,
+      "tau_0": 1.0
+    },
+    {
+      "name": "forced_utilisation_unique_interior",
+      "theorem": "Thm. forced optimal utilisation (corrected net-yield form)",
+      "claim": "Y(v)=P b(v)-tau c g_u(v) strictly concave with unique interior v* at P b'(v*)=tau c g_u'(v*)",
+      "ok": true,
+      "history": "Original ratio form P/(tau c g_u(v)) had no interior optimum (argmax at boundary v->0+); the failing check prompted this concave-benefit / convex-cost correction.",
+      "v_star": 0.431637,
+      "argmax_is_interior": true,
+      "objective_strictly_concave": true,
+      "foc_residual": 0.000122,
+      "vbar": 1.0
+    },
+    {
+      "name": "settling_time_bound",
+      "theorem": "Cor. finite settling time",
+      "claim": "T_settle <= V0/(tau*|E|_active)",
+      "ok": true,
+      "cases": [
+        {
+          "V0": 100.0,
+          "n_active": 4,
+          "bound": 25.0,
+          "realised_ticks": 25,
+          "holds": true
+        },
+        {
+          "V0": 37.0,
+          "n_active": 1,
+          "bound": 37.0,
+          "realised_ticks": 37,
+          "holds": true
+        },
+        {
+          "V0": 1024.0,
+          "n_active": 16,
+          "bound": 64.0,
+          "realised_ticks": 64,
+          "holds": true
+        },
+        {
+          "V0": 5.0,
+          "n_active": 5,
+          "bound": 1.0,
+          "realised_ticks": 1,
+          "holds": true
+        }
+      ]
+    },
+    {
+      "name": "three_way_equivalence_smallcase",
+      "theorem": "Thm. Three-way Equivalence (i)<=>(ii)<=>(iii) up to tau",
+      "claim": "yield-optimal assignment is deterministically closed AND market-clearing",
+      "ok": true,
+      "n_tasks": 4,
+      "n_slots": 4,
+      "y_max": 31.401,
+      "optimum_in_yield_optimal": true,
+      "optimum_in_closed": true,
+      "optimum_in_clearing": true,
+      "n_closed": 3,
+      "n_clearing": 1
+    },
+    {
+      "name": "multiplicative_confirmation",
+      "theorem": "Def. multiplicative confirmation composition",
+      "claim": "kappa=1-prod(1-k_i) equals iterative form and dominates each k_i",
+      "ok": true,
+      "kappa_composite": 0.766,
+      "components": [
+        0.2,
+        0.35,
+        0.5,
+        0.1
+      ]
+    }
+  ],
+  "suite_B_dynamical_simulation": {
+    "params": {
+      "n_agents": 12,
+      "dim": 2,
+      "ticks": 400,
+      "cell_width": 0.1,
+      "beta": 0.5,
+      "tau_0": 1.0
+    },
+    "checks": [
+      {
+        "name": "occupancy_progress_per_tick",
+        "theorem": "Thm. occupancy (Sec 9)",
+        "claim": "every live agent reduces residual by >= tau_0 each tick",
+        "ok": true,
+        "min_step_seen": 1.0
+      },
+      {
+        "name": "persistence_goal_succession",
+        "theorem": "Thm. persistence + Def. goal succession (Sec 9)",
+        "claim": "agents persist past r<=beta by succeeding to fresh goals; total residual revives (no terminal horizon)",
+        "ok": true,
+        "successions_per_agent": [
+          189,
+          188,
+          185,
+          182,
+          187,
+          185,
+          181,
+          189,
+          180,
+          181,
+          186,
+          182
+        ],
+        "tail_revived": true
+      },
+      {
+        "name": "ever_fresh_response",
+        "theorem": "Prop. no two identical interactions (Sec 9)",
+        "claim": "each agent crosses >=1 monitoring cell => response changes",
+        "ok": true,
+        "cell_crossings_per_agent": [
+          398,
+          399,
+          398,
+          399,
+          399,
+          399,
+          399,
+          399,
+          399,
+          399,
+          399,
+          399
+        ]
+      },
+      {
+        "name": "non_forgeable_life_history",
+        "theorem": "Cor. non-forgeable life-history (Sec 9)",
+        "claim": "committed-step counter M monotone; history length == successions",
+        "ok": true,
+        "counters_monotone": true
+      },
+      {
+        "name": "liveness_settling_first_goal",
+        "theorem": "Cor. finite settling time / Thm. liveness (per interval)",
+        "claim": "first-goal attainment ticks <= ceil(r0/tau_0)",
+        "ok": true,
+        "cases": [
+          {
+            "agent": 0,
+            "r0": 1.5748,
+            "bound_ticks": 2,
+            "realised_ticks": 2,
+            "holds": true
+          },
+          {
+            "agent": 1,
+            "r0": 1.4131,
+            "bound_ticks": 2,
+            "realised_ticks": 1,
+            "holds": true
+          },
+          {
+            "agent": 2,
+            "r0": 1.1702,
+            "bound_ticks": 2,
+            "realised_ticks": 1,
+            "holds": true
+          },
+          {
+            "agent": 3,
+            "r0": 0.8095,
+            "bound_ticks": 1,
+            "realised_ticks": 1,
+            "holds": true
+          },
+          {
+            "agent": 4,
+            "r0": 1.2592,
+            "bound_ticks": 2,
+            "realised_ticks": 1,
+            "holds": true
+          },
+          {
+            "agent": 5,
+            "r0": 2.4573,
+            "bound_ticks": 3,
+            "realised_ticks": 2,
+            "holds": true
+          }
+        ]
+      }
+    ],
+    "total_residual_trace_head": [
+      19.3752,
+      16.9404,
+      24.9055,
+      21.1096,
+      19.2437,
+      18.3864,
+      19.8711,
+      22.5517,
+      22.5004,
+      27.0064,
+      20.9867,
+      23.5959,
+      18.1943,
+      26.6197,
+      22.9185,
+      20.9861,
+      23.0742,
+      23.073,
+      20.9213,
+      16.9721
+    ],
+    "total_residual_trace_tail": [
+      19.2033,
+      24.1957,
+      25.3022,
+      18.076,
+      22.1449,
+      21.3027,
+      14.0625,
+      19.9236,
+      20.9975,
+      17.6719,
+      18.5216,
+      19.7717,
+      19.0003,
+      16.4185,
+      15.9489,
+      21.1825,
+      25.5572,
+      18.4498,
+      22.0181,
+      18.3113
+    ]
+  }
+}

@@ -1,4 +1,12 @@
-# Pylon: Thermodynamic Network Coordination Through Gear Ratio Manifolds
+<h1 align="center">Pylon</h1>
+<p align="center"><em>Thermodynamic Network Coordination</em></p>
+
+<p align="center">
+  <img src="assets/images/fre-sonneveld-q6n8nIrDQHE-unsplash.jpg" alt="Spectacular Logo" width="300"/>
+</p>
+
+
+
 
 ## Abstract
 

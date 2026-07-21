@@ -1,0 +1,66 @@
+\begin{thebibliography}{10}
+
+\bibitem{banach1922}
+Stefan Banach.
+\newblock Sur les op{\'e}rations dans les ensembles abstraits et leur
+  application aux {\'e}quations int{\'e}grales.
+\newblock {\em Fundamenta Mathematicae}, 3:133--181, 1922.
+
+\bibitem{demers1990}
+Alan Demers, Srinivasan Keshav, and Scott Shenker.
+\newblock Analysis and simulation of a fair queueing algorithm.
+\newblock {\em Journal of Internetworking Research and Experience}, 1(1):3--26,
+  1990.
+
+\bibitem{hindman2011}
+Benjamin Hindman, Andy Konwinski, Matei Zaharia, Ali Ghodsi, Anthony~D. Joseph,
+  Randy Katz, Scott Shenker, and Ion Stoica.
+\newblock {Mesos}: A platform for fine-grained resource sharing in the data
+  center.
+\newblock In {\em NSDI}, pages 295--308, 2011.
+
+\bibitem{kuramoto1984}
+Yoshiki Kuramoto.
+\newblock Chemical oscillations, waves, and turbulence.
+\newblock {\em Springer Series in Synergetics}, 19, 1984.
+
+\bibitem{neely2010}
+Michael~J. Neely.
+\newblock {\em Stochastic Network Optimization with Application to
+  Communication and Queueing Systems}.
+\newblock Morgan \& Claypool, 2010.
+
+\bibitem{cusum1954}
+E.~S. Page.
+\newblock Continuous inspection schemes.
+\newblock {\em Biometrika}, 41(1--2):100--115, 1954.
+
+\bibitem{russell2020}
+Stuart~J. Russell and Peter Norvig.
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Pearson, 4th edition, 2020.
+
+\bibitem{shannon1948}
+Claude~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock {\em Bell System Technical Journal}, 27:379--423, 623--656, 1948.
+
+\bibitem{strogatz2003}
+Steven~H. Strogatz.
+\newblock {\em Sync: The Emerging Science of Spontaneous Order}.
+\newblock Hyperion, 2003.
+
+\bibitem{tassiulas1992}
+Leandros Tassiulas and Anthony Ephremides.
+\newblock Stability properties of constrained queueing systems and scheduling
+  policies for maximum throughput in multihop radio networks.
+\newblock {\em IEEE Transactions on Automatic Control}, 37(12):1936--1948,
+  1992.
+
+\bibitem{verma2015}
+Abhishek Verma, Luis Pedrosa, Madhukar Korupolu, David Oppenheimer, Eric Tune,
+  and John Wilkes.
+\newblock Large-scale cluster management at {Google} with {Borg}.
+\newblock In {\em EuroSys}, 2015.
+
+\end{thebibliography}
