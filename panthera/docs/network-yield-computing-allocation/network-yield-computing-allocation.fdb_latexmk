@@ -1,16 +1,16 @@
 # Fdb version 4
-["bibtex network-yield-computing-allocation"] 1784662847.51043 "network-yield-computing-allocation.aux" "network-yield-computing-allocation.bbl" "network-yield-computing-allocation" 1784662855.33076 0
-  "./references.bib" 1784511860.39701 5993 dac3da41ccadeb2fcb9f8e4c2cc536ae ""
+["bibtex network-yield-computing-allocation"] 1784674532.51923 "network-yield-computing-allocation.aux" "network-yield-computing-allocation.bbl" "network-yield-computing-allocation" 1784674539.86428 0
+  "./references.bib" 1784511860 5993 dac3da41ccadeb2fcb9f8e4c2cc536ae ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/bibtex/bst/bibtex/plain.bst" 1291864736 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "network-yield-computing-allocation.aux" 1784662852.60212 24114 0735a195d0d1038e0e9c6681df699155 "pdflatex"
+  "network-yield-computing-allocation.aux" 1784674537 24113 cc7b06ad37a67024ffda20482e0a40df "pdflatex"
   (generated)
   "network-yield-computing-allocation.bbl"
   "network-yield-computing-allocation.blg"
   (rewritten before read)
-["pdflatex"] 1784662848.08649 "network-yield-computing-allocation.tex" "network-yield-computing-allocation.pdf" "network-yield-computing-allocation" 1784662855.33445 0
-  "C:/Users/kunda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1783486586.97399 82188 90cd578fc3cfbdcc7c37bb6a895e60cf ""
-  "C:/Users/kunda/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1774319051.72134 12668 0d80968f6b3c2b8988f7caf8d729ab8a ""
-  "C:/Users/kunda/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1774027875.46369 13333849 2cb8fe6563010d464c83c36a921c76e2 ""
+["pdflatex"] 1784674533.10095 "c:/Users/kunda/Documents/distributed/pylon/panthera/docs/network-yield-computing-allocation/network-yield-computing-allocation.tex" "network-yield-computing-allocation.pdf" "network-yield-computing-allocation" 1784674539.86562 0
+  "C:/Users/kunda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1783486586 82188 90cd578fc3cfbdcc7c37bb6a895e60cf ""
+  "C:/Users/kunda/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1774319051 12668 0d80968f6b3c2b8988f7caf8d729ab8a ""
+  "C:/Users/kunda/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1774027875 13333849 18c3261e54eac9bab1d5285ff9ea0920 ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm1095.tfm" 993062508 1460 8005ce585ff351dff78998923504da5e ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1233951848 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -132,15 +132,16 @@
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/tex/latex/tools/calc.sty" 1761901070 10374 2ffd4f27c7f90b8a300608069537743c ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/kunda/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "figures/panelA_equivalence_utilisation.png" 1784662075.65158 349455 044a22bfe49d52c0ba326cddf7c4a5bb ""
-  "figures/panelB_agent_dynamics.png" 1784662075.66251 401858 2ef5979a3ae441b116366d2eb5cf2e4d ""
-  "figures/panelC_floor_settling.png" 1784662075.67331 260433 531e3502e62e88bc26914e27614a3507 ""
-  "figures/panelD_clearing_confirmation.png" 1784662075.67331 295104 55c583afb49dbc488cd7517511e6a03a ""
-  "network-yield-computing-allocation.aux" 1784662852.60212 24114 0735a195d0d1038e0e9c6681df699155 "pdflatex"
-  "network-yield-computing-allocation.bbl" 1784662847.97899 2271 d380d29c9a73f0c02b4a82730e617f8a "bibtex network-yield-computing-allocation"
-  "network-yield-computing-allocation.out" 1784662852.62002 9387 9ab786ca5e80a8e0637e846770bea666 "pdflatex"
-  "network-yield-computing-allocation.tex" 1784662158.91073 80456 93c0741d6102e9eea6c2575404a2eb51 ""
-  "network-yield-computing-allocation.toc" 1784662852.63247 4671 d0a211f52a0be7b24f18dd7964e3a298 "pdflatex"
+  "c:/Users/kunda/Documents/distributed/pylon/panthera/docs/network-yield-computing-allocation/network-yield-computing-allocation.tex" 1784674519 80477 02298f5fd54cb8c3ab64155192104117 ""
+  "figures/panelA_equivalence_utilisation.png" 1784662075 349455 cbe543fc330e2235e71f9c29ebfbae2e ""
+  "figures/panelB_agent_dynamics.png" 1784662075 401858 df7c993e4ab3e45d51503769da073f9e ""
+  "figures/panelC_floor_settling.png" 1784662075 260433 7909bbc2e5cf07f83e4779b1d54703af ""
+  "figures/panelD_clearing_confirmation.png" 1784662075 295104 4695e47053b282ffdef7ca0e548b458a ""
+  "network-yield-computing-allocation.aux" 1784674537 24113 cc7b06ad37a67024ffda20482e0a40df "pdflatex"
+  "network-yield-computing-allocation.bbl" 1784674532 2271 27c793de0e73e25b7eee5a4c7de9d230 "bibtex network-yield-computing-allocation"
+  "network-yield-computing-allocation.out" 1784674537 9387 9ab786ca5e80a8e0637e846770bea666 "pdflatex"
+  "network-yield-computing-allocation.tex" 1784674519 80477 02298f5fd54cb8c3ab64155192104117 ""
+  "network-yield-computing-allocation.toc" 1784674537 4671 8a10994dbf806970ff216dcf7afd89a7 "pdflatex"
   (generated)
   "network-yield-computing-allocation.aux"
   "network-yield-computing-allocation.log"

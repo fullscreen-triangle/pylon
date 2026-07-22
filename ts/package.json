@@ -1,0 +1,39 @@
+{
+  "name": "@buhera/pylon",
+  "version": "0.1.0",
+  "description": "Distributed resource-allocation runtime for Buhera OS: speaks Sango Rine Shumba (SRN), clears a compute-tick-bounded yield market, and instantiates each allocated task as a persistent process agent.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/test/**/*.test.js\"",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true});require('fs').rmSync('dist-test',{recursive:true,force:true})\""
+  },
+  "keywords": [
+    "distributed",
+    "resource-allocation",
+    "sango-rine-shumba",
+    "yield-market",
+    "process-agent",
+    "compute-tick",
+    "receiver-relative"
+  ],
+  "author": "Kundai Farai Sachikonye",
+  "license": "MIT",
+  "private": true,
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

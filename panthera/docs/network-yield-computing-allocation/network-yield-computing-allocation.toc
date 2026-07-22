@@ -4,12 +4,12 @@
 \contentsline {section}{\numberline {2}The Computing Network Model}{3}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Primitive objects}{3}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Separation cost}{3}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Assignments and closure}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}Assignments and closure}{4}{subsection.2.3}%
 \contentsline {section}{\numberline {3}The Resolution Floor}{4}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Finite observer axiom}{4}{subsection.3.1}%
 \contentsline {section}{\numberline {4}Monitoring Architecture}{4}{section.4}%
 \contentsline {subsection}{\numberline {4.1}S-entropy state space}{4}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Cell partition and the monitoring cell}{4}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.2}Cell partition and the monitoring cell}{5}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}Trajectory completion}{5}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Closure dichotomy for monitoring}{5}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Coherence and sensor federation}{5}{subsection.4.5}%
@@ -29,25 +29,25 @@
 \contentsline {subsection}{\numberline {8.1}Backpressure routing}{10}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Liveness theorem}{10}{subsection.8.2}%
 \contentsline {section}{\numberline {9}Structural Incorruptibility}{10}{section.9}%
-\contentsline {section}{\numberline {10}Swarm Coordination and Phase-Lock}{11}{section.10}%
-\contentsline {section}{\numberline {11}Processes as Persistent Agents}{11}{section.11}%
-\contentsline {subsection}{\numberline {11.1}The process agent}{12}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Occupied, not waiting}{12}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Goal succession: persistence past completion}{12}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}An ever-fresh response}{13}{subsection.11.4}%
-\contentsline {subsection}{\numberline {11.5}The agent initiates}{13}{subsection.11.5}%
-\contentsline {subsection}{\numberline {11.6}Persistence is incorruptible}{14}{subsection.11.6}%
-\contentsline {section}{\numberline {12}Numerical Validation}{14}{section.12}%
-\contentsline {subsection}{\numberline {12.1}Formula checks}{14}{subsection.12.1}%
-\contentsline {subsection}{\numberline {12.2}A corrected theorem}{14}{subsection.12.2}%
-\contentsline {subsection}{\numberline {12.3}Agent-network simulation}{14}{subsection.12.3}%
-\contentsline {section}{\numberline {13}Discussion}{15}{section.13}%
-\contentsline {subsection}{\numberline {13.1}Relation to backpressure scheduling}{15}{subsection.13.1}%
-\contentsline {subsection}{\numberline {13.2}Relation to fair queueing}{15}{subsection.13.2}%
-\contentsline {subsection}{\numberline {13.3}Relation to cluster scheduling}{15}{subsection.13.3}%
-\contentsline {subsection}{\numberline {13.4}The resolution floor as a thermodynamic constraint}{15}{subsection.13.4}%
-\contentsline {subsection}{\numberline {13.5}The compute-tick as the unifying quantum}{15}{subsection.13.5}%
-\contentsline {subsection}{\numberline {13.6}Monitor--control separation as a design principle}{15}{subsection.13.6}%
-\contentsline {subsection}{\numberline {13.7}Processes as agents}{16}{subsection.13.7}%
-\contentsline {subsection}{\numberline {13.8}Limitations}{16}{subsection.13.8}%
-\contentsline {section}{\numberline {14}Conclusion}{17}{section.14}%
+\contentsline {section}{\numberline {10}Swarm Coordination and Phase-Lock}{12}{section.10}%
+\contentsline {section}{\numberline {11}Processes as Persistent Agents}{12}{section.11}%
+\contentsline {subsection}{\numberline {11.1}The process agent}{13}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Occupied, not waiting}{13}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Goal succession: persistence past completion}{13}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}An ever-fresh response}{14}{subsection.11.4}%
+\contentsline {subsection}{\numberline {11.5}The agent initiates}{15}{subsection.11.5}%
+\contentsline {subsection}{\numberline {11.6}Persistence is incorruptible}{15}{subsection.11.6}%
+\contentsline {section}{\numberline {12}Numerical Validation}{16}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Formula checks}{16}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}A corrected theorem}{16}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}Agent-network simulation}{16}{subsection.12.3}%
+\contentsline {section}{\numberline {13}Discussion}{16}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Relation to backpressure scheduling}{16}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}Relation to fair queueing}{17}{subsection.13.2}%
+\contentsline {subsection}{\numberline {13.3}Relation to cluster scheduling}{17}{subsection.13.3}%
+\contentsline {subsection}{\numberline {13.4}The resolution floor as a thermodynamic constraint}{17}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}The compute-tick as the unifying quantum}{17}{subsection.13.5}%
+\contentsline {subsection}{\numberline {13.6}Monitor--control separation as a design principle}{17}{subsection.13.6}%
+\contentsline {subsection}{\numberline {13.7}Processes as agents}{17}{subsection.13.7}%
+\contentsline {subsection}{\numberline {13.8}Limitations}{17}{subsection.13.8}%
+\contentsline {section}{\numberline {14}Conclusion}{18}{section.14}%

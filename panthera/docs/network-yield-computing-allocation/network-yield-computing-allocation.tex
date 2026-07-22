@@ -60,9 +60,13 @@ A Unified Framework for Distributed Task Scheduling\\
 via Thermodynamic Resolution Floors, Cell-Partition Control,\\
 and Market Clearing}}
 
-\author{Kundai Farai Sachikonye}
-
+\author{Kundai Farai Sachikonye\\[2pt]
+\small Technical University Muenchen\\
+\small AIMe Registry for Artificial Intelligence\\
+\small \texttt{kundai.sachikonye@wzw.tum.de}}
 \date{\today}
+
+
 
 \begin{document}
 
@@ -599,6 +603,23 @@ is therefore strictly concave (concave minus convex), so it has a \emph{unique i
 and $Y_e'(0^+)>0$ (marginal benefit $\pres\,b'(0)>0$ dominates the finite marginal cost near $0$) while $Y_e'(v)\to-\infty$ as $v\to\bar v$ (marginal cost diverges). By the intermediate value theorem and strict concavity there is exactly one interior root of $Y_e'$, the marginal-balance point $\pres\, b'(v^*)=\tick\, c(e)\, g_u'(v^*)$. Any deviation from $v^*$ reduces $Y_e$, and since $A$ is closed such a deviation cannot be compensated by reassignments. Therefore $e$ must run at $v^*$.\footnote{An earlier form of this theorem stated the contribution as $\pres/(\tick c\, g_u(v))$ with $\pres$ constant in $v$; that ratio is strictly \emph{decreasing} in $v$, its argmax is the boundary $v\to 0^+$, and the stated first-order condition $g_u(v)-v g_u'(v)=0$ has no interior root for convex $g_u$ with $g_u(0)=0$. A numerical check of that form correctly failed and prompted the concave-benefit / convex-cost formulation above (Section~\ref{sec:validation}).}
 \end{proof}
 
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{panelA_equivalence_utilisation.png}
+  \caption{\textbf{Equivalence and forced utilisation.}
+  Left to right: the yield landscape over a two-parameter reassignment
+  family, with its single interior fixed point (red); the net-yield
+  contribution $Y(v)=\pres\,b(v)-\tick\,c\,g_u(v)$ of a slot, strictly
+  concave with a unique interior optimum $v^*$
+  (Theorem~\ref{thm:forcedutil}, corrected form); the marginal-balance
+  view, where marginal benefit meets marginal cost at the same $v^*$;
+  and, over all assignments of a $5{\times}5$ instance, yield
+  sub-optimality against closure gap---both vanish together at the one
+  fixed point (red), the numerical content of the Three-way Equivalence
+  (Theorem~\ref{thm:trinity}).}
+  \label{fig:panelA}
+\end{figure*}
+
 \subsection{Comparative-advantage sorting}
 
 \begin{theorem}[Comparative-advantage sorting]
@@ -645,6 +666,23 @@ We show that the Lyapunov function $V = \sum_{x \in \X} r(x, A(x))$ (total resid
 
 Combining Steps 1--3: every live task makes progress each tick, or its stall raises a price signal that resolves the stall in finite time. Total residual work reaches zero in finite time.
 \end{proof}
+
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{panelD_clearing_confirmation.png}
+  \caption{\textbf{Separation cost, clearing, and confirmation.}
+  Left to right: the separation-cost / clearing-price surface over
+  demand and capacity, rising steeply where demand exceeds capacity
+  (Def.~\ref{def:sep}, Prop.~\ref{prop:sepcost}); multiplicative
+  confirmation composition $\kap=1-(1-\kap_1)(1-\kap_2)$, every curve
+  above the diagonal so the composite dominates each component
+  (Def.~\ref{def:multconf}); the market-clearing prices
+  $p(e)=\sep(e,A)$ across slots (Def.~\ref{def:clearing}); and a
+  yield-density map in which each slot's assigned task (red ring) is the
+  one for which it has comparative advantage (Theorem~\ref{thm:sorting}).}
+  \label{fig:panelD}
+\end{figure*}
+
 
 \begin{corollary}[Finite settling time]
 \label{cor:settling}
@@ -742,6 +780,22 @@ addressed, who gives a \emph{different response on each interaction} because his
 internal state has advanced, and who may \emph{initiate}---hailing the visitor
 rather than only reacting. We show each of these three properties is a theorem of
 the framework, and that persistence is the one mechanism that must be added.
+
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{panelB_agent_dynamics.png}
+  \caption{\textbf{Persistent-agent dynamics (Section~\ref{sec:agents}).}
+  Left to right: goal-pursuit trajectories of five process agents in
+  $(x_1,x_2,\text{tick})$ space, each straight descent segment ending in
+  a succession jump to a fresh goal; the residual $r(x)$ of one agent
+  over time, a sawtooth of descend--attain--succeed against the floor
+  $\floor$ (Theorem~\ref{thm:occupied}, Def.~\ref{def:succession}); the
+  number of goals each of twelve agents attained over the run
+  (persistence, Theorem~\ref{thm:persistence}); and the total residual
+  $V(t)$ at the start and end of the run---it revives rather than
+  draining to zero, exhibiting no terminal horizon.}
+  \label{fig:panelB}
+\end{figure*}
 
 \subsection{The process agent}
 
@@ -877,6 +931,23 @@ piecewise-constant, changing only at cell-resolution completion events, and ever
 per-interval theorem holds with $\tau$ frozen on that interval. Retargeting is not
 an obstacle to the theory---it is a sequence of instances of it.
 \end{remark}
+
+\begin{figure*}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{panelC_floor_settling.png}
+  \caption{\textbf{Resolution floor and settling geometry.}
+  Left to right: the finite settling bound
+  $T_{\mathrm{settle}}=V_0/(\tick|\E|_{\mathrm{active}})$ as a surface
+  over initial work and active-slot count
+  (Cor.~\ref{cor:settling}); the admissible cell-width band between the
+  floor $\floor$ and the Nyquist upper bound $1/(2B_{\mathrm{proc}})$
+  (Theorem~\ref{thm:nyquist}), which closes as process bandwidth grows;
+  the monotone committed-step counter $M(t)$ of four agents, a
+  non-forgeable life-history (Cor.~\ref{cor:lifehistory}); and the
+  strictly positive resolution floor $100(1-1/|K|)$ approaching but never
+  reaching its limit (Theorem~\ref{thm:floor}).}
+  \label{fig:panelC}
+\end{figure*}
 
 \subsection{An ever-fresh response}
 
@@ -1049,71 +1120,9 @@ quantities: the equivalence and utilisation optima, the agent
 descent-and-succession dynamics, the resolution-floor and settling
 geometry, and the closure/clearing landscape.
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{panelA_equivalence_utilisation.png}
-  \caption{\textbf{Equivalence and forced utilisation.}
-  Left to right: the yield landscape over a two-parameter reassignment
-  family, with its single interior fixed point (red); the net-yield
-  contribution $Y(v)=\pres\,b(v)-\tick\,c\,g_u(v)$ of a slot, strictly
-  concave with a unique interior optimum $v^*$
-  (Theorem~\ref{thm:forcedutil}, corrected form); the marginal-balance
-  view, where marginal benefit meets marginal cost at the same $v^*$;
-  and, over all assignments of a $5{\times}5$ instance, yield
-  sub-optimality against closure gap---both vanish together at the one
-  fixed point (red), the numerical content of the Three-way Equivalence
-  (Theorem~\ref{thm:trinity}).}
-  \label{fig:panelA}
-\end{figure*}
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{panelB_agent_dynamics.png}
-  \caption{\textbf{Persistent-agent dynamics (Section~\ref{sec:agents}).}
-  Left to right: goal-pursuit trajectories of five process agents in
-  $(x_1,x_2,\text{tick})$ space, each straight descent segment ending in
-  a succession jump to a fresh goal; the residual $r(x)$ of one agent
-  over time, a sawtooth of descend--attain--succeed against the floor
-  $\floor$ (Theorem~\ref{thm:occupied}, Def.~\ref{def:succession}); the
-  number of goals each of twelve agents attained over the run
-  (persistence, Theorem~\ref{thm:persistence}); and the total residual
-  $V(t)$ at the start and end of the run---it revives rather than
-  draining to zero, exhibiting no terminal horizon.}
-  \label{fig:panelB}
-\end{figure*}
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{panelC_floor_settling.png}
-  \caption{\textbf{Resolution floor and settling geometry.}
-  Left to right: the finite settling bound
-  $T_{\mathrm{settle}}=V_0/(\tick|\E|_{\mathrm{active}})$ as a surface
-  over initial work and active-slot count
-  (Cor.~\ref{cor:settling}); the admissible cell-width band between the
-  floor $\floor$ and the Nyquist upper bound $1/(2B_{\mathrm{proc}})$
-  (Theorem~\ref{thm:nyquist}), which closes as process bandwidth grows;
-  the monotone committed-step counter $M(t)$ of four agents, a
-  non-forgeable life-history (Cor.~\ref{cor:lifehistory}); and the
-  strictly positive resolution floor $100(1-1/|K|)$ approaching but never
-  reaching its limit (Theorem~\ref{thm:floor}).}
-  \label{fig:panelC}
-\end{figure*}
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{panelD_clearing_confirmation.png}
-  \caption{\textbf{Separation cost, clearing, and confirmation.}
-  Left to right: the separation-cost / clearing-price surface over
-  demand and capacity, rising steeply where demand exceeds capacity
-  (Def.~\ref{def:sep}, Prop.~\ref{prop:sepcost}); multiplicative
-  confirmation composition $\kap=1-(1-\kap_1)(1-\kap_2)$, every curve
-  above the diagonal so the composite dominates each component
-  (Def.~\ref{def:multconf}); the market-clearing prices
-  $p(e)=\sep(e,A)$ across slots (Def.~\ref{def:clearing}); and a
-  yield-density map in which each slot's assigned task (red ring) is the
-  one for which it has comparative advantage (Theorem~\ref{thm:sorting}).}
-  \label{fig:panelD}
-\end{figure*}
 
 %% ===================================================================
 \section{Discussion}
